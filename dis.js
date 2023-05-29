@@ -26,7 +26,7 @@ function updatePlot(theta, plotId_rgb, plotId_lab, plotId_xy, action) {
 
     // this is the actual position without mapping
     // TODO: rotated colors might be out of HVS gamut; we should black out those colors too
-    var rotPoints_RGB = math.multiply(rotMat, math.transpose(colors));
+    var rotPoints_RGB = math.multiply(rotMat, math.transpose(state.colors));
     var rotColors_RGB = math.transpose(rotPoints_RGB);
 
     var rotPoints_RGB_mapped = rotPoints_RGB;
@@ -158,11 +158,12 @@ function updatePlot(theta, plotId_rgb, plotId_lab, plotId_xy, action) {
     $('#s13').css('background-color', rotColors_sRGB[2]);
     $('#s14').css('background-color', rotColors_sRGB[3]);
   }
-  // show names for the original colors (not dynamically updated with slider)
-  //$('#h11').text('');
-  //$('#h12').text('');
-  //$('#h13').text('');
-  //$('#h14').text('');
+
+  // good for debugging
+  //$('#s11').text(RGB2sRGB(rotColors_RGB[0]));
+  //$('#s12').text(RGB2sRGB(rotColors_RGB[1]));
+  //$('#s13').text(RGB2sRGB(rotColors_RGB[2]));
+  //$('#s14').text(RGB2sRGB(rotColors_RGB[3]));
   //$('#n11').text(name1);
   //$('#n12').text(name2);
   //$('#n13').text(name3);
@@ -262,15 +263,16 @@ function genTestColor(mode) {
   return testColor;
 }
 
-function testOneColor() {
+function testOneColor(random) {
   // set all four colors
   state.testColor = genTestColor(1);
-  state.testId = Math.floor(Math.random() * 4);
+  //random = false;
+  state.testId = random ? Math.floor(Math.random() * 4) : 0;
   for (var i = 0; i <= 3; i++) {
-    if (i == state.testId) colors[i] = state.testColor;
-    else colors[i] = state.baseColor;
+    if (i == state.testId) state.colors[i] = state.testColor;
+    else state.colors[i] = state.baseColor;
 
-    names[i] = sRGB2Name(RGB2sRGB(colors[i], true));
+    //names[i] = sRGB2Name(RGB2sRGB(state.colors[i], true));
   }
 
   updatePlot(0, 'rgbDiv', 'labDiv', 'xyDiv', 3);
@@ -286,7 +288,7 @@ function submit(rangeId) {
   $(rangeId).val(0);
   $('.rot-label').html('Rotation Angle (Degree): 0&#176;');
 
-  testOneColor();
+  testOneColor(true);
 }
 
 function setupNextColor() {
@@ -305,7 +307,7 @@ function setupNextColor() {
   $('.rot-label').html('Rotation Angle (Degree): 0&#176;')
   $('#customRange').prop('disabled', true);
   setTimeout(() => {
-    testOneColor();
+    testOneColor(true);
     $('#customRange').prop('disabled', false);
   }, 1000); // caveat: this is async
 }
@@ -313,6 +315,7 @@ function setupNextColor() {
 // contains the state one baseColor test (multiple testColors)
 class discTestState {
   constructor(base, space) {
+    this._colors = [];
     this._baseColor = base;
     this._cs = space; // the colorspace that _baseColor is defined in
     this._scalesAtRevs = [];
@@ -343,6 +346,10 @@ class discTestState {
 
   get scalesAtRevs() {
     return this._scalesAtRevs;
+  }
+
+  get colors() {
+    return this._colors;
   }
 
   set testColor(v) {
@@ -493,7 +500,7 @@ var init = false;
 var simMethod; // 0 for Brettel 1997 (two planes) and 1 for Viénot 1999 (one plane)
 var type; // 0 for P, 1 for D, 2 for T
 var sim;
-var colors = [], names = [];
+//var colors = [], names = [];
 
 d3.csv('ciexyzjv.csv').then(function(rows){
   function unpack(rows, key, toNum) {

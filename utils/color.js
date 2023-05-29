@@ -149,14 +149,25 @@ function rgbToHex(c) {
   return "#" + componentToHex(c[0]) + componentToHex(c[1]) + componentToHex(c[2]);
 }
 
+// remove gamma from a normalized sRGB color
+function removeGamma(color) {
+  var out;
+
+  if (color <= 0.0031308) out = Math.round(12.92 * color * 255);
+  else out = Math.round((1.055 * Math.pow(color, 1/2.4) - 0.055) * 255);
+
+  return out;
+}
+
 // From linear RGB to sRGB in Hex
 // if |clip| true, use the absolute rendering intent to clip
 function RGB2sRGB(color, clip) {
   var out = [];
 
   for(var i = 0; i < 3; i++) {
-    if (color[i] <= 0.0031308) out[i] = parseInt((12.92 * color[i] * 255).toFixed());
-    else out[i] = parseInt(((1.055 * Math.pow(color[i], 1/2.4) - 0.055) * 255).toFixed());
+    out[i] = removeGamma(color[i]);
+    //if (color[i] <= 0.0031308) out[i] = parseInt((12.92 * color[i] * 255).toFixed());
+    //else out[i] = parseInt(((1.055 * Math.pow(color[i], 1/2.4) - 0.055) * 255).toFixed());
 
     if (clip) {
       if (out[i] < 0) out[i] = 0;
@@ -176,15 +187,6 @@ function formatLinearSRGB(color) {
       color[0].toString()+' '+
       color[1].toString()+' '+
       color[2].toString()+')';
-}
-
-function removeGamma(color) {
-  var out;
-
-  if (color <= 0.0031308) out = Math.round(12.92 * color * 255);
-  else out = Math.round((1.055 * Math.pow(color, 1/2.4) - 0.055) * 255);
-
-  return out;
 }
 
 // From sRGB [0, 1] to linear RGB
