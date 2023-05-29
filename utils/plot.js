@@ -1,0 +1,878 @@
+function plotExp(plotId) {
+  var trace = {
+    x: [],
+    y: [],
+    mode: 'lines+markers',
+    line: {
+      width: 1,
+      color: 'rgb(0, 0, 0)',
+    },
+    marker: {
+      size: 15,
+      color: [],
+      line: {
+        color: '#000000',
+        width: []
+      }
+    },
+    showlegend: false,
+    hovertemplate: 'x: %{x}' +
+      '<br>y: %{y}<extra></extra>',
+  };
+
+  var threshold = {
+    x: [],
+    y: [],
+    mode: 'lines',
+    name: 'Experimental threshold',
+    line: {
+      dash: 'dot',
+      width: 3,
+      color: 'rgb(92, 50, 168)',
+    }
+  };
+
+  var rev = {
+    x: [-1],
+    y: [-1],
+    mode: 'markers',
+    name: 'Reversal',
+    visible: false,
+    marker: {
+      size: 15,
+      color: '#FFFFFF',
+      line: {
+        color: '#000000',
+        width: 2
+      }
+    },
+  };
+
+  var corRes = {
+    x: [-1],
+    y: [-1],
+    mode: 'markers',
+    name: 'Correct response',
+    visible: false,
+    marker: {
+      size: 15,
+      color: '#63bf7d',
+    },
+  };
+
+  var incorRes = {
+    x: [-1],
+    y: [-1],
+    mode: 'markers',
+    name: 'Incorrect response',
+    visible: false,
+    marker: {
+      size: 15,
+      color: '#d61e49',
+    },
+  };
+
+  var data = [threshold, trace, rev, corRes, incorRes];
+
+  var layout = {
+    height: 600,
+    width: 600,
+    paper_bgcolor: 'rgba(0, 0, 0, 0)',
+    plot_bgcolor: 'rgba(0, 0, 0, 0)',
+    title: 'Results',
+    xaxis: {
+      title: 'Trial Number',
+      showgrid: true,
+      zeroline: true,
+      range: [0, 30],
+    },
+    yaxis: {
+      title: 'Scale',
+      showline: true,
+      range: [-0.02, 0.12],
+    },
+    legend: {
+      x: 1,
+      xanchor: 'right',
+      y: 1
+    },
+    annotations: [
+      {
+        x: 25,
+        y: 0.06,
+        xref: 'x',
+        yref: 'y',
+        //text: 'Annotation Text',
+        visible: false,
+        showarrow: false,
+        font: {
+          family: 'Helvetica Neue',
+          size: 20,
+          color: 'rgb(92, 50, 168)',
+        },
+      },
+    ],
+  };
+ 
+  var plot = document.getElementById(plotId);
+  Plotly.newPlot(plot, data, layout);
+
+  return plot;
+}
+
+function plotXy(plotId, chrm, wlen, a475, a575, a485, a660) {
+  var xyTrace = {
+    x: chrm[0],
+    y: chrm[1],
+    text: wlen,
+    mode: 'lines+markers',
+    line: {
+      color: blackColor,
+      width: 1,
+      shape: 'spline',
+    },
+    name: 'Spectral Locus',
+    hovertemplate: 'x: %{x}' +
+      '<br>y: %{y}' +
+      '<br>wavelength: %{text}<extra></extra>',
+  };
+
+
+  // Viénot 1999 single-plane approach
+  var RGB2xyz = [[40.9568, 35.5041, 17.9167], [21.3389, 70.6743, 7.9868], [1.86297, 11.462, 91.2367]];
+  var sRGB_R = math.multiply(RGB2xyz, [1, 0, 0]);
+  var sRGB_B = math.multiply(RGB2xyz, [0, 0, 1]);
+  var sRGB_Y = math.multiply(RGB2xyz, [1, 1, 0]);
+  var sRGB_C = math.multiply(RGB2xyz, [0, 1, 1]);
+  var sRGB_W = math.multiply(RGB2xyz, [1, 1, 1]);
+
+  var isochrome_line_pd_single = {
+    x: [sRGB_B[0] / math.sum(sRGB_B), sRGB_W[0] / math.sum(sRGB_W), sRGB_Y[0] / math.sum(sRGB_Y)],
+    y: [sRGB_B[1] / math.sum(sRGB_B), sRGB_W[1] / math.sum(sRGB_W), sRGB_Y[1] / math.sum(sRGB_Y)],
+    text: ['sRGB B', 'sRGB W', 'sRGB Y'],
+    mode: 'lines+markers',
+    marker: {
+      size: 12,
+      opacity: 1,
+      color: ['#FFFFFF','#FFFFFF','#FFFFFF'],
+      line: {
+        color: '#000000',
+        width: 2
+      }
+    },
+    line: {
+      width: 1,
+      color: '#000000',
+    },
+    name: 'Iso-chrome lines',
+    visible: false,
+    hovertemplate: 'x: %{x}' +
+      '<br>y: %{y}' +
+      '<br>%{text}<extra></extra>',
+  };
+
+  var isochrome_line_tri_single = {
+    x: [sRGB_R[0] / math.sum(sRGB_R), sRGB_W[0] / math.sum(sRGB_W), sRGB_C[0] / math.sum(sRGB_C)],
+    y: [sRGB_R[1] / math.sum(sRGB_R), sRGB_W[1] / math.sum(sRGB_W), sRGB_C[1] / math.sum(sRGB_C)],
+    text: ['sRGB R', 'sRGB W', 'sRGB C'],
+    mode: 'lines+markers',
+    marker: {
+      size: 12,
+      opacity: 1,
+      color: ['#888888','#888888','#888888'],
+      line: {
+        color: '#000000',
+        width: 2
+      }
+    },
+    line: {
+      width: 1,
+      color: '#000000',
+    },
+    name: 'Iso-chrome lines',
+    visible: false,
+    hovertemplate: 'x: %{x}' +
+      '<br>y: %{y}' +
+      '<br>%{text}<extra></extra>',
+  };
+
+
+  // Brettel projection planes
+  var isochrome_line_pd = {
+    x: [chrm[0][a475], 1/3, chrm[0][a575]],
+    y: [chrm[1][a475], 1/3, chrm[1][a575]],
+    text: ['475 nm', 'EEW', '575 nm'],
+    mode: 'lines+markers',
+    marker: {
+      size: 12,
+      opacity: 1,
+      color: ['#FFFFFF','#FFFFFF','#FFFFFF'],
+      line: {
+        color: '#000000',
+        width: 2
+      }
+    },
+    line: {
+      width: 1,
+      color: '#000000',
+    },
+    name: 'Iso-chrome lines',
+    visible: false,
+    hovertemplate: 'x: %{x}' +
+      '<br>y: %{y}' +
+      '<br>%{text}<extra></extra>',
+  };
+
+  var isochrome_line_tri = {
+    x: [chrm[0][a485], 1/3, chrm[0][a660]],
+    y: [chrm[1][a485], 1/3, chrm[1][a660]],
+    text: ['485 nm', 'EEW', '660 nm'],
+    mode: 'lines+markers',
+    marker: {
+      size: 12,
+      opacity: 1,
+      color: ['#888888','#888888','#888888'],
+      line: {
+        color: '#000000',
+        width: 2
+      }
+    },
+    line: {
+      width: 1,
+      color: '#000000',
+    },
+    name: 'Iso-chrome lines',
+    visible: false,
+    hovertemplate: 'x: %{x}' +
+      '<br>y: %{y}' +
+      '<br>%{text}<extra></extra>',
+  };
+
+  var line = {
+    x: [0],
+    y: [0],
+    text: wlen,
+    mode: 'markers',
+    marker: {
+      size: 15,
+      opacity: 1,
+      color: [0,0,0],
+    },
+    line: {
+      width: 1,
+      color: '#000000',
+    },
+    name: 'Actual',
+    hovertemplate: 'x: %{x}' +
+      '<br>y: %{y}' +
+      '<br>Actual: %{text}<extra></extra>',
+  };
+
+  var sim_line = {
+    x: [0],
+    y: [0],
+    text: wlen,
+    mode: 'markers',
+    marker: {
+      size: 13,
+      opacity: 1,
+      color: [0,0,0],
+      symbol: 'square',
+    },
+    line: {
+      width: 1,
+      color: '#000000',
+    },
+    name: 'Simulation',
+    hovertemplate: 'x: %{x}' +
+      '<br>y: %{y}' +
+      '<br>Simulation: %{text}<extra></extra>',
+  };
+
+  var srgb_gamut_lines = {
+    x: [0.6383673477, 0.301801932, 0.1529509084, 0.6383673477],
+    y: [0.3325957349, 0.6007655533, 0.06818154656, 0.3325957349],
+    text: ['R', 'G', 'B', 'R'],
+    mode: 'lines',
+    line: {
+      width: 1,
+      color: orangeColor,
+    },
+    name: 'sRGB gamut',
+    visible: true,
+    hovertemplate: 'x: %{x}' +
+      '<br>y: %{y}' +
+      '<br>%{text}<extra></extra>',
+  };
+
+  line_p_R = math.transpose(
+     [math.add([0.6383673477, 0.3325957349], math.multiply(confusion_lines_xy[0*3+0], 2)),
+      math.add([0.6383673477, 0.3325957349], math.multiply(confusion_lines_xy[0*3+0], -2))]);
+  line_p_G = math.transpose(
+     [math.add([0.301801932, 0.6007655533], math.multiply(confusion_lines_xy[0*3+1], -2)),
+      math.add([0.301801932, 0.6007655533], math.multiply(confusion_lines_xy[0*3+1], 2))]);
+  line_p_B = math.transpose(
+     [math.add([0.1529509084, 0.06818154656], math.multiply(confusion_lines_xy[0*3+2], 2)),
+      math.add([0.1529509084, 0.06818154656], math.multiply(confusion_lines_xy[0*3+2], -2))]);
+
+  line_d_R = math.transpose(
+     [math.add([0.6383673477, 0.3325957349], math.multiply(confusion_lines_xy[1*3+0], 2)),
+      math.add([0.6383673477, 0.3325957349], math.multiply(confusion_lines_xy[1*3+0], -2))]);
+  line_d_G = math.transpose(
+     [math.add([0.301801932, 0.6007655533], math.multiply(confusion_lines_xy[1*3+1], -2)),
+      math.add([0.301801932, 0.6007655533], math.multiply(confusion_lines_xy[1*3+1], 2))]);
+  line_d_B = math.transpose(
+     [math.add([0.1529509084, 0.06818154656], math.multiply(confusion_lines_xy[1*3+2], 2)),
+      math.add([0.1529509084, 0.06818154656], math.multiply(confusion_lines_xy[1*3+2], -2))]);
+
+  line_t_R = math.transpose(
+     [math.add([0.6383673477, 0.3325957349], math.multiply(confusion_lines_xy[2*3+0], 2)),
+      math.add([0.6383673477, 0.3325957349], math.multiply(confusion_lines_xy[2*3+0], -2))]);
+  line_t_G = math.transpose(
+     [math.add([0.301801932, 0.6007655533], math.multiply(confusion_lines_xy[2*3+1], -2)),
+      math.add([0.301801932, 0.6007655533], math.multiply(confusion_lines_xy[2*3+1], 2))]);
+  line_t_B = math.transpose(
+     [math.add([0.1529509084, 0.06818154656], math.multiply(confusion_lines_xy[2*3+2], 2)),
+      math.add([0.1529509084, 0.06818154656], math.multiply(confusion_lines_xy[2*3+2], -2))]);
+
+  var p_conf = {
+    x: line_p_R[0].concat(line_p_G[0]).concat(line_p_B[0]),
+    y: line_p_R[1].concat(line_p_G[1]).concat(line_p_B[1]),
+    mode: 'lines',
+    line: {
+      width: 1,
+      color: '#777777',
+    },
+    name: 'Confusion lines',
+    visible: false,
+  };
+
+  var d_conf = {
+    x: line_d_R[0].concat(line_d_G[0]).concat(line_d_B[0]),
+    y: line_d_R[1].concat(line_d_G[1]).concat(line_d_B[1]),
+    mode: 'lines',
+    line: {
+      width: 1,
+      color: '#777777',
+    },
+    name: 'Confusion lines',
+    visible: false,
+  };
+
+  var t_conf = {
+    x: line_t_R[0].concat(line_t_G[0]).concat(line_t_B[0]),
+    y: line_t_R[1].concat(line_t_G[1]).concat(line_t_B[1]),
+    mode: 'lines',
+    line: {
+      width: 1,
+      color: '#777777',
+    },
+    name: 'Confusion lines',
+    visible: false,
+  };
+
+  var data = [xyTrace,
+              isochrome_line_pd, isochrome_line_tri, isochrome_line_pd_single, isochrome_line_tri_single,
+              line, sim_line, srgb_gamut_lines,
+              p_conf, d_conf, t_conf,
+             ];
+
+  var layout = {
+    height: 600,
+    width: 600,
+    margin: {
+      l: 0,
+      r: 0,
+      b: 50,
+      t: 50
+    },
+    showlegend: true,
+    paper_bgcolor: 'rgba(0, 0, 0, 0)',
+    plot_bgcolor: 'rgba(0, 0, 0, 0)',
+    legend: {
+      x: 1,
+      xanchor: 'right',
+      y: 1,
+    },
+    xaxis: {
+      range: [0, 1],
+      title: {
+        text: 'x'
+      },
+      // https://community.plotly.com/t/get-mouses-position-on-click/4145/3
+      constrain: 'domain',
+      dtick: 0.2,
+      zerolinewidth: 3,
+    },
+    yaxis: {
+      range: [-0.2, 1],
+      title: {
+        text: 'y'
+      },
+      scaleanchor: 'x',
+      dtick: 0.2,
+      zerolinewidth: 3,
+    }
+  };
+ 
+  var plot = document.getElementById(plotId);
+  Plotly.newPlot(plot, data, layout);
+
+  return plot;
+}
+
+function plotLab(plotId) {
+  var traces = [];
+
+  var line = {
+    x: [0], // a*
+    y: [0], // b*
+    z: [0], // L
+    text: [0, 0, 0],
+    type: 'scatter3d',
+    mode: 'markers',
+    marker: {
+      size: 10,
+      opacity: 1,
+      color: [0,0,0],
+    },
+    line: {
+      width: 1,
+      color: '#000000',
+    },
+    //mode: 'markers',
+    showlegend: true,
+    name: 'Actual colors',
+    opacity:0.8,
+    hovertemplate: 'Actual: %{text}<br>' +
+      '<br>L: %{z}' +
+      '<br>a<sup>*</sup>: %{x}' +
+      '<br>b<sup>*</sup>: %{y}<extra></extra>',
+  };
+  traces.push(line);
+
+  var sim_line = {
+    x: [0], // a*
+    y: [0], // b*
+    z: [0], // L
+    text: [0, 0, 0],
+    type: 'scatter3d',
+    mode: 'markers',
+    marker: {
+      size: 10,
+      opacity: 1,
+      color: [0,0,0],
+      symbol: 'square',
+    },
+    line: {
+      width: 1,
+      color: '#000000',
+    },
+    //mode: 'markers',
+    showlegend: true,
+    name: 'Simulation',
+    opacity:0.8,
+    hovertemplate: 'Simulation: %{text}<br>' +
+      '<br>L: %{z}' +
+      '<br>a<sup>*</sup>: %{x}' +
+      '<br>b<sup>*</sup>: %{y}<extra></extra>',
+  };
+  traces.push(sim_line);
+
+  var data = traces;
+
+  var layout = {
+    height: 600,
+    width: 600,
+    margin: {
+      l: 0,
+      r: 0,
+      b: 0,
+      t: 0
+    },
+    showlegend: true,
+    legend: {
+      x: 0,
+      xanchor: 'left',
+      y: 0.9,
+    },
+    //title: 'Spectral locus in RGB color space',
+    paper_bgcolor: 'rgba(0, 0, 0, 0)',
+    scene: {
+      camera: {
+        projection: {
+          type: 'orthographic'
+        }
+      },
+      // https://plotly.com/javascript/3d-axes/
+      aspectmode: 'cube',
+      xaxis: {
+        //autorange: true,
+        range: [-200, 500],
+        constrain: 'domain',
+        dtick: 100,
+        showspikes: false,
+        title: {
+          text: 'a<sup>*</sup>'
+        }
+      },
+      yaxis: {
+        //autorange: true,
+        range: [-300, 500],
+        scaleanchor: 'x',
+        scaleratio: 1,
+        dtick: 100,
+        showspikes: false,
+        title: {
+          text: 'b<sup>*</sup>'
+        }
+      },
+      zaxis: {
+        //autorange: true,
+        range: [-100, 100],
+        scaleanchor: 'y',
+        scaleratio: 1,
+        dtick: 20,
+        showspikes: false,
+        title: {
+          text: 'L'
+        }
+      },
+    }
+  };
+ 
+  var plot = document.getElementById(plotId);
+  Plotly.newPlot(plot, data, layout);
+
+  return plot;
+}
+
+function plotRGB(plotId) {
+  var allPoints = math.transpose([[0, 0, 0], [1, 0, 0], [0, 1, 0], [0, 0, 1], [1, 1, 0], [1, 0, 1], [0, 1, 1], [1, 1, 1]]);
+
+  var traces = [];
+
+  // O: 0; R: 1; G: 2: B: 3
+  // RG: 4; RB: 5; GB: 6; RGB: 7
+  var indices = [[0, 1], [0, 2], [0, 3], [1, 4], [1, 5], [2, 4], [2, 6], [3, 5], [3, 6], [4, 7], [5, 7], [6, 7], [0, 7]];
+  var names = ['O', 'R', 'G', 'B', 'R+G', 'R+B', 'G+B', 'W'];
+  var hoverInfo = [true, true, true, 'skip', 'skip', 'skip', 'skip', 'skip', 'skip', true, true, true, 'skip'];
+  var colors = ['#000000', redColor, greenColor, blueColor, yellowColor, magentaColor, cyanColor, '#FFFFFF'];
+  var modes = Array(3).fill('lines+markers+text').concat(Array(6).fill('lines')).concat(Array(3).fill('lines+markers+text'));
+
+  // plot the RGB cube
+  for (var i = 0; i < indices.length; i++) {
+    var start = indices[i][0];
+    var end = indices[i][1];
+    var line = {
+      x: [allPoints[0][start], allPoints[0][end]],
+      y: [allPoints[1][start], allPoints[1][end]],
+      z: [allPoints[2][start], allPoints[2][end]],
+      text: [names[start], names[end]],
+      mode: modes[i],
+      type: 'scatter3d',
+      showlegend: false,
+      line: {
+        width: 2,
+        color: '#20ac37',
+      },
+      marker: {
+        size: 8,
+        opacity: 1,
+        color: [colors[start], colors[end]],
+        line: {
+          width: 4,
+          color: '#000000',
+        },
+      },
+      hoverinfo: hoverInfo[i],
+    };
+    // hovertemplate overwrites hoverinfo, so add it later
+    if (hoverInfo[i] == true) {
+      line.hovertemplate = '%{text}<br>R: %{x}' +
+        '<br>G: %{y}' +
+        '<br>B: %{z}<extra></extra>';
+    }
+    traces.push(line);
+  }
+
+  var line = {
+    x: [0],
+    y: [0],
+    z: [0],
+    text: [0, 0, 0],
+    type: 'scatter3d',
+    marker: {
+      size: 8,
+      opacity: 1,
+      color: [0,0,0],
+    },
+    line: {
+      width: 1,
+      color: '#000000',
+    },
+    mode: 'markers',
+    showlegend: true,
+    name: 'Actual colors',
+    opacity:0.8,
+    hovertemplate: 'Actual: %{text}<br>' +
+      '<br>R: %{x}' +
+      '<br>G: %{y}' +
+      '<br>B: %{z}<extra></extra>',
+  };
+
+  var sim_line = {
+    x: [0],
+    y: [0],
+    z: [0],
+    text: [0, 0, 0],
+    type: 'scatter3d',
+    marker: {
+      size: 8,
+      opacity: 1,
+      color: [0,0,0],
+      symbol: 'square',
+    },
+    line: {
+      width: 1,
+      color: '#000000',
+    },
+    mode: 'markers',
+    showlegend: true,
+    name: 'Simulation',
+    opacity:0.8,
+    hovertemplate: 'Simulation: %{text}<br>' +
+      '<br>R: %{x}' +
+      '<br>G: %{y}' +
+      '<br>B: %{z}<extra></extra>',
+  };
+
+  // Viénot 1999 single-plane approach
+  var prot_plane_single = {
+    x: [0, 0, 1, 1],
+    y: [0, 0, 1, 1],
+    z: [0, 1, 0, 1],
+    i: [0, 1],
+    j: [1, 2],
+    k: [2, 3],
+    type: 'mesh3d',
+    opacity: 0.3,
+    color: '#24A5E5',
+    showlegend: true,
+    name: 'Iso-chrome Plane',
+    hoverinfo: 'skip',
+    visible: 'legendonly',
+  };
+
+  var tri_plane_single = {
+    x: [0, 1, 0, 1],
+    y: [0, 0, 1, 1],
+    z: [0, 0, 1, 1],
+    i: [0, 1],
+    j: [1, 2],
+    k: [2, 3],
+    type: 'mesh3d',
+    opacity: 0.3,
+    color: '#24A5E5',
+    showlegend: true,
+    name: 'Iso-chrome Plane',
+    hoverinfo: 'skip',
+    visible: 'legendonly',
+  };
+
+  // Brettel projection planes
+  var a475_RGB = math.multiply(math.multiply(lms2RGB, a475_lms), 200);
+  var a575_RGB = math.multiply(math.multiply(lms2RGB, a575_lms), 200);
+  var a485_RGB = math.multiply(math.multiply(lms2RGB, a485_lms), 500);
+  var a660_RGB = math.multiply(math.multiply(lms2RGB, a660_lms), 500);
+  var aEEW_RGB = math.multiply(math.multiply(lms2RGB, aEEW_lms), 200);
+
+  // planes for protanopia and deutanopia
+  var prot_plane1 = {
+    x: [-aEEW_RGB[0], a475_RGB[0], aEEW_RGB[0]],
+    y: [-aEEW_RGB[1], a475_RGB[1], aEEW_RGB[1]],
+    z: [-aEEW_RGB[2], a475_RGB[2], aEEW_RGB[2]],
+    i: [0],
+    j: [1],
+    k: [2],
+    type: 'mesh3d',
+    opacity: 0.3,
+    color: '#24A5E5',
+    showlegend: true,
+    name: 'Iso-chrome Plane 1',
+    hoverinfo: 'skip',
+    visible: 'legendonly',
+  };
+
+  var prot_plane2 = {
+    x: [-aEEW_RGB[0], a575_RGB[0], aEEW_RGB[0]],
+    y: [-aEEW_RGB[1], a575_RGB[1], aEEW_RGB[1]],
+    z: [-aEEW_RGB[2], a575_RGB[2], aEEW_RGB[2]],
+    i: [0],
+    j: [1],
+    k: [2],
+    type: 'mesh3d',
+    opacity: 0.3,
+    color: '#E5DF24',
+    showlegend: true,
+    name: 'Iso-chrome Plane 2',
+    hoverinfo: 'skip',
+    visible: 'legendonly',
+  };
+
+  // planes for tritanopia
+  var tri_plane1 = {
+    x: [-aEEW_RGB[0], a485_RGB[0], aEEW_RGB[0]],
+    y: [-aEEW_RGB[1], a485_RGB[1], aEEW_RGB[1]],
+    z: [-aEEW_RGB[2], a485_RGB[2], aEEW_RGB[2]],
+    i: [0],
+    j: [1],
+    k: [2],
+    type: 'mesh3d',
+    color: oGreenColor,
+    hoverinfo: 'skip',
+    showlegend: true,
+    name: 'Iso-chrome Plane 1',
+    visible: 'legendonly',
+  };
+
+  var tri_plane2 = {
+    x: [-aEEW_RGB[0], a660_RGB[0], aEEW_RGB[0]],
+    y: [-aEEW_RGB[1], a660_RGB[1], aEEW_RGB[1]],
+    z: [-aEEW_RGB[2], a660_RGB[2], aEEW_RGB[2]],
+    i: [0],
+    j: [1],
+    k: [2],
+    type: 'mesh3d',
+    color: oRedColor,
+    hoverinfo: 'skip',
+    showlegend: true,
+    name: 'Iso-chrome Plane 2',
+    visible: 'legendonly',
+  };
+
+  var isochromes_pd = {
+    x: [a475_RGB[0]/a475_RGB[2], aEEW_RGB[0]/aEEW_RGB[2]*0.9, a575_RGB[0]*(-0.1)/a575_RGB[2]],
+    y: [a475_RGB[1]/a475_RGB[2], aEEW_RGB[1]/aEEW_RGB[2]*0.9, a575_RGB[1]*(-0.1)/a575_RGB[2]],
+    z: [1, 0.9, -0.1],
+    text: ['475 nm', 'EEW', '575 nm'],
+    type: 'scatter3d',
+    marker: {
+      size: 6,
+      opacity: 1,
+      color: '#000000',
+      symbol: 'cross'
+    },
+    mode: 'markers+text',
+    visible: 'legendonly',
+    showlegend: true,
+    name: 'Iso-chromes',
+    opacity:0.8,
+    hovertemplate: 'R: %{x}' +
+      '<br>G: %{y}' +
+      '<br>B: %{z}<extra></extra>',
+  };
+
+  var isochromes_t = {
+    x: [a485_RGB[0]/a485_RGB[2]*0.3, aEEW_RGB[0]/aEEW_RGB[2]*0.9, a660_RGB[0]/a660_RGB[2]*(-0.008)],
+    y: [a485_RGB[1]/a485_RGB[2]*0.3, aEEW_RGB[1]/aEEW_RGB[2]*0.9, a660_RGB[1]/a660_RGB[2]*(-0.008)],
+    z: [0.3, 0.9, -0.008],
+    text: ['485 nm', 'EEW', '660 nm'],
+    type: 'scatter3d',
+    marker: {
+      size: 6,
+      opacity: 1,
+      color: '#000000',
+      symbol: 'cross'
+    },
+    mode: 'markers+text',
+    visible: 'legendonly',
+    showlegend: true,
+    name: 'Iso-chromes',
+    opacity:0.8,
+    hovertemplate: 'R: %{x}' +
+      '<br>G: %{y}' +
+      '<br>B: %{z}<extra></extra>',
+  };
+
+  traces.push(line, sim_line,
+              prot_plane1, prot_plane2, tri_plane1, tri_plane2, prot_plane_single, tri_plane_single,
+              isochromes_pd, isochromes_t,
+             );
+
+  var data = traces;
+
+  var layout = {
+    height: 600,
+    width: 600,
+    margin: {
+      l: 0,
+      r: 0,
+      b: 0,
+      t: 0
+    },
+    showlegend: true,
+    legend: {
+      x: 0,
+      xanchor: 'left',
+      y: 1,
+    },
+    //title: 'Spectral locus in RGB color space',
+    paper_bgcolor: 'rgba(0, 0, 0, 0)',
+    scene: {
+      camera: {
+        projection: {
+          type: 'orthographic'
+        }
+      },
+      // https://plotly.com/javascript/3d-axes/
+      //aspectmode: 'data', // to enforce the same scale across axes
+      aspectmode: 'cube',
+      xaxis: {
+        //autorange: true,
+        range: [-0.3, 1.3],
+        //zeroline: true,
+        //zerolinecolor: '#000000',
+        //zerolinewidth: 5,
+        //dtick: 0.02,
+        showspikes: false,
+        title: {
+          text: 'R'
+        }
+      },
+      yaxis: {
+        //autorange: true,
+        range: [-0.3, 1.3],
+        //zeroline: true,
+        //zerolinecolor: '#000000',
+        //zerolinewidth: 5,
+        scaleanchor: 'x',
+        //scaleratio: 1,
+        //dtick: 0.02,
+        showspikes: false,
+        title: {
+          text: 'G'
+        }
+      },
+      zaxis: {
+        //autorange: true,
+        range: [-0.3, 1.3],
+        //zeroline: true,
+        //zerolinecolor: '#000000',
+        //zerolinewidth: 5,
+        scaleanchor: 'x',
+        //dtick: 0.02,
+        showspikes: false,
+        title: {
+          text: 'B'
+        }
+      },
+    }
+  };
+ 
+  var plot = document.getElementById(plotId);
+  Plotly.newPlot(plot, data, layout);
+
+  return plot;
+}
+
