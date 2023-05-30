@@ -383,6 +383,7 @@ class colorObj {
     this._xyz = null;
     this._xy = null;
     this._lms = null;
+    this._lab = null;
 
     // _space:
     // norm_srgb: [0, 1] with gamma
@@ -404,6 +405,10 @@ class colorObj {
     this._lms = math.multiply(RGB2lms, this._linear_srgb);
     this._xyz = math.multiply(RGB2xyz, this._linear_srgb);
     this._xy = math.divide(this._xyz, math.sum(this._xyz));
+    // TODO: this is problematic since Lab is defined over CIE 1931 XYZ but we use JV XYZ
+    // also we don't allow create colorObj in Lab
+    var c = new Color("srgb-linear", this._linear_srgb);
+    this._lab = c.lab_d65;
   }
 
   get space() {
@@ -436,6 +441,10 @@ class colorObj {
 
   get lms() {
     return this._lms;
+  }
+
+  get lab() {
+    return this._lab;
   }
 
   get linear_srgb_css() {

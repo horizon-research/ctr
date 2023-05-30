@@ -44,11 +44,10 @@ function updatePlot(theta, plotId_rgb, plotId_lab, plotId_xy, action) {
   Plotly.update(rgb_plot, data_update, {}, [13]);
 
   // update actual colors in the 3D plot (Lab)
-  //var rotColors_Lab = RGBtoLab(math.transpose(rotPoints_RGB));
-  //var rotPoints_Lab = math.transpose(rotColors_Lab);
-  //data_update = {'x': [rotPoints_Lab[1]], 'y': [rotPoints_Lab[2]], 'z': [rotPoints_Lab[0]],
-  //               'marker.color': [rotColors_css], 'text': [rotColors_css]};
-  //Plotly.update(lab_plot, data_update, {}, [0]);
+  var rotPoints_Lab = math.transpose(state.rotColorsMapped.map(c => c.lab));
+  data_update = {'x': [rotPoints_Lab[1]], 'y': [rotPoints_Lab[2]], 'z': [rotPoints_Lab[0]],
+                 'marker.color': [rotColors_css], 'text': [rotColors_css]};
+  Plotly.update(lab_plot, data_update, {}, [0]);
 
   // update chromaticity plot
   var rotPoints_xy = math.transpose(state.rotColorsMapped.map(c => c.xy));
@@ -71,12 +70,11 @@ function updatePlot(theta, plotId_rgb, plotId_lab, plotId_xy, action) {
                  'marker.color': [simColors_css], 'text': [simColors_css]};
   Plotly.update(rgb_plot, data_update, {}, [14]);
 
-  //// update simulated colors in Lab
-  //var simColors_Lab = RGBtoLab(simColors_RGB);
-  //var simPoints_Lab = math.transpose(simColors_Lab);
-  //data_update = {'x': [simPoints_Lab[1]], 'y': [simPoints_Lab[2]], 'z': [simPoints_Lab[0]],
-  //               'marker.color': [simColors_css], 'text': [simColors_css]};
-  //Plotly.update(lab_plot, data_update, {}, [1]);
+  // update simulated colors in Lab
+  var simPoints_Lab = math.transpose(state.simColors.map(c => c.lab));
+  data_update = {'x': [simPoints_Lab[1]], 'y': [simPoints_Lab[2]], 'z': [simPoints_Lab[0]],
+                 'marker.color': [simColors_css], 'text': [simColors_css]};
+  Plotly.update(lab_plot, data_update, {}, [1]);
 
   // update chromaticity plot
   var simPoints_xy = math.transpose(state.simColors.map(c => c.xy));
@@ -192,14 +190,6 @@ function registerPickSimMethod() {
 
     // automatically update colors and re-plot
     if (init) updatePlot($('#customRange').val(), 'rgbDiv', 'labDiv', 'xyDiv', 2);
-  });
-}
-
-function registerColorPicker(baseId, squareId, nameId) {
-  $(baseId).on('change', function(evt) {
-    var colorVal = $(baseId).val();
-    $(squareId).css('background-color', colorVal);
-    $(nameId).text(sRGB2Name(colorVal));
   });
 }
 
@@ -412,7 +402,7 @@ d3.csv('ciexyzjv.csv').then(function(rows){
   // initial plot with no meaningful data
   plotXy('xyDiv', [x_chrm, y_chrm, z_chrm], wlen, a475, a575, a485, a660);
   plotRGB('rgbDiv');
-  //plotLab('labDiv');
+  plotLab('labDiv');
   plotExp('expDiv');
 
   registerSlider('#customRange');
