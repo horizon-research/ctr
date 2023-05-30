@@ -24,33 +24,36 @@ function updatePlot(theta, plotId_rgb, plotId_lab, plotId_xy, action) {
 
     // Convention: in |Points| each color is a column and in |Colors| each color is a row
 
-    // this is the actual position without mapping
     // TODO: rotated colors might be out of HVS gamut; we should black out those colors too
-    var rotPoints_RGB = state.rotate(rotMat);
-    var rotColors_RGB = math.transpose(rotPoints_RGB);
+    // this is the actual position without mapping
+    state.rotate(rotMat); // state.rotColors now has the rotated colors
+    //var rotColors_RGB = math.transpose(rotPoints_RGB);
 
-    var rotPoints_RGB_mapped = rotPoints_RGB;
+    //var rotPoints_RGB_mapped = rotPoints_RGB;
     if (mapping) {
-      rotColors_RGB = dichromatic_gamut_mapping(rotColors_RGB, 0);
+      //rotColors_RGB = dichromatic_gamut_mapping_new(state.rotColors, 0);
+      state.dichromatic_gamut_mapping(state.rotColors, 0); // state.rotColorsMapped has mapped rotated colors
       // this is the position of the mapped colors
-      rotPoints_RGB_mapped = math.transpose(rotColors_RGB);
+      //rotPoints_RGB_mapped = math.transpose(rotColors_RGB);
     }
 
     // Option 1: return actual rotated position but mapped color
     //return [rotPoints_RGB, rotColors_RGB];
     // Option 2: return mapped position and mapped color
-    return [rotPoints_RGB_mapped, rotColors_RGB];
+    //return [rotPoints_RGB_mapped, rotColors_RGB];
   }
 
-  var res = rotate_colors(true);
-  var rotPoints_RGB = res[0];
-  var rotColors_RGB = res[1];
+  rotate_colors(true);
+  //var res = rotate_colors(true);
+  //var rotPoints_RGB = res[0];
+  //var rotColors_RGB = res[1];
 
-  var rotColors_sRGB = [formatLinearSRGB(rotColors_RGB[0]),
-                        formatLinearSRGB(rotColors_RGB[1]),
-                        formatLinearSRGB(rotColors_RGB[2]),
-                        formatLinearSRGB(rotColors_RGB[3])
-                       ];
+  //var rotColors_sRGB = [formatLinearSRGB(rotColors_RGB[0]),
+  //                      formatLinearSRGB(rotColors_RGB[1]),
+  //                      formatLinearSRGB(rotColors_RGB[2]),
+  //                      formatLinearSRGB(rotColors_RGB[3])
+  //                     ];
+  var rotColors_sRGB = state.rotColorsMapped.map(c => c.legacy_rgb_css);
 
 
   ///* update actual colors */
@@ -68,11 +71,8 @@ function updatePlot(theta, plotId_rgb, plotId_lab, plotId_xy, action) {
   //Plotly.update(lab_plot, data_update, {}, [0]);
 
   // update chromaticity plot
-  var rotPoints_XYZ = math.multiply(RGB2xyz, rotPoints_RGB);
-  var rotPoints_XYZ_sum = math.add(rotPoints_XYZ[0], rotPoints_XYZ[1], rotPoints_XYZ[2]);
-  var rotPoints_x = math.dotDivide(rotPoints_XYZ[0], rotPoints_XYZ_sum);
-  var rotPoints_y = math.dotDivide(rotPoints_XYZ[1], rotPoints_XYZ_sum);
-  data_update = {'x': [rotPoints_x], 'y': [rotPoints_y],
+  var rotPoints_xy = state.rotColorsMapped.map(c => c.xy);
+  data_update = {'x': [rotPoints_xy[0]], 'y': [rotPoints_xy[1]],
                  'marker.color': [rotColors_sRGB], 'text': [rotColors_sRGB]};
   Plotly.update(xy_plot, data_update, {}, [5]);
 
@@ -81,15 +81,18 @@ function updatePlot(theta, plotId_rgb, plotId_lab, plotId_xy, action) {
 
   /* update simulated colors in the 3D plot */
   /* we need to use mapped colors for simulation */
-  var rotPoints_LMS = math.multiply(RGB2lms, math.transpose(rotColors_RGB));
-  var simPoints_LMS = project(rotPoints_LMS);
-  var simPoints_RGB = math.multiply(lms2RGB, simPoints_LMS);
-  var simColors_RGB = math.transpose(simPoints_RGB);
-  var simColors_sRGB = [formatLinearSRGB(simColors_RGB[0]),
-                        formatLinearSRGB(simColors_RGB[1]),
-                        formatLinearSRGB(simColors_RGB[2]),
-                        formatLinearSRGB(simColors_RGB[3])
-                       ];
+  //var rotPoints_LMS = math.multiply(RGB2lms, math.transpose(rotColors_RGB));
+  //var simPoints_LMS = project(rotPoints_LMS);
+  //var simPoints_RGB = math.multiply(lms2RGB, simPoints_LMS);
+  //var simColors_RGB = math.transpose(simPoints_RGB);
+  //var simColors_sRGB = [formatLinearSRGB(simColors_RGB[0]),
+  //                      formatLinearSRGB(simColors_RGB[1]),
+  //                      formatLinearSRGB(simColors_RGB[2]),
+  //                      formatLinearSRGB(simColors_RGB[3])
+  //                     ];
+
+  state.simulate();
+  var simColors_sRGB = state.simColors.map(c => c.legacy_rgb_css);
 
   //// update simulated colors in the RGB plot */
   //data_update = {'x': [simPoints_RGB[0]], 'y': [simPoints_RGB[1]], 'z': [simPoints_RGB[2]],
@@ -104,11 +107,12 @@ function updatePlot(theta, plotId_rgb, plotId_lab, plotId_xy, action) {
   //Plotly.update(lab_plot, data_update, {}, [1]);
 
   // update chromaticity plot
-  var simPoints_XYZ = math.multiply(RGB2xyz, simPoints_RGB);
-  var simPoints_XYZ_sum = math.add(simPoints_XYZ[0], simPoints_XYZ[1], simPoints_XYZ[2]);
-  var simPoints_x = math.dotDivide(simPoints_XYZ[0], simPoints_XYZ_sum);
-  var simPoints_y = math.dotDivide(simPoints_XYZ[1], simPoints_XYZ_sum);
-  data_update = {'x': [simPoints_x], 'y': [simPoints_y],
+  //var simPoints_XYZ = math.multiply(RGB2xyz, simPoints_RGB);
+  //var simPoints_XYZ_sum = math.add(simPoints_XYZ[0], simPoints_XYZ[1], simPoints_XYZ[2]);
+  //var simPoints_x = math.dotDivide(simPoints_XYZ[0], simPoints_XYZ_sum);
+  //var simPoints_y = math.dotDivide(simPoints_XYZ[1], simPoints_XYZ_sum);
+  var simPoints_xy = state.simColors.map(c => c.xy);
+  data_update = {'x': [simPoints_xy[0]], 'y': [simPoints_xy[1]],
                  'marker.color': [simColors_sRGB], 'text': [simColors_sRGB]};
   Plotly.update(xy_plot, data_update, {}, [6]);
 
@@ -148,22 +152,24 @@ function updatePlot(theta, plotId_rgb, plotId_lab, plotId_xy, action) {
 
   /* update square colors */
   if (sim) {
-    $('#s11').css('background-color', simColors_sRGB[0]);
-    $('#s12').css('background-color', simColors_sRGB[1]);
-    $('#s13').css('background-color', simColors_sRGB[2]);
-    $('#s14').css('background-color', simColors_sRGB[3]);
+    var temp = state.simColors.map(c => c.linear_srgb_css);
+    $('#s11').css('background-color', temp[0]);
+    $('#s12').css('background-color', temp[1]);
+    $('#s13').css('background-color', temp[2]);
+    $('#s14').css('background-color', temp[3]);
   } else {
-    $('#s11').css('background-color', rotColors_sRGB[0]);
-    $('#s12').css('background-color', rotColors_sRGB[1]);
-    $('#s13').css('background-color', rotColors_sRGB[2]);
-    $('#s14').css('background-color', rotColors_sRGB[3]);
+    var temp = state.rotColorsMapped.map(c => c.linear_srgb_css);
+    $('#s11').css('background-color', temp[0]);
+    $('#s12').css('background-color', temp[1]);
+    $('#s13').css('background-color', temp[2]);
+    $('#s14').css('background-color', temp[3]);
   }
 
   // good for debugging
-  //$('#s11').text(RGB2sRGB(rotColors_RGB[0]));
-  //$('#s12').text(RGB2sRGB(rotColors_RGB[1]));
-  //$('#s13').text(RGB2sRGB(rotColors_RGB[2]));
-  //$('#s14').text(RGB2sRGB(rotColors_RGB[3]));
+  $('#s11').text(rotColors_sRGB[0]);
+  $('#s12').text(rotColors_sRGB[1]);
+  $('#s13').text(rotColors_sRGB[2]);
+  $('#s14').text(rotColors_sRGB[3]);
   //$('#n11').text(name1);
   //$('#n12').text(name2);
   //$('#n13').text(name3);

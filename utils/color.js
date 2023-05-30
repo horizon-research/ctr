@@ -244,6 +244,7 @@ function normalize(vec) {
 }
 
 function project(colors_LMS) {
+  // TODO: make those global vars local here
   // in input each column is a color
 
   if (simMethod == 1) {
@@ -282,6 +283,10 @@ function project(colors_LMS) {
   }
 }
 
+function clamp (value, min, max) {
+  return Math.min(Math.max(value, min), max);
+};
+
 function dichromatic_gamut_mapping(colors, mode) {
   // mode:
   // 0: clipping
@@ -307,8 +312,9 @@ function dichromatic_gamut_mapping(colors, mode) {
   if (mode == 0) {
     colors.forEach((color) => {
       for (var j = 0; j < 3; j++) {
-        if (color[j] < 0) color[j] = 0;
-        else if (color[j] > 1) color[j] = 1; 
+        color[j] = clamp(color[j], 0, 1)
+        //if (color[j] < 0) color[j] = 0;
+        //else if (color[j] > 1) color[j] = 1; 
       }
       mapped_colors.push(color);
     });
@@ -369,11 +375,34 @@ class colorObj {
   constructor(value, space) {
     this._value = value; // an array
     this._space = space;
+    this._srgb = null;
+    this._norm_srgb = null;
+    this._linear_srgb = null;
+    this._xyz = null;
+    this._xy = null;
+    this._lms = null;
+
+    // _space:
+    // norm_srgb: [0, 1] with gamma
+    // linear_srgb: [0, 1] without gamma
+    // srgb: [0, 255] with gamma
+    if (this.space == 'srgb') {
+      this._linear_srgb = this.value.map(c => removeGamma(c/255));
+    } else if (this.space == 'linear_srgb') {
+      this._linear_srgb = this.value;
+    } else if (this.space == 'norm_srgb') {
+      this._linear_srgb = this.value.map(c => removeGamma(c));
+    } else if (this.space == 'lms') {
+      this._linear_srgb = math.multiply(lms2RGB, this.value);
+    } else if (this.space == 'xyz') {
+      this._linear_srgb = math.multiply(xyz2RGB, this.value);
+    }
+    this._norm_srgb = this._linear_srgb.map(c => applyGamma(c));
+    this._srgb = this._norm_srgb.map(c => quantize(c));
+    this._lms = math.multiply(RGB2lms, this._linear_srgb);
+    this._xyz = math.multiply(RGB2xyz, this._linear_srgb);
+    this._xy = math.divide(this._xyz, math.sum(this._xyz));
   }
-  // _space:
-  // norm_srgb: [0, 1] with gamma
-  // linear_srgb: [0, 1] without gamma
-  // srgb: [0, 255] with gamma
 
   get space() {
     return this._space;
@@ -384,33 +413,27 @@ class colorObj {
   }
 
   get norm_srgb() {
-    if (this.space == 'srgb') {
-      return  this.value.map(c => c/255);
-    } else if (this.space == 'linear_srgb') {
-      return  this.value.map(c => applyGamma(c) / 255);
-    } else if (this.space == 'norm_srgb') {
-      return this.value;
-    }
+    return this._norm_srgb;
   }
 
   get linear_srgb() {
-    if (this.space == 'srgb') {
-      return  this.value.map(c => removeGamma(c/255));
-    } else if (this.space == 'linear_srgb') {
-      return  this.value;
-    } else if (this.space == 'norm_srgb') {
-      return  this.value.map(c => removeGamma(c));
-    }
+    return this._linear_srgb;
   }
 
   get srgb() {
-    if (this.space == 'srgb') {
-      return  this.value;
-    } else if (this.space == 'linear_srgb') {
-      return  this.value.map(c => quantize(applyGamma(c)));
-    } else if (this.space == 'norm_srgb') {
-      return  this.value.map(c => quantize(c));
-    }
+    return this._srgb;
+  }
+
+  get xyz() {
+    return this._xyz;
+  }
+
+  get xy() {
+    return this._xy;
+  }
+
+  get lms() {
+    return this._lms;
   }
 
   get linear_srgb_css() {
@@ -446,6 +469,8 @@ class discTestState {
     this._testColor = null; // one single color
     this._colors = []; // four initial colors (three test + one base) without rotation; one color per row
     this._rotColors = []; // rotated colors; one color per row
+    this._rotColorsMapped = []; // rotated colors after gamut mapping; one color per row
+    this._simColors = []; // simulated dichromatic colors; one color per row
     this._scalesAtRevs = [];
     this._scale = 0.1; // TODO: need to figure out how to better set this
     this._numRight = 0;
@@ -482,8 +507,22 @@ class discTestState {
     var rotated_colors_col = this.geoTrans(rotMat, this.colors);
     var rotated_colors_row = math.transpose(rotated_colors_col);
 
-    for (var i = 0; i <= 3; i++)
-      this.rotColors.push(new colorObj(rotated_colors_row[i], 'linear_srgb'));
+    this.rotColors = rotated_colors_row.map(c => new colorObj(c, 'linear_srgb'));
+  }
+
+  dichromatic_gamut_mapping(colors, mode) {
+    var colors_value = colors.map(color => color.linear_srgb);
+    var mapped_colors_value = dichromatic_gamut_mapping(colors_value, mode);
+
+    this.rotColorsMapped = mapped_colors_value.map(c => new colorObj(c, 'linear_srgb'));
+  }
+
+  simulate() {
+    // simulate dichromatic color using current rotated mapped colors, which is what's actually displayed to users
+    var colors_lms = this.rotColorsMapped.map(c => c.lms);
+    var sim_colors_lms = math.transpose(project(math.transpose(colors_lms)));
+
+    this.simColors = sim_colors_lms.map(c => new colorObj(c, 'lms'));
   }
 
   get baseColor() {
@@ -498,8 +537,25 @@ class discTestState {
     return this._colors;
   }
 
+  set rotColors(v) {
+    this._rotColors = v;
+  }
   get rotColors() {
-    return this._rotColors_row;
+    return this._rotColors;
+  }
+
+  set rotColorsMapped(v) {
+    this._rotColorsMapped = v;
+  }
+  get rotColorsMapped() {
+    return this._rotColorsMapped;
+  }
+
+  set simColors(v) {
+    this._simColors = v;
+  }
+  get simColors() {
+    return this._simColors;
   }
 
   set testColor(v) {
