@@ -140,7 +140,7 @@ function get_proj_mat() {
 const rgb2hex = (rgb) => `#${rgb.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/).slice(1).map(n => parseInt(n, 10).toString(16).padStart(2, '0')).join('')}`
 
 // It converts an array [255, 255, 255] to '#FFFFFF'
-function rgbToHex(c) {
+function srgbToHex(c) {
   function componentToHex(c) {
     var hex = c.toString(16);
     return hex.length == 1 ? "0" + hex : hex;
@@ -149,12 +149,25 @@ function rgbToHex(c) {
   return "#" + componentToHex(c[0]) + componentToHex(c[1]) + componentToHex(c[2]);
 }
 
+function quantize(value, bitdepth = 8) {
+  return Math.round(value * (Math.pow(2, bitdepth) - 1));
+}
+
+function applyGamma(color) {
+  var out;
+
+  if (color <= 0.0031308) out = 12.92 * color;
+  else out = 1.055 * Math.pow(color, 1/2.4) - 0.055;
+
+  return out;
+}
+
 // remove gamma from a normalized sRGB color
 function removeGamma(color) {
   var out;
 
-  if (color <= 0.0031308) out = Math.round(12.92 * color * 255);
-  else out = Math.round((1.055 * Math.pow(color, 1/2.4) - 0.055) * 255);
+  if (color <= 0.04045) out = color / 12.92;
+  else out = Math.pow((color + 0.055) / 1.055, 2.4);
 
   return out;
 }
@@ -165,9 +178,7 @@ function RGB2sRGB(color, clip) {
   var out = [];
 
   for(var i = 0; i < 3; i++) {
-    out[i] = removeGamma(color[i]);
-    //if (color[i] <= 0.0031308) out[i] = parseInt((12.92 * color[i] * 255).toFixed());
-    //else out[i] = parseInt(((1.055 * Math.pow(color[i], 1/2.4) - 0.055) * 255).toFixed());
+    out[i] = quantize(applyGamma(color[i]));
 
     if (clip) {
       if (out[i] < 0) out[i] = 0;
@@ -178,7 +189,7 @@ function RGB2sRGB(color, clip) {
     }
   }
 
-  return rgbToHex(out);
+  return srgbToHex(out);
 }
 
 function formatLinearSRGB(color) {
@@ -193,8 +204,7 @@ function formatLinearSRGB(color) {
 function sRGB2RGB(color) {
   var out = [];
   for(var i = 0; i < 3; i++) {
-    if (color[i] <= 0.04045) out[i] = color[i]/12.92;
-    else out[i] = Math.pow((color[i]+0.055)/1.055, 2.4);
+    out[i] = removeGamma(color[i]);
   }
 
   return out;

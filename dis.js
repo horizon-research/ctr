@@ -26,7 +26,7 @@ function updatePlot(theta, plotId_rgb, plotId_lab, plotId_xy, action) {
 
     // this is the actual position without mapping
     // TODO: rotated colors might be out of HVS gamut; we should black out those colors too
-    var rotPoints_RGB = math.multiply(rotMat, math.transpose(state.colors));
+    var rotPoints_RGB = state.rotate(rotMat);
     var rotColors_RGB = math.transpose(rotPoints_RGB);
 
     var rotPoints_RGB_mapped = rotPoints_RGB;
@@ -244,20 +244,22 @@ function genTestColor(mode) {
 
   if (mode == 0) {
     // sample in xy space using equi-luminance (for trichromats)
-    var p0_RGB = math.add(state.baseColor, math.multiply(line_RGB, 0.2));
+    var p0_RGB = math.add(state.baseColor.linear_srgb, math.multiply(line_RGB, 0.2));
     var p0_xy = XYZ2xy(math.multiply(RGB2xyz, p0_RGB));
-    var p1_xy = XYZ2xy(math.multiply(RGB2xyz, state.baseColor));
+    var p1_xy = XYZ2xy(math.multiply(RGB2xyz, state.baseColor.linear_srgb));
     var dir = normalize(math.subtract(p1_xy, p0_xy));
 
-    var baseColor_xy = XYZ2xy(math.multiply(RGB2xyz, state.baseColor));
+    var baseColor_xy = XYZ2xy(math.multiply(RGB2xyz, state.baseColor.linear_srgb));
     var testColor_xy = math.add(baseColor_xy, math.multiply(dir, state.scale));
-    var baseLum = math.multiply(RGB2xyz[1], state.baseColor);
+    var baseLum = math.multiply(RGB2xyz[1], state.baseColor.linear_srgb);
     var mag = baseLum / testColor_xy[1];
 
-    testColor = math.multiply(XYZ2RGB, math.multiply(testColor_xy.concat([1-math.sum(testColor_xy)]), mag));
+    testColor = new colorObj(math.multiply(XYZ2RGB, math.multiply(testColor_xy.concat([1-math.sum(testColor_xy)]), mag)),
+        'linear_srgb');
   } else if (mode == 1) {
     // sample in RGB
-    testColor = math.add(state.baseColor, math.multiply(line_RGB, state.scale));
+    testColor = new colorObj(math.add(state.baseColor.linear_srgb, math.multiply(line_RGB, state.scale)),
+        'linear_srgb');
   }
 
   return testColor;
@@ -278,12 +280,11 @@ function testOneColor(random) {
   updatePlot(0, 'rgbDiv', 'labDiv', 'xyDiv', 3);
 }
 
-var state;
-
 function submit(rangeId) {
   // set the base color.
-  var baseColor_sRGB_linear = sRGB2RGB([0.85, 0.5, 0.25]);
-  state = new discTestState(baseColor_sRGB_linear, "srgb-linear");
+  //var baseColor_sRGB_linear = sRGB2RGB([0.85, 0.5, 0.25]);
+  var baseColor_sRGB_linear = new colorObj([0.85, 0.5, 0.25], 'norm_srgb');
+  state = new discTestState(baseColor_sRGB_linear);
 
   $(rangeId).val(0);
   $('.rot-label').html('Rotation Angle (Degree): 0&#176;');
@@ -312,12 +313,86 @@ function setupNextColor() {
   }, 1000); // caveat: this is async
 }
 
+class colorObj {
+  constructor(value, space) {
+    this._value = value; // an array
+    this._space = space;
+  }
+  // _space:
+  // norm_srgb: [0, 1] with gamma
+  // linear_srgb: [0, 1] without gamma
+  // srgb: [0, 255] with gamma
+
+  get space() {
+    return this._space;
+  }
+
+  get value() {
+    return this._value;
+  }
+
+  get norm_srgb() {
+    if (this.space == 'srgb') {
+      return  this.value.map(c => c/255);
+    } else if (this.space == 'linear_srgb') {
+      return  this.value.map(c => applyGamma(c) / 255);
+    } else if (this.space == 'norm_srgb') {
+      return this.value;
+    }
+  }
+
+  get linear_srgb() {
+    if (this.space == 'srgb') {
+      return  this.value.map(c => removeGamma(c/255));
+    } else if (this.space == 'linear_srgb') {
+      return  this.value;
+    } else if (this.space == 'norm_srgb') {
+      return  this.value.map(c => removeGamma(c));
+    }
+  }
+
+  get srgb() {
+    if (this.space == 'srgb') {
+      return  this.value;
+    } else if (this.space == 'linear_srgb') {
+      return  this.value.map(c => quantize(applyGamma(c)));
+    } else if (this.space == 'norm_srgb') {
+      return  this.value.map(c => quantize(c));
+    }
+  }
+
+  get linear_srgb_css() {
+    return 'color(srgb-linear '+
+        this.linear_srgb[0].toString()+' '+
+        this.linear_srgb[1].toString()+' '+
+        this.linear_srgb[2].toString()+')';
+  }
+
+  get srgb_css() {
+    return 'color(srgb '+
+        this.norm_srgb[0].toString()+' '+
+        this.norm_srgb[1].toString()+' '+
+        this.norm_srgb[2].toString()+')';
+  }
+
+  get legacy_rgb_css() {
+    return 'rgb('+
+        this.srgb[0].toString()+', '+
+        this.srgb[1].toString()+', '+
+        this.srgb[2].toString()+')';
+  }
+
+  get legacy_hex_css() {
+    return srgbToHex(this.srgb);
+  }
+}
+
 // contains the state one baseColor test (multiple testColors)
 class discTestState {
-  constructor(base, space) {
-    this._colors = [];
-    this._baseColor = base;
-    this._cs = space; // the colorspace that _baseColor is defined in
+  constructor(base) {
+    this._baseColor = base; // one single color
+    this._testColor = null; // one single color
+    this._colors = []; // four colors (of the four squares)
     this._scalesAtRevs = [];
     this._scale = 0.1; // TODO: need to figure out how to better set this
     this._numRight = 0;
@@ -329,15 +404,23 @@ class discTestState {
   }
 
   setStep2() {
-	// TODO: The idea is to make sure in each step at least one channel
-	// changes, but the implementation using deltaLUT is a hack and for now
-	// works only for sRGB
+	// TODO: the idea is to make sure in each step at least one channel changes
+	// by setting the step size based on the first reversal color, but the
+	// implementation using deltaLUT is a hack and for now works only for sRGB
     var line_RGB = confusion_lines[1]; // D line in RGB
-    var deltaR = deltaLUT[removeGamma(state.testColor[0])];
-    var deltaG = deltaLUT[removeGamma(state.testColor[1])];
-    var deltaB = deltaLUT[removeGamma(state.testColor[2])];
+    var deltaR = deltaLUT[state.testColor.srgb[0]];
+    var deltaG = deltaLUT[state.testColor.srgb[1]];
+    var deltaB = deltaLUT[state.testColor.srgb[2]];
   
     this.step2 = Math.min(deltaR / Math.abs(line_RGB[0]), deltaG / Math.abs(line_RGB[1]), deltaB / Math.abs(line_RGB[2]));
+  }
+
+  rotate(rotMat) {
+    var colors_in_linear_srgb = [this.colors[0].linear_srgb,
+                                 this.colors[1].linear_srgb,
+                                 this.colors[2].linear_srgb,
+                                 this.colors[3].linear_srgb]
+    return math.multiply(rotMat, math.transpose(colors_in_linear_srgb));
   }
 
   get baseColor() {
@@ -415,6 +498,8 @@ class discTestState {
     return this._step2;
   }
 }
+
+var state;
 
 function registerGetAns() {
   $('#s11, #s12, #s13, #s14').click(function() {
@@ -500,7 +585,6 @@ var init = false;
 var simMethod; // 0 for Brettel 1997 (two planes) and 1 for Viénot 1999 (one plane)
 var type; // 0 for P, 1 for D, 2 for T
 var sim;
-//var colors = [], names = [];
 
 d3.csv('ciexyzjv.csv').then(function(rows){
   function unpack(rows, key, toNum) {
