@@ -71,7 +71,7 @@ function updatePlot(theta, plotId_rgb, plotId_lab, plotId_xy, action) {
   //Plotly.update(lab_plot, data_update, {}, [0]);
 
   // update chromaticity plot
-  var rotPoints_xy = state.rotColorsMapped.map(c => c.xy);
+  var rotPoints_xy = math.transpose(state.rotColorsMapped.map(c => c.xy));
   data_update = {'x': [rotPoints_xy[0]], 'y': [rotPoints_xy[1]],
                  'marker.color': [rotColors_sRGB], 'text': [rotColors_sRGB]};
   Plotly.update(xy_plot, data_update, {}, [5]);
@@ -111,7 +111,7 @@ function updatePlot(theta, plotId_rgb, plotId_lab, plotId_xy, action) {
   //var simPoints_XYZ_sum = math.add(simPoints_XYZ[0], simPoints_XYZ[1], simPoints_XYZ[2]);
   //var simPoints_x = math.dotDivide(simPoints_XYZ[0], simPoints_XYZ_sum);
   //var simPoints_y = math.dotDivide(simPoints_XYZ[1], simPoints_XYZ_sum);
-  var simPoints_xy = state.simColors.map(c => c.xy);
+  var simPoints_xy = math.transpose(state.simColors.map(c => c.xy));
   data_update = {'x': [simPoints_xy[0]], 'y': [simPoints_xy[1]],
                  'marker.color': [simColors_sRGB], 'text': [simColors_sRGB]};
   Plotly.update(xy_plot, data_update, {}, [6]);
