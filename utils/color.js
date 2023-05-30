@@ -365,3 +365,210 @@ function dichromatic_gamut_mapping(colors, mode) {
   return mapped_colors;
 }
 
+class colorObj {
+  constructor(value, space) {
+    this._value = value; // an array
+    this._space = space;
+  }
+  // _space:
+  // norm_srgb: [0, 1] with gamma
+  // linear_srgb: [0, 1] without gamma
+  // srgb: [0, 255] with gamma
+
+  get space() {
+    return this._space;
+  }
+
+  get value() {
+    return this._value;
+  }
+
+  get norm_srgb() {
+    if (this.space == 'srgb') {
+      return  this.value.map(c => c/255);
+    } else if (this.space == 'linear_srgb') {
+      return  this.value.map(c => applyGamma(c) / 255);
+    } else if (this.space == 'norm_srgb') {
+      return this.value;
+    }
+  }
+
+  get linear_srgb() {
+    if (this.space == 'srgb') {
+      return  this.value.map(c => removeGamma(c/255));
+    } else if (this.space == 'linear_srgb') {
+      return  this.value;
+    } else if (this.space == 'norm_srgb') {
+      return  this.value.map(c => removeGamma(c));
+    }
+  }
+
+  get srgb() {
+    if (this.space == 'srgb') {
+      return  this.value;
+    } else if (this.space == 'linear_srgb') {
+      return  this.value.map(c => quantize(applyGamma(c)));
+    } else if (this.space == 'norm_srgb') {
+      return  this.value.map(c => quantize(c));
+    }
+  }
+
+  get linear_srgb_css() {
+    return 'color(srgb-linear '+
+        this.linear_srgb[0].toString()+' '+
+        this.linear_srgb[1].toString()+' '+
+        this.linear_srgb[2].toString()+')';
+  }
+
+  get srgb_css() {
+    return 'color(srgb '+
+        this.norm_srgb[0].toString()+' '+
+        this.norm_srgb[1].toString()+' '+
+        this.norm_srgb[2].toString()+')';
+  }
+
+  get legacy_rgb_css() {
+    return 'rgb('+
+        this.srgb[0].toString()+', '+
+        this.srgb[1].toString()+', '+
+        this.srgb[2].toString()+')';
+  }
+
+  get legacy_hex_css() {
+    return srgbToHex(this.srgb);
+  }
+}
+
+// contains the state one baseColor test (multiple testColors)
+class discTestState {
+  constructor(base) {
+    this._baseColor = base; // one single color
+    this._testColor = null; // one single color
+    this._colors = []; // four initial colors (three test + one base) without rotation
+    this._rotColors_row = []; // rotated colors, one color per row
+    this._rotColors_col = []; // rotated colors, one color per column
+    this._scalesAtRevs = [];
+    this._scale = 0.1; // TODO: need to figure out how to better set this
+    this._numRight = 0;
+    this._numRevs = 0;
+    this._lastAns = null;
+    this._numTrials = 1;
+    this._step1 = 0.02; // TODO: need to figure out how to better set this
+    this._step2 = 0.002; // TODO: need to figure out how to better set this
+  }
+
+  setStep2() {
+	// TODO: the idea is to make sure in each step at least one channel changes
+	// by setting the step size based on the first reversal color, but the
+	// implementation using deltaLUT is a hack and for now works only for sRGB
+    var line_RGB = confusion_lines[1]; // D line in RGB
+    var deltaR = deltaLUT[this.testColor.srgb[0]];
+    var deltaG = deltaLUT[this.testColor.srgb[1]];
+    var deltaB = deltaLUT[this.testColor.srgb[2]];
+  
+    this.step2 = Math.min(deltaR / Math.abs(line_RGB[0]), deltaG / Math.abs(line_RGB[1]), deltaB / Math.abs(line_RGB[2]));
+  }
+
+  // take in a set of colorObj (not a pure numerical array)
+  geoTrans(transMat, fromColors) {
+    // TODO: now assuming we want to transform from linear-srgb; generalize this later
+    var colors_in_linear_srgb = [fromColors[0].linear_srgb,
+                                 fromColors[1].linear_srgb,
+                                 fromColors[2].linear_srgb,
+                                 fromColors[3].linear_srgb]
+    return math.multiply(transMat, math.transpose(colors_in_linear_srgb));
+  }
+
+  rotate(rotMat) {
+    return this.geoTrans(rotMat, this.colors);
+    //this.rotColors_col = math.multiply(rotMat, math.transpose(colors_in_linear_srgb));
+    //this.rotColors_row = math.transpose(this.rotColors_col);
+  }
+
+  get baseColor() {
+    return this._baseColor;
+  }
+
+  get scalesAtRevs() {
+    return this._scalesAtRevs;
+  }
+
+  get colors() {
+    return this._colors;
+  }
+
+  get rotColors_row() {
+    return this._rotColors_row;
+  }
+
+  get rotColors_col() {
+    return this._rotColors_col;
+  }
+  set rotColors_col(v) {
+    this._rotColors_col = v;
+  }
+
+  set testColor(v) {
+    this._testColor = v;
+  }
+  get testColor() {
+    return this._testColor;
+  }
+
+  set scale(v) {
+    this._scale = v;
+  }
+  get scale() {
+    return this._scale;
+  }
+
+  set testId(v) {
+    this._testId = v;
+  }
+  get testId() {
+    return this._testId;
+  }
+
+  set numRight(v) {
+    this._numRight = v;
+  }
+  get numRight() {
+    return this._numRight;
+  }
+
+  set numRevs(v) {
+    this._numRevs = v;
+  }
+  get numRevs() {
+    return this._numRevs;
+  }
+
+  set lastAns(v) {
+    this._lastAns = v;
+  }
+  get lastAns() {
+    return this._lastAns;
+  }
+
+  set numTrials(v) {
+    this._numTrials = v;
+  }
+  get numTrials() {
+    return this._numTrials;
+  }
+
+  set step1(v) {
+    this._step1 = v;
+  }
+  get step1() {
+    return this._step1;
+  }
+
+  set step2(v) {
+    this._step2 = v;
+  }
+  get step2() {
+    return this._step2;
+  }
+}
+
