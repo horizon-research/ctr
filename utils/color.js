@@ -444,9 +444,8 @@ class discTestState {
   constructor(base) {
     this._baseColor = base; // one single color
     this._testColor = null; // one single color
-    this._colors = []; // four initial colors (three test + one base) without rotation
-    this._rotColors_row = []; // rotated colors, one color per row
-    this._rotColors_col = []; // rotated colors, one color per column
+    this._colors = []; // four initial colors (three test + one base) without rotation; one color per row
+    this._rotColors = []; // rotated colors; one color per row
     this._scalesAtRevs = [];
     this._scale = 0.1; // TODO: need to figure out how to better set this
     this._numRight = 0;
@@ -480,9 +479,11 @@ class discTestState {
   }
 
   rotate(rotMat) {
-    return this.geoTrans(rotMat, this.colors);
-    //this.rotColors_col = math.multiply(rotMat, math.transpose(colors_in_linear_srgb));
-    //this.rotColors_row = math.transpose(this.rotColors_col);
+    var rotated_colors_col = this.geoTrans(rotMat, this.colors);
+    var rotated_colors_row = math.transpose(rotated_colors_col);
+
+    for (var i = 0; i <= 3; i++)
+      this.rotColors.push(new colorObj(rotated_colors_row[i], 'linear_srgb'));
   }
 
   get baseColor() {
@@ -497,15 +498,8 @@ class discTestState {
     return this._colors;
   }
 
-  get rotColors_row() {
+  get rotColors() {
     return this._rotColors_row;
-  }
-
-  get rotColors_col() {
-    return this._rotColors_col;
-  }
-  set rotColors_col(v) {
-    this._rotColors_col = v;
   }
 
   set testColor(v) {
