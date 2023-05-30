@@ -29,92 +29,93 @@ function updatePlot(theta, plotId_rgb, plotId_lab, plotId_xy, action) {
     state.dichromatic_gamut_mapping(state.rotColors, mapping);
   }
 
-  // state.rotColors now has the rotated colors
-  // state.rotColorsMapped has gamut-mapped rotated colors
-  rotate_colors(1); // 0 for no mapping; 1 for clipping; 2 for confusion line mapping
+  function update_rgb(rotColors_css, simColors_css) {
+    var rotPoints_RGB = math.transpose(state.rotColorsMapped.map(c => c.linear_srgb));
+    var simPoints_RGB = math.transpose(state.simColors.map(c => c.linear_srgb));
 
-  // Convention: in |Points| each color is a column and in |Colors| each color is a row
-  var rotPoints_RGB = math.transpose(state.rotColorsMapped.map(c => c.linear_srgb));
-  var rotColors_css = state.rotColorsMapped.map(c => c.legacy_rgb_css);
+    // update actual colors
+    var data_update = {'x': [rotPoints_RGB[0]], 'y': [rotPoints_RGB[1]], 'z': [rotPoints_RGB[2]],
+                       'marker.color': [rotColors_css], 'text': [rotColors_css]};
+    Plotly.update(rgb_plot, data_update, {}, [13]);
 
-  /* update actual colors */
-  // update actual colors in the 3D plot (RGB)
-  var data_update = {'x': [rotPoints_RGB[0]], 'y': [rotPoints_RGB[1]], 'z': [rotPoints_RGB[2]],
-                     'marker.color': [rotColors_css], 'text': [rotColors_css]};
-  Plotly.update(rgb_plot, data_update, {}, [13]);
+    // update simulated colors
+    data_update = {'x': [simPoints_RGB[0]], 'y': [simPoints_RGB[1]], 'z': [simPoints_RGB[2]],
+                   'marker.color': [simColors_css], 'text': [simColors_css]};
+    Plotly.update(rgb_plot, data_update, {}, [14]);
+  }
 
-  // update actual colors in the 3D plot (Lab)
-  var rotPoints_Lab = math.transpose(state.rotColorsMapped.map(c => c.lab));
-  data_update = {'x': [rotPoints_Lab[1]], 'y': [rotPoints_Lab[2]], 'z': [rotPoints_Lab[0]],
-                 'marker.color': [rotColors_css], 'text': [rotColors_css]};
-  Plotly.update(lab_plot, data_update, {}, [0]);
+  function update_lab(rotColors_css, simColors_css) {
+    // update actual colors
+    var rotPoints_Lab = math.transpose(state.rotColorsMapped.map(c => c.lab));
+    data_update = {'x': [rotPoints_Lab[1]], 'y': [rotPoints_Lab[2]], 'z': [rotPoints_Lab[0]],
+                   'marker.color': [rotColors_css], 'text': [rotColors_css]};
+    Plotly.update(lab_plot, data_update, {}, [0]);
 
-  // update chromaticity plot
-  var rotPoints_xy = math.transpose(state.rotColorsMapped.map(c => c.xy));
-  data_update = {'x': [rotPoints_xy[0]], 'y': [rotPoints_xy[1]],
-                 'marker.color': [rotColors_css], 'text': [rotColors_css]};
-  Plotly.update(xy_plot, data_update, {}, [5]);
+    // update simulated colors
+    var simPoints_Lab = math.transpose(state.simColors.map(c => c.lab));
+    data_update = {'x': [simPoints_Lab[1]], 'y': [simPoints_Lab[2]], 'z': [simPoints_Lab[0]],
+                   'marker.color': [simColors_css], 'text': [simColors_css]};
+    Plotly.update(lab_plot, data_update, {}, [1]);
+  }
 
+  function update_xy(rotColors_css, simColors_css) {
+    var rotPoints_xy = math.transpose(state.rotColorsMapped.map(c => c.xy));
+    data_update = {'x': [rotPoints_xy[0]], 'y': [rotPoints_xy[1]],
+                   'marker.color': [rotColors_css], 'text': [rotColors_css]};
+    Plotly.update(xy_plot, data_update, {}, [5]);
 
-
-
-  /* update simulated colors in the 3D plot */
-  /* we need to use mapped colors for simulation */
-
-  state.simulate();
-  var simPoints_RGB = math.transpose(state.simColors.map(c => c.linear_srgb));
-  var simColors_css = state.simColors.map(c => c.legacy_rgb_css);
-
-  // update simulated colors in the RGB plot */
-  data_update = {'x': [simPoints_RGB[0]], 'y': [simPoints_RGB[1]], 'z': [simPoints_RGB[2]],
-                 'marker.color': [simColors_css], 'text': [simColors_css]};
-  Plotly.update(rgb_plot, data_update, {}, [14]);
-
-  // update simulated colors in Lab
-  var simPoints_Lab = math.transpose(state.simColors.map(c => c.lab));
-  data_update = {'x': [simPoints_Lab[1]], 'y': [simPoints_Lab[2]], 'z': [simPoints_Lab[0]],
-                 'marker.color': [simColors_css], 'text': [simColors_css]};
-  Plotly.update(lab_plot, data_update, {}, [1]);
-
-  // update chromaticity plot
-  var simPoints_xy = math.transpose(state.simColors.map(c => c.xy));
-  data_update = {'x': [simPoints_xy[0]], 'y': [simPoints_xy[1]],
-                 'marker.color': [simColors_css], 'text': [simColors_css]};
-  Plotly.update(xy_plot, data_update, {}, [6]);
-
-
+    var simPoints_xy = math.transpose(state.simColors.map(c => c.xy));
+    data_update = {'x': [simPoints_xy[0]], 'y': [simPoints_xy[1]],
+                   'marker.color': [simColors_css], 'text': [simColors_css]};
+    Plotly.update(xy_plot, data_update, {}, [6]);
+  }
 
   /* update iso-chrome planes/lines visibility */
-  if (action == 2 || action == 3 || action == 4) {
-    if (type == 0 || type == 1) { // P and D
-      if (simMethod == 0) { // 2-plane {
-        data_update = {'visible': ['legendonly', false, false, false,
-            (type==0)?'legendonly':false, (type==1)?'legendonly':false, false]};
-        Plotly.update(xy_plot, data_update, {}, [1, 2, 3, 4, 8, 9, 10]);
-        data_update = {'visible': ['legendonly', 'legendonly', false, false, false, false, 'legendonly', false]};
-        Plotly.update(rgb_plot, data_update, {}, [15, 16, 17, 18, 19, 20, 21, 22]);
-      } else { // 1-plane
-        data_update = {'visible': [false, false, 'legendonly', false,
-            (type==0)?'legendonly':false, (type==1)?'legendonly':false, false]};
-        Plotly.update(xy_plot, data_update, {}, [1, 2, 3, 4, 8, 9, 10]);
-        data_update = {'visible': [false, false, false, false, 'legendonly', false, false, false]};
-        Plotly.update(rgb_plot, data_update, {}, [15, 16, 17, 18, 19, 20, 21, 22]);
-      }
-    } else { // T
-      if (simMethod == 0) { // 2-plane {
-        data_update = {'visible': [false, 'legendonly', false, false, false, false, 'legendonly']};
-        Plotly.update(xy_plot, data_update, {}, [1, 2, 3, 4, 8, 9, 10]);
-        data_update = {'visible': [false, false, 'legendonly', 'legendonly', false, false, false, 'legendonly']};
-        Plotly.update(rgb_plot, data_update, {}, [15, 16, 17, 18, 19, 20, 21, 22]);
-      } else { // 1-plane
-        data_update = {'visible': [false, false, false, 'legendonly', false, false, 'legendonly']};
-        Plotly.update(xy_plot, data_update, {}, [1, 2, 3, 4, 8, 9, 10]);
-        data_update = {'visible': [false, false, false, false, false, 'legendonly', false, false]};
-        Plotly.update(rgb_plot, data_update, {}, [15, 16, 17, 18, 19, 20, 21, 22]);
+  function update_legends(update_xy, update_rgb) {
+    if (action == 2 || action == 3 || action == 4) {
+      if (type == 0 || type == 1) { // P and D
+        if (simMethod == 0) { // 2-plane {
+          data_update = {'visible': ['legendonly', false, false, false,
+              (type==0)?'legendonly':false, (type==1)?'legendonly':false, false]};
+          if (update_xy) Plotly.update(xy_plot, data_update, {}, [1, 2, 3, 4, 8, 9, 10]);
+          data_update = {'visible': ['legendonly', 'legendonly', false, false, false, false, 'legendonly', false]};
+          if (update_rgb) Plotly.update(rgb_plot, data_update, {}, [15, 16, 17, 18, 19, 20, 21, 22]);
+        } else { // 1-plane
+          data_update = {'visible': [false, false, 'legendonly', false,
+              (type==0)?'legendonly':false, (type==1)?'legendonly':false, false]};
+          if (update_xy) Plotly.update(xy_plot, data_update, {}, [1, 2, 3, 4, 8, 9, 10]);
+          data_update = {'visible': [false, false, false, false, 'legendonly', false, false, false]};
+          if (update_rgb) Plotly.update(rgb_plot, data_update, {}, [15, 16, 17, 18, 19, 20, 21, 22]);
+        }
+      } else { // T
+        if (simMethod == 0) { // 2-plane {
+          data_update = {'visible': [false, 'legendonly', false, false, false, false, 'legendonly']};
+          if (update_xy) Plotly.update(xy_plot, data_update, {}, [1, 2, 3, 4, 8, 9, 10]);
+          data_update = {'visible': [false, false, 'legendonly', 'legendonly', false, false, false, 'legendonly']};
+          if (update_rgb) Plotly.update(rgb_plot, data_update, {}, [15, 16, 17, 18, 19, 20, 21, 22]);
+        } else { // 1-plane
+          data_update = {'visible': [false, false, false, 'legendonly', false, false, 'legendonly']};
+          if (update_xy) Plotly.update(xy_plot, data_update, {}, [1, 2, 3, 4, 8, 9, 10]);
+          data_update = {'visible': [false, false, false, false, false, 'legendonly', false, false]};
+          if (update_rgb) Plotly.update(rgb_plot, data_update, {}, [15, 16, 17, 18, 19, 20, 21, 22]);
+        }
       }
     }
   }
 
+  // state.rotColors now has the rotated colors
+  // state.rotColorsMapped has gamut-mapped rotated colors
+  rotate_colors(1); // 0 for no mapping; 1 for clipping; 2 for confusion line mapping
+  state.simulate();
+  // Convention: in |Points| each color is a column and in |Colors| each color is a row
+  var rotColors_css = state.rotColorsMapped.map(c => c.legacy_rgb_css);
+  var simColors_css = state.simColors.map(c => c.legacy_rgb_css);
+
+  //update_rgb(rotColors_css, simColors_css);
+  //update_lab(rotColors_css, simColors_css);
+  update_xy(rotColors_css, simColors_css);
+
+  update_legends(true, false);
 
   /* update square colors */
   if (sim) {
@@ -132,10 +133,10 @@ function updatePlot(theta, plotId_rgb, plotId_lab, plotId_xy, action) {
   }
 
   // good for debugging
-  $('#s11').text(rotColors_css[0]);
-  $('#s12').text(rotColors_css[1]);
-  $('#s13').text(rotColors_css[2]);
-  $('#s14').text(rotColors_css[3]);
+  //$('#s11').text(rotColors_css[0]);
+  //$('#s12').text(rotColors_css[1]);
+  //$('#s13').text(rotColors_css[2]);
+  //$('#s14').text(rotColors_css[3]);
   //$('#n11').text(name1);
   //$('#n12').text(name2);
   //$('#n13').text(name3);
@@ -401,8 +402,8 @@ d3.csv('ciexyzjv.csv').then(function(rows){
 
   // initial plot with no meaningful data
   plotXy('xyDiv', [x_chrm, y_chrm, z_chrm], wlen, a475, a575, a485, a660);
-  plotRGB('rgbDiv');
-  plotLab('labDiv');
+  //plotRGB('rgbDiv');
+  //plotLab('labDiv');
   plotExp('expDiv');
 
   registerSlider('#customRange');
