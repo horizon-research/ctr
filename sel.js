@@ -1578,12 +1578,9 @@ function updatePlot(theta, plotId_rgb, plotId_lab, plotId_xy, action) {
     var rotPoints_RGB = math.multiply(rotMat, math.transpose([color1, color2, color3]));
     var rotColors_RGB = math.transpose(rotPoints_RGB);
 
-    var rotPoints_RGB_mapped = rotPoints_RGB;
-    if (mapping) {
-      rotColors_RGB = dichromatic_gamut_mapping(rotColors_RGB, 0);
-      // this is the position of the mapped colors
-      rotPoints_RGB_mapped = math.transpose(rotColors_RGB);
-    }
+    rotColors_RGB = dichromatic_gamut_mapping(rotColors_RGB, mapping);
+    // this is the position of the mapped colors
+    var rotPoints_RGB_mapped = math.transpose(rotColors_RGB);
 
     // Option 1: return actual rotated position but mapped color
     //return [rotPoints_RGB, rotColors_RGB];
@@ -1591,7 +1588,7 @@ function updatePlot(theta, plotId_rgb, plotId_lab, plotId_xy, action) {
     return [rotPoints_RGB_mapped, rotColors_RGB];
   }
 
-  var res = rotate_colors(true);
+  var res = rotate_colors(1);
   var rotPoints_RGB = res[0];
   var rotColors_RGB = res[1];
 

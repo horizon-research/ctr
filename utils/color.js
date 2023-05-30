@@ -288,6 +288,8 @@ function clamp (value, min, max) {
 };
 
 function dichromatic_gamut_mapping(colors, mode) {
+  if (mode == 0) return colors;
+
   // mode:
   // 0: clipping
   // 1: confusion line
@@ -309,7 +311,7 @@ function dichromatic_gamut_mapping(colors, mode) {
 
   var mapped_colors = [];
 
-  if (mode == 0) {
+  if (mode == 1) {
     colors.forEach((color) => {
       for (var j = 0; j < 3; j++) {
         color[j] = clamp(color[j], 0, 1)

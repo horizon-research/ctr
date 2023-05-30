@@ -22,58 +22,38 @@ function updatePlot(theta, plotId_rgb, plotId_lab, plotId_xy, action) {
       [u*u*(1-cos)-u*sin, u*u*(1-cos)+u*sin, cos+u*u*(1-cos)]
     ];
 
-    // Convention: in |Points| each color is a column and in |Colors| each color is a row
-
     // TODO: rotated colors might be out of HVS gamut; we should black out those colors too
     // this is the actual position without mapping
-    state.rotate(rotMat); // state.rotColors now has the rotated colors
-    //var rotColors_RGB = math.transpose(rotPoints_RGB);
+    state.rotate(rotMat);
 
-    //var rotPoints_RGB_mapped = rotPoints_RGB;
-    if (mapping) {
-      //rotColors_RGB = dichromatic_gamut_mapping_new(state.rotColors, 0);
-      state.dichromatic_gamut_mapping(state.rotColors, 0); // state.rotColorsMapped has mapped rotated colors
-      // this is the position of the mapped colors
-      //rotPoints_RGB_mapped = math.transpose(rotColors_RGB);
-    }
-
-    // Option 1: return actual rotated position but mapped color
-    //return [rotPoints_RGB, rotColors_RGB];
-    // Option 2: return mapped position and mapped color
-    //return [rotPoints_RGB_mapped, rotColors_RGB];
+    state.dichromatic_gamut_mapping(state.rotColors, mapping);
   }
 
-  rotate_colors(true);
-  //var res = rotate_colors(true);
-  //var rotPoints_RGB = res[0];
-  //var rotColors_RGB = res[1];
+  // state.rotColors now has the rotated colors
+  // state.rotColorsMapped has gamut-mapped rotated colors
+  rotate_colors(1); // 0 for no mapping; 1 for clipping; 2 for confusion line mapping
 
-  //var rotColors_sRGB = [formatLinearSRGB(rotColors_RGB[0]),
-  //                      formatLinearSRGB(rotColors_RGB[1]),
-  //                      formatLinearSRGB(rotColors_RGB[2]),
-  //                      formatLinearSRGB(rotColors_RGB[3])
-  //                     ];
-  var rotColors_sRGB = state.rotColorsMapped.map(c => c.legacy_rgb_css);
+  // Convention: in |Points| each color is a column and in |Colors| each color is a row
+  var rotPoints_RGB = math.transpose(state.rotColorsMapped.map(c => c.linear_srgb));
+  var rotColors_css = state.rotColorsMapped.map(c => c.legacy_rgb_css);
 
+  /* update actual colors */
+  // update actual colors in the 3D plot (RGB)
+  var data_update = {'x': [rotPoints_RGB[0]], 'y': [rotPoints_RGB[1]], 'z': [rotPoints_RGB[2]],
+                     'marker.color': [rotColors_css], 'text': [rotColors_css]};
+  Plotly.update(rgb_plot, data_update, {}, [13]);
 
-  ///* update actual colors */
-  //// update actual colors in the 3D plot (RGB)
-  //var data_update = {'x': [rotPoints_RGB[0]], 'y': [rotPoints_RGB[1]], 'z': [rotPoints_RGB[2]],
-  //                   'marker.color': [rotColors_sRGB], 'text': [rotColors_sRGB]};
-  //Plotly.update(rgb_plot, data_update, {}, [13]);
-
-
-  //// update actual colors in the 3D plot (Lab)
+  // update actual colors in the 3D plot (Lab)
   //var rotColors_Lab = RGBtoLab(math.transpose(rotPoints_RGB));
   //var rotPoints_Lab = math.transpose(rotColors_Lab);
   //data_update = {'x': [rotPoints_Lab[1]], 'y': [rotPoints_Lab[2]], 'z': [rotPoints_Lab[0]],
-  //               'marker.color': [rotColors_sRGB], 'text': [rotColors_sRGB]};
+  //               'marker.color': [rotColors_css], 'text': [rotColors_css]};
   //Plotly.update(lab_plot, data_update, {}, [0]);
 
   // update chromaticity plot
   var rotPoints_xy = math.transpose(state.rotColorsMapped.map(c => c.xy));
   data_update = {'x': [rotPoints_xy[0]], 'y': [rotPoints_xy[1]],
-                 'marker.color': [rotColors_sRGB], 'text': [rotColors_sRGB]};
+                 'marker.color': [rotColors_css], 'text': [rotColors_css]};
   Plotly.update(xy_plot, data_update, {}, [5]);
 
 
@@ -81,39 +61,27 @@ function updatePlot(theta, plotId_rgb, plotId_lab, plotId_xy, action) {
 
   /* update simulated colors in the 3D plot */
   /* we need to use mapped colors for simulation */
-  //var rotPoints_LMS = math.multiply(RGB2lms, math.transpose(rotColors_RGB));
-  //var simPoints_LMS = project(rotPoints_LMS);
-  //var simPoints_RGB = math.multiply(lms2RGB, simPoints_LMS);
-  //var simColors_RGB = math.transpose(simPoints_RGB);
-  //var simColors_sRGB = [formatLinearSRGB(simColors_RGB[0]),
-  //                      formatLinearSRGB(simColors_RGB[1]),
-  //                      formatLinearSRGB(simColors_RGB[2]),
-  //                      formatLinearSRGB(simColors_RGB[3])
-  //                     ];
 
   state.simulate();
-  var simColors_sRGB = state.simColors.map(c => c.legacy_rgb_css);
+  var simPoints_RGB = math.transpose(state.simColors.map(c => c.linear_srgb));
+  var simColors_css = state.simColors.map(c => c.legacy_rgb_css);
 
-  //// update simulated colors in the RGB plot */
-  //data_update = {'x': [simPoints_RGB[0]], 'y': [simPoints_RGB[1]], 'z': [simPoints_RGB[2]],
-  //               'marker.color': [simColors_sRGB], 'text': [simColors_sRGB]};
-  //Plotly.update(rgb_plot, data_update, {}, [14]);
+  // update simulated colors in the RGB plot */
+  data_update = {'x': [simPoints_RGB[0]], 'y': [simPoints_RGB[1]], 'z': [simPoints_RGB[2]],
+                 'marker.color': [simColors_css], 'text': [simColors_css]};
+  Plotly.update(rgb_plot, data_update, {}, [14]);
 
   //// update simulated colors in Lab
   //var simColors_Lab = RGBtoLab(simColors_RGB);
   //var simPoints_Lab = math.transpose(simColors_Lab);
   //data_update = {'x': [simPoints_Lab[1]], 'y': [simPoints_Lab[2]], 'z': [simPoints_Lab[0]],
-  //               'marker.color': [simColors_sRGB], 'text': [simColors_sRGB]};
+  //               'marker.color': [simColors_css], 'text': [simColors_css]};
   //Plotly.update(lab_plot, data_update, {}, [1]);
 
   // update chromaticity plot
-  //var simPoints_XYZ = math.multiply(RGB2xyz, simPoints_RGB);
-  //var simPoints_XYZ_sum = math.add(simPoints_XYZ[0], simPoints_XYZ[1], simPoints_XYZ[2]);
-  //var simPoints_x = math.dotDivide(simPoints_XYZ[0], simPoints_XYZ_sum);
-  //var simPoints_y = math.dotDivide(simPoints_XYZ[1], simPoints_XYZ_sum);
   var simPoints_xy = math.transpose(state.simColors.map(c => c.xy));
   data_update = {'x': [simPoints_xy[0]], 'y': [simPoints_xy[1]],
-                 'marker.color': [simColors_sRGB], 'text': [simColors_sRGB]};
+                 'marker.color': [simColors_css], 'text': [simColors_css]};
   Plotly.update(xy_plot, data_update, {}, [6]);
 
 
@@ -125,26 +93,26 @@ function updatePlot(theta, plotId_rgb, plotId_lab, plotId_xy, action) {
         data_update = {'visible': ['legendonly', false, false, false,
             (type==0)?'legendonly':false, (type==1)?'legendonly':false, false]};
         Plotly.update(xy_plot, data_update, {}, [1, 2, 3, 4, 8, 9, 10]);
-        //data_update = {'visible': ['legendonly', 'legendonly', false, false, false, false, 'legendonly', false]};
-        //Plotly.update(rgb_plot, data_update, {}, [15, 16, 17, 18, 19, 20, 21, 22]);
+        data_update = {'visible': ['legendonly', 'legendonly', false, false, false, false, 'legendonly', false]};
+        Plotly.update(rgb_plot, data_update, {}, [15, 16, 17, 18, 19, 20, 21, 22]);
       } else { // 1-plane
         data_update = {'visible': [false, false, 'legendonly', false,
             (type==0)?'legendonly':false, (type==1)?'legendonly':false, false]};
         Plotly.update(xy_plot, data_update, {}, [1, 2, 3, 4, 8, 9, 10]);
-        //data_update = {'visible': [false, false, false, false, 'legendonly', false, false, false]};
-        //Plotly.update(rgb_plot, data_update, {}, [15, 16, 17, 18, 19, 20, 21, 22]);
+        data_update = {'visible': [false, false, false, false, 'legendonly', false, false, false]};
+        Plotly.update(rgb_plot, data_update, {}, [15, 16, 17, 18, 19, 20, 21, 22]);
       }
     } else { // T
       if (simMethod == 0) { // 2-plane {
         data_update = {'visible': [false, 'legendonly', false, false, false, false, 'legendonly']};
         Plotly.update(xy_plot, data_update, {}, [1, 2, 3, 4, 8, 9, 10]);
-        //data_update = {'visible': [false, false, 'legendonly', 'legendonly', false, false, false, 'legendonly']};
-        //Plotly.update(rgb_plot, data_update, {}, [15, 16, 17, 18, 19, 20, 21, 22]);
+        data_update = {'visible': [false, false, 'legendonly', 'legendonly', false, false, false, 'legendonly']};
+        Plotly.update(rgb_plot, data_update, {}, [15, 16, 17, 18, 19, 20, 21, 22]);
       } else { // 1-plane
         data_update = {'visible': [false, false, false, 'legendonly', false, false, 'legendonly']};
         Plotly.update(xy_plot, data_update, {}, [1, 2, 3, 4, 8, 9, 10]);
-        //data_update = {'visible': [false, false, false, false, false, 'legendonly', false, false]};
-        //Plotly.update(rgb_plot, data_update, {}, [15, 16, 17, 18, 19, 20, 21, 22]);
+        data_update = {'visible': [false, false, false, false, false, 'legendonly', false, false]};
+        Plotly.update(rgb_plot, data_update, {}, [15, 16, 17, 18, 19, 20, 21, 22]);
       }
     }
   }
@@ -166,10 +134,10 @@ function updatePlot(theta, plotId_rgb, plotId_lab, plotId_xy, action) {
   }
 
   // good for debugging
-  $('#s11').text(rotColors_sRGB[0]);
-  $('#s12').text(rotColors_sRGB[1]);
-  $('#s13').text(rotColors_sRGB[2]);
-  $('#s14').text(rotColors_sRGB[3]);
+  $('#s11').text(rotColors_css[0]);
+  $('#s12').text(rotColors_css[1]);
+  $('#s13').text(rotColors_css[2]);
+  $('#s14').text(rotColors_css[3]);
   //$('#n11').text(name1);
   //$('#n12').text(name2);
   //$('#n13').text(name3);
@@ -443,7 +411,7 @@ d3.csv('ciexyzjv.csv').then(function(rows){
 
   // initial plot with no meaningful data
   plotXy('xyDiv', [x_chrm, y_chrm, z_chrm], wlen, a475, a575, a485, a660);
-  //plotRGB('rgbDiv');
+  plotRGB('rgbDiv');
   //plotLab('labDiv');
   plotExp('expDiv');
 
