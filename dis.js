@@ -54,22 +54,22 @@ function updatePlot(theta, plotId_rgb, plotId_lab, plotId_xy, action) {
   /* update iso-chrome planes/lines visibility */
   function update_legends(update_xy, update_rgb) {
     if (action == 2 || action == 3 || action == 4) {
-      if (type == 0 || type == 1) { // P and D
-        if (simMethod == 0) { // 2-plane {
+      if (page.type == 0 || page.type == 1) { // P and D
+        if (page.simMethod == 0) { // 2-plane {
           data_update = {'visible': ['legendonly', false, false, false,
-              (type==0)?'legendonly':false, (type==1)?'legendonly':false, false]};
+              (page.type==0)?'legendonly':false, (page.type==1)?'legendonly':false, false]};
           if (update_xy) Plotly.update(xy_plot, data_update, {}, [1, 2, 3, 4, 8, 9, 10]);
           data_update = {'visible': ['legendonly', 'legendonly', false, false, false, false, 'legendonly', false]};
           if (update_rgb) Plotly.update(rgb_plot, data_update, {}, [15, 16, 17, 18, 19, 20, 21, 22]);
         } else { // 1-plane
           data_update = {'visible': [false, false, 'legendonly', false,
-              (type==0)?'legendonly':false, (type==1)?'legendonly':false, false]};
+              (page.type==0)?'legendonly':false, (page.type==1)?'legendonly':false, false]};
           if (update_xy) Plotly.update(xy_plot, data_update, {}, [1, 2, 3, 4, 8, 9, 10]);
           data_update = {'visible': [false, false, false, false, 'legendonly', false, false, false]};
           if (update_rgb) Plotly.update(rgb_plot, data_update, {}, [15, 16, 17, 18, 19, 20, 21, 22]);
         }
       } else { // T
-        if (simMethod == 0) { // 2-plane {
+        if (page.simMethod == 0) { // 2-plane {
           data_update = {'visible': [false, 'legendonly', false, false, false, false, 'legendonly']};
           if (update_xy) Plotly.update(xy_plot, data_update, {}, [1, 2, 3, 4, 8, 9, 10]);
           data_update = {'visible': [false, false, 'legendonly', 'legendonly', false, false, false, 'legendonly']};
@@ -102,7 +102,7 @@ function updatePlot(theta, plotId_rgb, plotId_lab, plotId_xy, action) {
   update_legends(true, false);
 
   /* update square colors */
-  if (sim) {
+  if (page.sim) {
     var temp = state.simColors.map(c => c.linear_srgb_css);
     $('#s11').css('background-color', temp[0]);
     $('#s12').css('background-color', temp[1]);
@@ -138,27 +138,27 @@ function registerSlider(id) {
 function registerSimMode() {
   $('input[type=radio][name=sim]').change(function() {
     if (this.id == 'yes') {
-      sim = true;
+      page.sim = true;
     } else {
-      sim = false;
+      page.sim = false;
     }
 
-    if (init) updatePlot($('#customRange').val(), 'rgbDiv', 'labDiv', 'xyDiv', 1);
+    if (page.init) updatePlot($('#customRange').val(), 'rgbDiv', 'labDiv', 'xyDiv', 1);
   });
 }
 
 function registerPickType() {
   $('input[type=radio][name=pick]').change(function() {
     if (this.id == 'pickp') {
-      type = 0;
+      page.type = 0;
     } else if (this.id == 'pickd') {
-      type = 1;
+      page.type = 1;
     } else if (this.id == 'pickt') {
-      type = 2;
+      page.type = 2;
     }
 
     // automatically update colors and re-plot
-    if (init) updatePlot($('#customRange').val(), 'rgbDiv', 'labDiv', 'xyDiv', 4);
+    if (page.init) updatePlot($('#customRange').val(), 'rgbDiv', 'labDiv', 'xyDiv', 4);
   });
 }
 
@@ -166,15 +166,15 @@ function registerPickSimMethod() {
   $('input[type=radio][name=method]').change(function() {
     if (this.id == 'm1') {
       // one plane
-      simMethod = 1;
+      page.simMethod = 1;
     } else {
       // two planes
-      simMethod = 0;
+      page.simMethod = 0;
     }
     proj_mat = get_proj_mat();
 
     // automatically update colors and re-plot
-    if (init) updatePlot($('#customRange').val(), 'rgbDiv', 'labDiv', 'xyDiv', 2);
+    if (page.init) updatePlot($('#customRange').val(), 'rgbDiv', 'labDiv', 'xyDiv', 2);
   });
 }
 
@@ -342,53 +342,102 @@ function registerGetAns() {
   });
 }
 
-var init = false;
-var simMethod; // 0 for Brettel 1997 (two planes) and 1 for Viénot 1999 (one plane)
-var type; // 0 for P, 1 for D, 2 for T
-var sim;
+class pageObj {
+  constructor() {
+    this._init = false;
+    this._simMethod = null; // 0 for Brettel 1997 (two planes) and 1 for Viénot 1999 (one plane)
+    this._type = null; // 0 for P, 1 for D, 2 for T
+    this._sim = null;
+    this._hassRGB = false;
+    this._hasP3 = false;
+    this._hasRec2020 = false;
+  }
+
+  get init() {
+    return this._init;
+  }
+  set init(v) {
+    this._init = v;
+  }
+
+  get simMethod() {
+    return this._simMethod;
+  }
+  set simMethod(v) {
+    this._simMethod = v;
+  }
+
+  get type() {
+    return this._type;
+  }
+  set type(v) {
+    this._type = v;
+  }
+
+  get sim() {
+    return this._sim;
+  }
+  set sim(v) {
+    this._sim = v;
+  }
+
+  get hassRGB() {
+    return this._hassRGB;
+  }
+  set hassRGB(v) {
+    this._hassRGB = v;
+  }
+
+  get hasP3() {
+    return this._hasP3;
+  }
+  set hasP3(v) {
+    this._hasP3 = v;
+  }
+
+  get hasRec2020() {
+    return this._hasRec2020;
+  }
+  set hasRec2020(v) {
+    this._hasRec2020 = v;
+  }
+}
+
+var page = new pageObj();
 var state;
 
+function test_color_support() {
+  // https://developer.chrome.com/articles/high-definition-css-color-guide/#checking-for-gamut-and-color-space-support
+  // This checks browser support of the css syntax
+  var srgb_browser = CSS.supports('background: color(srgb 1 1 1)');
+  var p3_browser = CSS.supports('background: color(display-p3 1 1 1)');
+  var rec2020_browser = CSS.supports('background: color(rec2020 1 1 1)');
+  
+  // This checks display support (using the current ICC profile)
+  var srgb_display = window.matchMedia('(color-gamut: srgb)').matches;
+  var p3_display = window.matchMedia('(color-gamut: p3)').matches;
+  var rec2020_display = window.matchMedia('(color-gamut: rec2020)').matches;
+  
+  $('#bsrgb').html(srgb_browser ? '&#10003;' : '');
+  $('#bp3').html(p3_browser ? '&#10003;' : '');
+  $('#b2020').html(rec2020_browser ? '&#10003;' : '');
+  $('#dsrgb').html(srgb_display ? '&#10003;' : '');
+  $('#dp3').html(p3_display ? '&#10003;' : '');
+  $('#d2020').html(rec2020_display ? '&#10003;' : '');
+
+  page.hassRGB = srgb_browser && srgb_display;
+  page.hasP3 = p3_browser && p3_display;
+  page.hasRec2020 = rec2020_browser && rec2020_display;
+}
+
 d3.csv('ciexyzjv.csv').then(function(rows){
-  function unpack(rows, key, toNum) {
-    return rows.map(function(row) {
-        if (toNum == false) return row[key];
-        else return parseFloat(row[key]);
-      });
-  }
-
-  function range(start, end, stride) {
-    return Array((end - start) / stride + 1).fill().map((_, idx) => start + idx*stride)
-  }
-
-  var stride = 5;
-
-  wlen = unpack(rows, 'wavelength');
-  var firstW = wlen[0];
-  var lastW = wlen[wlen.length - 1];
-
-  var x_data = range(firstW, lastW, stride);
-
-  x_cmf = unpack(rows, 'x');
-  y_cmf = unpack(rows, 'y');
-  z_cmf = unpack(rows, 'z');
-
-  var x_chrm = math.dotDivide(x_cmf, math.add(x_cmf, y_cmf, z_cmf));
-  var y_chrm = math.dotDivide(y_cmf, math.add(x_cmf, y_cmf, z_cmf));
-  var z_chrm = math.dotDivide(z_cmf, math.add(x_cmf, y_cmf, z_cmf));
-
-  //var lms_cmf = math.multiply(xyz2lms, [x_cmf, y_cmf, z_cmf]);
-  //lms_cmf = math.dotMultiply(lms_cmf, 20);
-
-  var a475 = (475 - firstW) / stride;
-  var a575 = (575 - firstW) / stride;
-  var a485 = (485 - firstW) / stride;
-  var a660 = (660 - firstW) / stride;
-
   // initial plot with no meaningful data
-  plotXy('xyDiv', [x_chrm, y_chrm, z_chrm], wlen, a475, a575, a485, a660);
+  plotXy('xyDiv', rows);
   //plotRGB('rgbDiv');
   //plotLab('labDiv');
   plotExp('expDiv');
+
+  test_color_support();
 
   registerSlider('#customRange');
   registerSimMode();
@@ -397,6 +446,10 @@ d3.csv('ciexyzjv.csv').then(function(rows){
   registerReset('#reset');
   registerGetAns();
 
+  initPage();
+});
+
+function initPage() {
   // init color blindness type
   $('#pickd').prop("checked", true).trigger('change');
   
@@ -411,9 +464,11 @@ d3.csv('ciexyzjv.csv').then(function(rows){
   $('input[type=radio][name=method]').prop('disabled', false);
   $('#customRange').prop('disabled', false);
   $('#reset').prop('disabled', false);
+
   submit('#customRange');
-  init = true;
-});
+
+  page.init = true;
+}
 
 // https://www.sitepoint.com/get-url-parameters-with-javascript/
 const queryString = window.location.search;
@@ -421,20 +476,3 @@ const urlParams = new URLSearchParams(queryString);
 const tab = urlParams.get('tab')
 $('#' + tab + '-tab').trigger('click');
 
-// https://developer.chrome.com/articles/high-definition-css-color-guide/#checking-for-gamut-and-color-space-support
-// This checks browser support of the css syntax
-var srgb_browser = CSS.supports('background: color(srgb 1 1 1)');
-var p3_browser = CSS.supports('background: color(display-p3 1 1 1)');
-var rec2020_browser = CSS.supports('background: color(rec2020 1 1 1)');
-
-// This checks display support (using the current ICC profile)
-var srgb_display = window.matchMedia('(color-gamut: srgb)').matches;
-var p3_display = window.matchMedia('(color-gamut: p3)').matches;
-var rec2020_display = window.matchMedia('(color-gamut: rec2020)').matches;
-
-$('#bsrgb').html(srgb_browser ? '&#10003;' : '');
-$('#bp3').html(p3_browser ? '&#10003;' : '');
-$('#b2020').html(rec2020_browser ? '&#10003;' : '');
-$('#dsrgb').html(srgb_display ? '&#10003;' : '');
-$('#dp3').html(p3_display ? '&#10003;' : '');
-$('#d2020').html(rec2020_display ? '&#10003;' : '');

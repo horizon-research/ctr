@@ -120,10 +120,41 @@ function plotExp(plotId) {
   return plot;
 }
 
-function plotXy(plotId, chrm, wlen, a475, a575, a485, a660) {
+function plotXy(plotId, rows) {
+  function unpack(rows, key, toNum) {
+    return rows.map(function(row) {
+        if (toNum == false) return row[key];
+        else return parseFloat(row[key]);
+      });
+  }
+
+  function range(start, end, stride) {
+    return Array((end - start) / stride + 1).fill().map((_, idx) => start + idx*stride)
+  }
+
+  var stride = 5;
+
+  wlen = unpack(rows, 'wavelength');
+  var firstW = wlen[0];
+  var lastW = wlen[wlen.length - 1];
+
+  var x_data = range(firstW, lastW, stride);
+
+  x_cmf = unpack(rows, 'x');
+  y_cmf = unpack(rows, 'y');
+  z_cmf = unpack(rows, 'z');
+
+  var x_chrm = math.dotDivide(x_cmf, math.add(x_cmf, y_cmf, z_cmf));
+  var y_chrm = math.dotDivide(y_cmf, math.add(x_cmf, y_cmf, z_cmf));
+
+  var a475 = (475 - firstW) / stride;
+  var a575 = (575 - firstW) / stride;
+  var a485 = (485 - firstW) / stride;
+  var a660 = (660 - firstW) / stride;
+
   var xyTrace = {
-    x: chrm[0],
-    y: chrm[1],
+    x: x_chrm,
+    y: y_chrm,
     text: wlen,
     mode: 'lines+markers',
     line: {
@@ -199,8 +230,8 @@ function plotXy(plotId, chrm, wlen, a475, a575, a485, a660) {
 
   // Brettel projection planes
   var isochrome_line_pd = {
-    x: [chrm[0][a475], 1/3, chrm[0][a575]],
-    y: [chrm[1][a475], 1/3, chrm[1][a575]],
+    x: [x_chrm[a475], 1/3, x_chrm[a575]],
+    y: [y_chrm[a475], 1/3, y_chrm[a575]],
     text: ['475 nm', 'EEW', '575 nm'],
     mode: 'lines+markers',
     marker: {
@@ -224,8 +255,8 @@ function plotXy(plotId, chrm, wlen, a475, a575, a485, a660) {
   };
 
   var isochrome_line_tri = {
-    x: [chrm[0][a485], 1/3, chrm[0][a660]],
-    y: [chrm[1][a485], 1/3, chrm[1][a660]],
+    x: [x_chrm[a485], 1/3, x_chrm[a660]],
+    y: [y_chrm[a485], 1/3, y_chrm[a660]],
     text: ['485 nm', 'EEW', '660 nm'],
     mode: 'lines+markers',
     marker: {

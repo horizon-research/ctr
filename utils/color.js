@@ -90,7 +90,7 @@ var confusion_lines_xy = get_confusion_lines_xy();
 
 function get_proj_mat() {
   // https://daltonlens.org/understanding-cvd-simulation/
-  if (simMethod == 1) {
+  if (page.simMethod == 1) {
     // Viénot 1999 (one plane); an approximation of Brettel 1997 (two planes).
     // for protanopia and deuteranopia they use the black-blue-yellow-white plane;
     // for tritanopia the paper didn't say what to do here we simply use black-red-cyan-white plane.
@@ -244,16 +244,15 @@ function normalize(vec) {
 }
 
 function project(colors_LMS) {
-  // TODO: make those global vars local here
   // in input each column is a color
 
-  if (simMethod == 1) {
+  if (page.simMethod == 1) {
     // one plane
-    return math.multiply(proj_mat[type], colors_LMS);
+    return math.multiply(proj_mat[page.type], colors_LMS);
   } else {
     // two planes
-    var outColors1 = math.multiply(proj_mat[type], colors_LMS);
-    var outColors2 = math.multiply(proj_mat[type + 3], colors_LMS);
+    var outColors1 = math.multiply(proj_mat[page.type], colors_LMS);
+    var outColors2 = math.multiply(proj_mat[page.type + 3], colors_LMS);
     var outColors = [];
 
     var whiteLMS = math.multiply(RGB2lms, [1, 1, 1]);
@@ -264,10 +263,10 @@ function project(colors_LMS) {
       var M = colors_LMS[1][i];
       var S = colors_LMS[2][i];
 
-      if (type == 0) {
+      if (page.type == 0) {
         if (S/M < wS/wM) mask = 0;
         else mask = 1;
-      } else if (type == 1) {
+      } else if (page.type == 1) {
         if (S/L < wS/wL) mask = 0;
         else mask = 1;
       } else {
@@ -336,7 +335,7 @@ function dichromatic_gamut_mapping(colors, mode) {
       continue;
     }
 
-    var line = confusion_lines[type];
+    var line = confusion_lines[page.type];
     var hit = Number.MAX_VALUE;
     var hit_pos = [0, 0, 0];
 
