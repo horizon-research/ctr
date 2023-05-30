@@ -10,25 +10,6 @@ function updatePlot(theta, plotId_rgb, plotId_lab, plotId_xy, action) {
   var lab_plot = document.getElementById(plotId_lab);
   var xy_plot = document.getElementById(plotId_xy);
 
-  function rotate_colors(mapping) {
-    /* perform the rotation */
-    var u = 1/Math.sqrt(3)
-    var cos = Math.cos(theta)
-    var sin = Math.sin(theta)
-
-    var rotMat = [
-      [cos + u*u*(1-cos), u*u*(1-cos)-u*sin, u*u*(1-cos)+u*sin],
-      [u*u*(1-cos)+u*sin, cos+u*u*(1-cos), u*u*(1-cos)-u*sin],
-      [u*u*(1-cos)-u*sin, u*u*(1-cos)+u*sin, cos+u*u*(1-cos)]
-    ];
-
-    // TODO: rotated colors might be out of HVS gamut; we should black out those colors too
-    // this is the actual position without mapping
-    state.rotate(rotMat);
-
-    state.dichromatic_gamut_mapping(state.rotColors, mapping);
-  }
-
   function update_rgb(rotColors_css, simColors_css) {
     var rotPoints_RGB = math.transpose(state.rotColorsMapped.map(c => c.linear_srgb));
     var simPoints_RGB = math.transpose(state.simColors.map(c => c.linear_srgb));
@@ -104,9 +85,12 @@ function updatePlot(theta, plotId_rgb, plotId_lab, plotId_xy, action) {
   }
 
   // state.rotColors now has the rotated colors
+  state.rotate_colors(theta);
   // state.rotColorsMapped has gamut-mapped rotated colors
-  rotate_colors(1); // 0 for no mapping; 1 for clipping; 2 for confusion line mapping
+  state.dichromatic_gamut_mapping(state.rotColors, 1); // 0 for no mapping; 1 for clipping; 2 for confusion line mapping
+  // state.simColors has simulated, gamut-mapped rotated colors
   state.simulate();
+
   // Convention: in |Points| each color is a column and in |Colors| each color is a row
   var rotColors_css = state.rotColorsMapped.map(c => c.legacy_rgb_css);
   var simColors_css = state.simColors.map(c => c.legacy_rgb_css);

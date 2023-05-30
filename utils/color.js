@@ -501,7 +501,9 @@ class discTestState {
     var deltaG = deltaLUT[this.testColor.srgb[1]];
     var deltaB = deltaLUT[this.testColor.srgb[2]];
   
-    this.step2 = Math.min(deltaR / Math.abs(line_RGB[0]), deltaG / Math.abs(line_RGB[1]), deltaB / Math.abs(line_RGB[2]));
+    this.step2 = Math.min(deltaR / Math.abs(line_RGB[0]),
+                          deltaG / Math.abs(line_RGB[1]),
+                          deltaB / Math.abs(line_RGB[2]));
   }
 
   // take in a set of colorObj (not a pure numerical array)
@@ -514,18 +516,30 @@ class discTestState {
     return math.multiply(transMat, math.transpose(colors_in_linear_srgb));
   }
 
-  rotate(rotMat) {
-    var rotated_colors_col = this.geoTrans(rotMat, this.colors);
-    var rotated_colors_row = math.transpose(rotated_colors_col);
-
-    this.rotColors = rotated_colors_row.map(c => new colorObj(c, 'linear_srgb'));
-  }
-
   dichromatic_gamut_mapping(colors, mode) {
     var colors_value = colors.map(color => color.linear_srgb);
     var mapped_colors_value = dichromatic_gamut_mapping(colors_value, mode);
 
     this.rotColorsMapped = mapped_colors_value.map(c => new colorObj(c, 'linear_srgb'));
+  }
+
+  rotate_colors(theta) {
+    var u = 1/Math.sqrt(3)
+    var cos = Math.cos(theta)
+    var sin = Math.sin(theta)
+
+    var rotMat = [
+      [cos + u*u*(1-cos), u*u*(1-cos)-u*sin, u*u*(1-cos)+u*sin],
+      [u*u*(1-cos)+u*sin, cos+u*u*(1-cos), u*u*(1-cos)-u*sin],
+      [u*u*(1-cos)-u*sin, u*u*(1-cos)+u*sin, cos+u*u*(1-cos)]
+    ];
+
+    // TODO: rotated colors might be out of HVS gamut; we should black out those colors too
+    // this is the actual position without mapping
+    var rotated_colors_col = this.geoTrans(rotMat, this.colors);
+    var rotated_colors_row = math.transpose(rotated_colors_col);
+
+    this.rotColors = rotated_colors_row.map(c => new colorObj(c, 'linear_srgb'));
   }
 
   simulate() {
