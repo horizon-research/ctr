@@ -225,8 +225,8 @@ function plotXy(plotId, rows) {
   };
 
   var isochrome_line_tri_single = {
-    x: [R[0], W[0], C[0]C)],
-    y: [R[1], W[1], C[1]C)],
+    x: [R[0], W[0], C[0]],
+    y: [R[1], W[1], C[1]],
     text: ['R', 'W', 'C'],
     mode: 'lines+markers',
     marker: {

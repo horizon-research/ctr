@@ -188,8 +188,8 @@ function registerReset(resetId) {
 }
 
 function genTestColor(mode) {
-  // TODO: the direction should be sampled
-  var line_RGB = confusion_lines[1]; // D line in RGB
+  // TODO: should also accommodate other blindness types
+  var line_RGB = state.confusion_lines_rgb[1]; // D line in RGB
   var testColor;
 
   if (mode == 0) {
@@ -463,21 +463,7 @@ class pageObj {
   set proj_mat(v) {
     this._proj_mat = v;
   }
-
-  toCSS(c) {
-    // TODO: for now uses srgb, because plotly doesn't accept others
-    if (this.cs == 0) {
-      return c.legacy_rgb_css;
-    } else if (this.cs == 1) {
-      return c.legacy_rgb_css;
-    } else if (this.cs == 2) {
-      return c.legacy_rgb_css;
-    }
-  }
 }
-
-var page = new pageObj();
-var state = new discTestState();
 
 function test_color_support() {
   // https://developer.chrome.com/articles/high-definition-css-color-guide/#checking-for-gamut-and-color-space-support
@@ -502,15 +488,26 @@ function test_color_support() {
   page.hasP3 = p3_browser && p3_display;
   page.hasRec2020 = rec2020_browser && rec2020_display;
 
+  // TODO: better logic (e.g., use P3 if it's supported)
   page.cs = 1;
 }
 
+var page, state;
+
 d3.csv('ciexyzjv.csv').then(function(rows){
+  initPage();
+
   // initial plot with no meaningful data
   plotXy('xyDiv', rows);
   //plotRGB('rgbDiv');
   //plotLab('labDiv');
   plotExp('expDiv');
+
+  submit('#customRange');
+});
+
+function initPage() {
+  page = new pageObj();
 
   test_color_support();
 
@@ -521,27 +518,20 @@ d3.csv('ciexyzjv.csv').then(function(rows){
   registerReset('#reset');
   registerGetAns();
 
-  initPage();
-});
-
-function initPage() {
   // init color blindness type
   $('#pickd').prop("checked", true).trigger('change');
-  
   // init simulation method
   $('#m2').prop("checked", true).trigger('change');
-  
   // choose to show actual colors
   $('#yes').prop("checked", true).trigger('change');
-  
+
   // set the mode to play and update the plot with the initial setting
   $('input[type=radio][name=sim]').prop('disabled', false);
   $('input[type=radio][name=method]').prop('disabled', false);
   $('#customRange').prop('disabled', false);
   $('#reset').prop('disabled', false);
 
-  submit('#customRange');
-
+  state = new discTestState();
   page.init = true;
 }
 

@@ -205,7 +205,7 @@ class colorObj {
     this._srgb = this._norm_srgb.map(c => quantize(c));
     this._lms = math.multiply(color_consts.lin_sRGB_to_LMS, this._linear_srgb);
     this._xyz = math.multiply(color_consts.lin_sRGB_to_XYZ, this._linear_srgb);
-    this._xy = math.divide(this._xyz, math.sum(this._xyz));
+    this._xy = math.divide(this._xyz, math.sum(this._xyz)).slice(0, 2);
     this._linear_p3 = math.multiply(color_consts.lin_sRGB_to_lin_P3, this._linear_srgb);
     this._norm_p3 = this._linear_p3.map(c => applyGamma(c));
     this._p3 = this._linear_p3.map(c => quantize(applyGamma(c), 10));
@@ -365,6 +365,7 @@ class discTestState {
 
     for (var t of [0, 1, 2]) {
       for (var p of [[1, 0, 0], [0, 1, 0], [0, 0, 1]]) {
+        // TODO: srgb is fine, since the lines in xy won't change
         var line_RGB = this.confusion_lines_rgb[t];
         var p0_RGB = new colorObj(math.add(p, math.multiply(line_RGB, 0.2)), 'v_rgb');
         var p0_xy = p0_RGB.xy;
@@ -381,6 +382,7 @@ class discTestState {
 	// TODO: the idea is to make sure in each step at least one channel changes
 	// by setting the step size based on the first reversal color, but the
 	// implementation using deltaLUT is a hack and for now works only for sRGB
+    // TODO: there are a few uses of this line. should be part of the test object
     var line_RGB = this.confusion_lines_rgb[1]; // D line in RGB
     var deltaR = deltaLUT_8b[this.testColor.srgb[0]];
     var deltaG = deltaLUT_8b[this.testColor.srgb[1]];
