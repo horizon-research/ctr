@@ -542,4 +542,3 @@ class discTestState {
   }
 }
 
-state = new discTestState();

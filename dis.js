@@ -477,7 +477,7 @@ class pageObj {
 }
 
 var page = new pageObj();
-var state;
+var state = new discTestState();
 
 function test_color_support() {
   // https://developer.chrome.com/articles/high-definition-css-color-guide/#checking-for-gamut-and-color-space-support
