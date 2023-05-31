@@ -1,3 +1,5 @@
+var color_consts = new cConst(true);
+
 var redColor = '#FF0000';
 var greenColor = '#00FF00';
 var blueColor = '#0000FF';
@@ -61,9 +63,9 @@ function get_confusion_lines() {
   //var t_line = [0.1428342021, -0.1413451732, 0.9796019256];
 
   // vectors for confusion lines (derived using lms2RGB matrix) in RGB
-  var p_line = normalize(math.multiply(lms2RGB, [1, 0, 0]));
-  var d_line = normalize(math.multiply(lms2RGB, [0, 1, 0]));
-  var t_line = normalize(math.multiply(lms2RGB, [0, 0, 1]));
+  var p_line = normalize(math.multiply(color_consts.LMS_to_lin_sRGB, [1, 0, 0]));
+  var d_line = normalize(math.multiply(color_consts.LMS_to_lin_sRGB, [0, 1, 0]));
+  var t_line = normalize(math.multiply(color_consts.LMS_to_lin_sRGB, [0, 0, 1]));
 
   return [p_line, d_line, t_line];
 }
@@ -77,8 +79,8 @@ function get_confusion_lines_xy() {
     for (p of [[1, 0, 0], [0, 1, 0], [0, 0, 1]]) {
       var line_RGB = confusion_lines[t];
       var p0_RGB = math.add(p, math.multiply(line_RGB, 0.2));
-      var p0_xy = XYZ2xy(math.multiply(RGB2xyz, p0_RGB));
-      var p1_xy = XYZ2xy(math.multiply(RGB2xyz, p));
+      var p0_xy = XYZ2xy(math.multiply(color_consts.lin_sRGB_to_XYZ, p0_RGB));
+      var p1_xy = XYZ2xy(math.multiply(color_consts.lin_sRGB_to_XYZ, p));
       lines.push(normalize(math.subtract(p1_xy, p0_xy)));
     }
   }
@@ -94,11 +96,11 @@ function get_proj_mat() {
     // Viénot 1999 (one plane); an approximation of Brettel 1997 (two planes).
     // for protanopia and deuteranopia they use the black-blue-yellow-white plane;
     // for tritanopia the paper didn't say what to do here we simply use black-red-cyan-white plane.
-    var sRGBWhite = math.multiply(get_RGB2lms(), [1, 1, 1]);
-    var sRGBBlue = math.multiply(get_RGB2lms(), [0, 0, 1]);
-    var sRGBRed = math.multiply(get_RGB2lms(), [1, 0, 0]);
-    var sRGBYellow = math.multiply(get_RGB2lms(), [1, 1, 0]);
-    var sRGBCyan = math.multiply(get_RGB2lms(), [0, 1, 1]);
+    var sRGBWhite = math.multiply(color_consts.lin_sRGB_to_LMS, [1, 1, 1]);
+    var sRGBBlue = math.multiply(color_consts.lin_sRGB_to_LMS, [0, 0, 1]);
+    var sRGBRed = math.multiply(color_consts.lin_sRGB_to_LMS, [1, 0, 0]);
+    var sRGBYellow = math.multiply(color_consts.lin_sRGB_to_LMS, [1, 1, 0]);
+    var sRGBCyan = math.multiply(color_consts.lin_sRGB_to_LMS, [0, 1, 1]);
 
     var p_norm1 = math.cross(sRGBBlue, sRGBYellow);
     var d_norm1 = p_norm1;
@@ -112,7 +114,7 @@ function get_proj_mat() {
   } else {
     // Brettel 1997 (two planes).
     // in LMS space (transformed from JV-modified XYZ)
-    var sRGBWhite = math.multiply(get_RGB2lms(), [1, 1, 1]);
+    var sRGBWhite = math.multiply(color_consts.lin_sRGB_to_LMS, [1, 1, 1]);
     var aWhite = aEEW_lms; // (Brettel 97 uses EEW and Vienot 99 uses sRGBWhite)
 
     var p_norm1 = math.cross(aWhite, a475_lms);
@@ -255,7 +257,7 @@ function project(colors_LMS) {
     var outColors2 = math.multiply(proj_mat[page.type + 3], colors_LMS);
     var outColors = [];
 
-    var whiteLMS = math.multiply(RGB2lms, [1, 1, 1]);
+    var whiteLMS = math.multiply(color_consts.lin_sRGB_to_LMS, [1, 1, 1]);
     var wL = whiteLMS[0], wM = whiteLMS[1], wS = whiteLMS[2];
 
     for (var i = 0; i < colors_LMS[0].length; i++) {
@@ -383,6 +385,8 @@ class colorObj {
     this._xy = null;
     this._lms = null;
     this._lab = null;
+    this._p3 = null;
+    this._linear_p3 = null;
 
     // _space:
     // norm_srgb: [0, 1] with gamma
@@ -395,15 +399,21 @@ class colorObj {
     } else if (this.space == 'norm_srgb') {
       this._linear_srgb = this.value.map(c => removeGamma(c));
     } else if (this.space == 'lms') {
-      this._linear_srgb = math.multiply(lms2RGB, this.value);
+      this._linear_srgb = math.multiply(color_consts.LMS_to_lin_sRGB, this.value);
     } else if (this.space == 'xyz') {
-      this._linear_srgb = math.multiply(xyz2RGB, this.value);
+      this._linear_srgb = math.multiply(color_consts.XYZ_to_lin_sRGB, this.value);
+    } else if (this.space == 'linear_p3') {
+      this._linear_srgb = math.multiply(color_consts.lin_P3_to_lin_sRGB, this.value);
+    } else if (this.space == 'p3') {
+      this._linear_srgb = this.value.map(c => math.multiply(color_consts.lin_P3_to_lin_sRGB, removeGamma(c/255)));
     }
     this._norm_srgb = this._linear_srgb.map(c => applyGamma(c));
     this._srgb = this._norm_srgb.map(c => quantize(c));
-    this._lms = math.multiply(RGB2lms, this._linear_srgb);
-    this._xyz = math.multiply(RGB2xyz, this._linear_srgb);
+    this._lms = math.multiply(color_consts.lin_sRGB_to_LMS, this._linear_srgb);
+    this._xyz = math.multiply(color_consts.lin_sRGB_to_XYZ, this._linear_srgb);
     this._xy = math.divide(this._xyz, math.sum(this._xyz));
+    this._linear_p3 = math.multiply(color_consts.lin_sRGB_to_lin_P3, this._linear_srgb);
+    this._p3 = this._linear_p3.map(c => quantize(applyGamma(c), 10));
     // TODO: this is problematic since Lab is defined over CIE 1931 XYZ but we use JV XYZ
     // also we don't allow create colorObj in Lab
     var c = new Color("srgb-linear", this._linear_srgb);
@@ -444,6 +454,14 @@ class colorObj {
 
   get lab() {
     return this._lab;
+  }
+
+  get p3() {
+    return this._p3;
+  }
+
+  get linear_p3() {
+    return this._linear_p3;
   }
 
   get linear_srgb_css() {
@@ -496,9 +514,9 @@ class discTestState {
 	// by setting the step size based on the first reversal color, but the
 	// implementation using deltaLUT is a hack and for now works only for sRGB
     var line_RGB = confusion_lines[1]; // D line in RGB
-    var deltaR = deltaLUT[this.testColor.srgb[0]];
-    var deltaG = deltaLUT[this.testColor.srgb[1]];
-    var deltaB = deltaLUT[this.testColor.srgb[2]];
+    var deltaR = deltaLUT_8b[this.testColor.srgb[0]];
+    var deltaG = deltaLUT_8b[this.testColor.srgb[1]];
+    var deltaB = deltaLUT_8b[this.testColor.srgb[2]];
   
     this.step2 = Math.min(deltaR / Math.abs(line_RGB[0]),
                           deltaG / Math.abs(line_RGB[1]),
