@@ -1,5 +1,5 @@
 class cConst {
-  constructor(mode) {
+  constructor(useJV) {
     // XYZ <--> LMS mats based on Smith & Pokorny using Judd corrected XYZ (used by Brettel 1997 & Viénot 1999)
     // http://cvrl.ioo.ucl.ac.uk/database/text/cones/sp.htm
     var JV_XYZ_to_SP_LMS = [[0.15514, 0.54312, -0.03286], [-0.15514, 0.45684, 0.03286], [0, 0, 0.01608]];
@@ -20,7 +20,7 @@ class cConst {
                            ];
 
     // expose to externals
-    if (mode == true) {
+    if (useJV == true) {
       this.lin_sRGB_to_XYZ = linear_sRGB_to_JV_XYZ;
       this.lin_sRGB_to_LMS = math.multiply(JV_XYZ_to_SP_LMS, this.lin_sRGB_to_XYZ);
       this.XYZ_to_LMS = JV_XYZ_to_SP_LMS;
@@ -46,7 +46,7 @@ class cConst {
     this.aEEW_lms = [14.30506543, 7.190126944, 0.3379046085];
   }
 }
-var color_consts = new cConst(false);
+var color_consts = new cConst(true);
 
 var deltaLUT_8b = [
 0.0005, //0.0003267973856

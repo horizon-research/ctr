@@ -489,7 +489,7 @@ function test_color_support() {
   page.hasRec2020 = rec2020_browser && rec2020_display;
 
   // TODO: better logic (e.g., use P3 if it's supported)
-  page.cs = 1;
+  page.cs = 0;
 }
 
 var page, state;
