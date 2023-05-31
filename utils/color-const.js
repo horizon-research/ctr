@@ -23,9 +23,13 @@ class cConst {
     if (mode == true) {
       this.lin_sRGB_to_XYZ = linear_sRGB_to_JV_XYZ;
       this.lin_sRGB_to_LMS = math.multiply(JV_XYZ_to_SP_LMS, this.lin_sRGB_to_XYZ);
+      this.XYZ_to_LMS = JV_XYZ_to_SP_LMS;
+      this.LMS_to_XYZ = math.inv(this.XYZ_to_LMS);
     } else {
       this.lin_sRGB_to_XYZ = linear_sRGB_to_CIEXYZ_D65;
       this.lin_sRGB_to_LMS = math.multiply(CIEXYZ_to_LMS_D65, this.lin_sRGB_to_XYZ);
+      this.XYZ_to_LMS = CIEXYZ_to_LMS_D65;
+      this.LMS_to_XYZ = math.inv(this.XYZ_to_LMS);
     }
     this.lin_P3_to_XYZ = P3_to_CIEXYZ_D65;
     this.XYZ_to_lin_sRGB = math.inv(this.lin_sRGB_to_XYZ);
@@ -33,8 +37,16 @@ class cConst {
     this.XYZ_to_lin_P3 = math.inv(this.lin_P3_to_XYZ);
     this.lin_P3_to_lin_sRGB = math.multiply(this.XYZ_to_lin_sRGB, this.lin_P3_to_XYZ);
     this.lin_sRGB_to_lin_P3 = math.inv(this.lin_P3_to_lin_sRGB);
+    this.LMS_to_lin_P3 = math.multiply(this.XYZ_to_lin_P3, this.LMS_to_XYZ);
+
+    this.a475_lms = [0.0509384206, 0.0618970658, 0.015150576];
+    this.a485_lms = [0.0818313433, 0.0880318619, 0.009429312];
+    this.a575_lms = [0.6281339073, 0.2874094695, 0.000031687248];
+    this.a660_lms = [0.05820210417, 0.002795455831, 0.00000019144848];
+    this.aEEW_lms = [14.30506543, 7.190126944, 0.3379046085];
   }
 }
+var color_consts = new cConst(false);
 
 var deltaLUT_8b = [
 0.0005, //0.0003267973856

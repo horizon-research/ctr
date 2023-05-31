@@ -1,156 +1,3 @@
-var color_consts = new cConst(true);
-
-var redColor = '#FF0000';
-var greenColor = '#00FF00';
-var blueColor = '#0000FF';
-var magentaColor = '#FF00FF';
-var cyanColor = '#00FFFF';
-var yellowColor = '#FFFF00';
-
-var blackColor = '#000000';
-var greyColor = '#888888';
-var purpleColor = '#5c32a8';
-var brightYellowColor = '#fcd303'; 
-var orangeColor = '#DC7B2E';
-var blueGreenColor = '#63BFAB'; 
-var oRedColor = 'rgba(218, 37, 0, 0.3)';
-var oGreenColor = 'rgba(0, 143, 0, 0.3)';
-var oBlueColor = 'rgba(1, 25, 147, 0.5)';
-
-/* Constants */
-
-var a475_lms = [0.0509384206, 0.0618970658, 0.015150576];
-var a485_lms = [0.0818313433, 0.0880318619, 0.009429312];
-var a575_lms = [0.6281339073, 0.2874094695, 0.000031687248];
-var a660_lms = [0.05820210417, 0.002795455831, 0.00000019144848];
-var aEEW_lms = [14.30506543, 7.190126944, 0.3379046085];
-
-// XYZ <--> LMS mats based on Smith & Pokorny using Judd corrected XYZ (used by Brettel 1997 & Viénot 1999)
-// http://cvrl.ioo.ucl.ac.uk/database/text/cones/sp.htm
-var xyz2lms = [[0.15514, 0.54312, -0.03286], [-0.15514, 0.45684, 0.03286], [0, 0, 0.01608]];
-var RGB2xyz = [[40.9568, 35.5041, 17.9167], [21.3389, 70.6743, 7.9868], [1.86297, 11.462, 91.2367]];
-
-// XYZ <--> LMS mats using HPE
-// (used by https://ixora.io/projects/colorblindness/color-blindness-simulation-research/)
-//var hpe_xyz2lms_eew = [[0.3897,0.689,-0.0787], [-0.2298,1.1834,0.0464], [0,0,1]]; // EEW normalized
-//var hpe_xyz2lms_d65 = [[0.4002,0.7076,-0.0808], [-0.2263,1.1653,0.0457], [0,0,0.9182]]; // D65 adapted
-//var xyz2lms = hpe_xyz2lms_d65;
-// this is D65 adapted
-//var RGB2xyz = [[0.4124564, 0.3575761, 0.1804375], [0.2126729, 0.7151522, 0.0721750], [0.0193339, 0.1191920, 0.9503041]];
-
-// TODO: clean this up
-function get_RGB2lms() {
-  var RGB2lms = math.multiply(xyz2lms, RGB2xyz);
-  return RGB2lms;
-}
-
-var RGB2lms = get_RGB2lms();
-var lms2RGB = math.inv(RGB2lms);
-var XYZ2RGB = math.inv(RGB2xyz);
-
-function XYZ2xy(XYZ) {
-  var XYZ_sum = math.add(XYZ[0], XYZ[1], XYZ[2]);
-  var x = math.dotDivide(XYZ[0], XYZ_sum);
-  var y = math.dotDivide(XYZ[1], XYZ_sum);
-
-  return [x, y]
-}
-
-function get_confusion_lines() {
-  // vectors for confusion lines (derived from Sharma LUTs)
-  //var p_line = [0.9795006397, -0.2013704401, 0.005333160206];
-  //var d_line = [-0.8959739281, 0.4425391762, -0.03727999099];
-  //var t_line = [0.1428342021, -0.1413451732, 0.9796019256];
-
-  // vectors for confusion lines (derived using lms2RGB matrix) in RGB
-  var p_line = normalize(math.multiply(color_consts.LMS_to_lin_sRGB, [1, 0, 0]));
-  var d_line = normalize(math.multiply(color_consts.LMS_to_lin_sRGB, [0, 1, 0]));
-  var t_line = normalize(math.multiply(color_consts.LMS_to_lin_sRGB, [0, 0, 1]));
-
-  return [p_line, d_line, t_line];
-}
-
-var confusion_lines = get_confusion_lines();
-
-function get_confusion_lines_xy() {
-  var lines = [];
-
-  for (t of [0, 1, 2]) {
-    for (p of [[1, 0, 0], [0, 1, 0], [0, 0, 1]]) {
-      var line_RGB = confusion_lines[t];
-      var p0_RGB = math.add(p, math.multiply(line_RGB, 0.2));
-      var p0_xy = XYZ2xy(math.multiply(color_consts.lin_sRGB_to_XYZ, p0_RGB));
-      var p1_xy = XYZ2xy(math.multiply(color_consts.lin_sRGB_to_XYZ, p));
-      lines.push(normalize(math.subtract(p1_xy, p0_xy)));
-    }
-  }
-
-  return lines;
-}
-
-var confusion_lines_xy = get_confusion_lines_xy();
-
-function get_proj_mat() {
-  // https://daltonlens.org/understanding-cvd-simulation/
-  if (page.simMethod == 1) {
-    // Viénot 1999 (one plane); an approximation of Brettel 1997 (two planes).
-    // for protanopia and deuteranopia they use the black-blue-yellow-white plane;
-    // for tritanopia the paper didn't say what to do here we simply use black-red-cyan-white plane.
-    var sRGBWhite = math.multiply(color_consts.lin_sRGB_to_LMS, [1, 1, 1]);
-    var sRGBBlue = math.multiply(color_consts.lin_sRGB_to_LMS, [0, 0, 1]);
-    var sRGBRed = math.multiply(color_consts.lin_sRGB_to_LMS, [1, 0, 0]);
-    var sRGBYellow = math.multiply(color_consts.lin_sRGB_to_LMS, [1, 1, 0]);
-    var sRGBCyan = math.multiply(color_consts.lin_sRGB_to_LMS, [0, 1, 1]);
-
-    var p_norm1 = math.cross(sRGBBlue, sRGBYellow);
-    var d_norm1 = p_norm1;
-    var t_norm1 = math.cross(sRGBRed, sRGBCyan);
-
-    var p_proj_mat = [[0, -p_norm1[1]/p_norm1[0], -p_norm1[2]/p_norm1[0]], [0, 1, 0], [0, 0, 1]];
-    var d_proj_mat = [[1, 0, 0], [-d_norm1[0]/d_norm1[1], 0, -d_norm1[2]/d_norm1[1]], [0, 0, 1]];
-    var t_proj_mat = [[1, 0, 0], [0, 1, 0], [-t_norm1[0]/t_norm1[2], -t_norm1[1]/t_norm1[2], 0]];
-
-    return [p_proj_mat, d_proj_mat, t_proj_mat];
-  } else {
-    // Brettel 1997 (two planes).
-    // in LMS space (transformed from JV-modified XYZ)
-    var sRGBWhite = math.multiply(color_consts.lin_sRGB_to_LMS, [1, 1, 1]);
-    var aWhite = aEEW_lms; // (Brettel 97 uses EEW and Vienot 99 uses sRGBWhite)
-
-    var p_norm1 = math.cross(aWhite, a475_lms);
-    var p_norm2 = math.cross(aWhite, a575_lms);
-    var d_norm1 = p_norm1;
-    var d_norm2 = p_norm2;
-    var t_norm1 = math.cross(aWhite, a485_lms);
-    var t_norm2 = math.cross(aWhite, a660_lms);
-
-    // the results are close to values calculated by https://daltonlens.org/understanding-cvd-simulation/
-    var p_proj_mat1 = [[0, -p_norm1[1]/p_norm1[0], -p_norm1[2]/p_norm1[0]], [0, 1, 0], [0, 0, 1]]; // 475
-    var d_proj_mat1 = [[1, 0, 0], [-d_norm1[0]/d_norm1[1], 0, -d_norm1[2]/d_norm1[1]], [0, 0, 1]]; // 475
-    var t_proj_mat1 = [[1, 0, 0], [0, 1, 0], [-t_norm1[0]/t_norm1[2], -t_norm1[1]/t_norm1[2], 0]]; // 485
-
-    var p_proj_mat2 = [[0, -p_norm2[1]/p_norm2[0], -p_norm2[2]/p_norm2[0]], [0, 1, 0], [0, 0, 1]]; // 575
-    var d_proj_mat2 = [[1, 0, 0], [-d_norm2[0]/d_norm2[1], 0, -d_norm2[2]/d_norm2[1]], [0, 0, 1]]; // 575
-    var t_proj_mat2 = [[1, 0, 0], [0, 1, 0], [-t_norm2[0]/t_norm2[2], -t_norm2[1]/t_norm2[2], 0]]; // 660
-
-    return [p_proj_mat1, d_proj_mat1, t_proj_mat1, p_proj_mat2, d_proj_mat2, t_proj_mat2];
-  }
-}
-
-// https://stackoverflow.com/questions/1740700/how-to-get-hex-color-value-rather-than-rgb-value
-// It converts 'rgb(255, 255, 255)' to '#FFFFFF'
-const rgb2hex = (rgb) => `#${rgb.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/).slice(1).map(n => parseInt(n, 10).toString(16).padStart(2, '0')).join('')}`
-
-// It converts an array [255, 255, 255] to '#FFFFFF'
-function srgbToHex(c) {
-  function componentToHex(c) {
-    var hex = c.toString(16);
-    return hex.length == 1 ? "0" + hex : hex;
-  }
-
-  return "#" + componentToHex(c[0]) + componentToHex(c[1]) + componentToHex(c[2]);
-}
-
 function quantize(value, bitdepth = 8) {
   return Math.round(value * (Math.pow(2, bitdepth) - 1));
 }
@@ -174,56 +21,7 @@ function removeGamma(color) {
   return out;
 }
 
-// From linear RGB to sRGB in Hex
-// if |clip| true, use the absolute rendering intent to clip
-function RGB2sRGB(color, clip) {
-  var out = [];
-
-  for(var i = 0; i < 3; i++) {
-    out[i] = quantize(applyGamma(color[i]));
-
-    if (clip) {
-      if (out[i] < 0) out[i] = 0;
-      else if (out[i] > 255) out[i] = 255; 
-    } else {
-      if (out[i] < 0 || out[i] > 255)
-        return '#000000';
-    }
-  }
-
-  return srgbToHex(out);
-}
-
-function formatLinearSRGB(color) {
-  // TODO: take care of OOG (or not?)
-  return 'color(srgb-linear '+
-      color[0].toString()+' '+
-      color[1].toString()+' '+
-      color[2].toString()+')';
-}
-
-// From sRGB [0, 1] to linear RGB
-function sRGB2RGB(color) {
-  var out = [];
-  for(var i = 0; i < 3; i++) {
-    out[i] = removeGamma(color[i]);
-  }
-
-  return out;
-}
-
-// From sRGB hex to linear RGB
-function hex2RGB(hex) {
-  var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-  var color = [
-    parseInt(result[1], 16)/255,
-    parseInt(result[2], 16)/255,
-    parseInt(result[3], 16)/255
-  ];
-
-  return sRGB2RGB(color);
-}
-
+// TODO: move it to colorObj
 // https://chir.ag/projects/ntc/
 function sRGB2Name(color) {
   var n_match  = ntc.name(color);
@@ -231,14 +29,6 @@ function sRGB2Name(color) {
   var n_name       = n_match[1]; // This is the text string for the name of the match
   //var n_exactmatch = n_match[2]; // True if exact color match, False if close-match
   return n_name;
-}
-
-function RGBtoLab(rgb_color) {
-  var c0 = new Color("srgb-linear", rgb_color[0]);
-  var c1 = new Color("srgb-linear", rgb_color[1]);
-  var c2 = new Color("srgb-linear", rgb_color[2]);
-
-  return [c0.lab_d65, c1.lab_d65, c2.lab_d65];
 }
 
 function normalize(vec) {
@@ -250,14 +40,14 @@ function project(colors_LMS) {
 
   if (page.simMethod == 1) {
     // one plane
-    return math.multiply(proj_mat[page.type], colors_LMS);
+    return math.multiply(page.proj_mat[page.type], colors_LMS);
   } else {
     // two planes
-    var outColors1 = math.multiply(proj_mat[page.type], colors_LMS);
-    var outColors2 = math.multiply(proj_mat[page.type + 3], colors_LMS);
+    var outColors1 = math.multiply(page.proj_mat[page.type], colors_LMS);
+    var outColors2 = math.multiply(page.proj_mat[page.type + 3], colors_LMS);
     var outColors = [];
 
-    var whiteLMS = math.multiply(color_consts.lin_sRGB_to_LMS, [1, 1, 1]);
+    var whiteLMS = new colorObj([1, 1, 1], 'v_rgb');
     var wL = whiteLMS[0], wM = whiteLMS[1], wS = whiteLMS[2];
 
     for (var i = 0; i < colors_LMS[0].length; i++) {
@@ -288,7 +78,7 @@ function clamp (value, min, max) {
   return Math.min(Math.max(value, min), max);
 };
 
-function dichromatic_gamut_mapping(colors, mode) {
+function dichromatic_gamut_mapping(colors, line, mode) {
   if (mode == 0) return colors;
 
   // mode:
@@ -316,8 +106,6 @@ function dichromatic_gamut_mapping(colors, mode) {
     colors.forEach((color) => {
       for (var j = 0; j < 3; j++) {
         color[j] = clamp(color[j], 0, 1)
-        //if (color[j] < 0) color[j] = 0;
-        //else if (color[j] > 1) color[j] = 1; 
       }
       mapped_colors.push(color);
     });
@@ -337,7 +125,6 @@ function dichromatic_gamut_mapping(colors, mode) {
       continue;
     }
 
-    var line = confusion_lines[page.type];
     var hit = Number.MAX_VALUE;
     var hit_pos = [0, 0, 0];
 
@@ -377,7 +164,11 @@ function dichromatic_gamut_mapping(colors, mode) {
 class colorObj {
   constructor(value, space) {
     this._value = value; // an array
-    this._space = space;
+    if (space == 'v_rgb') {
+      this._space = page.cs ? 'linear_p3' : 'linear_srgb';
+    } else {
+      this._space = space;
+    }
     this._srgb = null;
     this._norm_srgb = null;
     this._linear_srgb = null;
@@ -386,10 +177,11 @@ class colorObj {
     this._lms = null;
     this._lab = null;
     this._p3 = null;
+    this._norm_p3 = null;
     this._linear_p3 = null;
 
     // _space:
-    // norm_srgb: [0, 1] with gamma
+    // norm_srgb: [0, 1] with gamma; this is 'srgb' in CSS Color L4/L5
     // linear_srgb: [0, 1] without gamma
     // srgb: [0, 255] with gamma
     if (this.space == 'srgb') {
@@ -404,6 +196,8 @@ class colorObj {
       this._linear_srgb = math.multiply(color_consts.XYZ_to_lin_sRGB, this.value);
     } else if (this.space == 'linear_p3') {
       this._linear_srgb = math.multiply(color_consts.lin_P3_to_lin_sRGB, this.value);
+    } else if (this.space == 'norm_p3') {
+      this._linear_srgb = this.value.map(c => math.multiply(color_consts.lin_P3_to_lin_sRGB, removeGamma(c)));
     } else if (this.space == 'p3') {
       this._linear_srgb = this.value.map(c => math.multiply(color_consts.lin_P3_to_lin_sRGB, removeGamma(c/255)));
     }
@@ -413,8 +207,9 @@ class colorObj {
     this._xyz = math.multiply(color_consts.lin_sRGB_to_XYZ, this._linear_srgb);
     this._xy = math.divide(this._xyz, math.sum(this._xyz));
     this._linear_p3 = math.multiply(color_consts.lin_sRGB_to_lin_P3, this._linear_srgb);
+    this._norm_p3 = this._linear_p3.map(c => applyGamma(c));
     this._p3 = this._linear_p3.map(c => quantize(applyGamma(c), 10));
-    // TODO: this is problematic since Lab is defined over CIE 1931 XYZ but we use JV XYZ
+    // TODO: this is problematic since Lab is defined over CIE 1931 XYZ but we might use JV XYZ
     // also we don't allow create colorObj in Lab
     var c = new Color("srgb-linear", this._linear_srgb);
     this._lab = c.lab_d65;
@@ -426,6 +221,11 @@ class colorObj {
 
   get value() {
     return this._value;
+  }
+
+  // an interface for either linear_srgb or linear_p3;
+  get v_rgb() {
+    return page.cs ? this.linear_p3 : this.linear_srgb;
   }
 
   get norm_srgb() {
@@ -460,8 +260,24 @@ class colorObj {
     return this._p3;
   }
 
+  get norm_p3() {
+    return this._norm_p3;
+  }
+
   get linear_p3() {
     return this._linear_p3;
+  }
+
+  get v_rgb_css() {
+    return page.cs ? this.p3_css : this.linear_srgb_css;
+  }
+
+  // there is no support for linear P3 in CSS yet
+  get p3_css() {
+    return 'color(display-p3 '+
+        this.norm_p3[0].toString()+' '+
+        this.norm_p3[1].toString()+' '+
+        this.norm_p3[2].toString()+')';
   }
 
   get linear_srgb_css() {
@@ -486,14 +302,24 @@ class colorObj {
   }
 
   get legacy_hex_css() {
+    // It converts an array [255, 255, 255] to '#FFFFFF'
+    function srgbToHex(c) {
+      function componentToHex(c) {
+        var hex = c.toString(16);
+        return hex.length == 1 ? "0" + hex : hex;
+      }
+    
+      return "#" + componentToHex(c[0]) + componentToHex(c[1]) + componentToHex(c[2]);
+    }
+
     return srgbToHex(this.srgb);
   }
 }
 
 // contains the state one baseColor test (multiple testColors)
 class discTestState {
-  constructor(base) {
-    this._baseColor = base; // one single color
+  constructor() {
+    this._baseColor = null; // one single color
     this._testColor = null; // one single color
     this._colors = []; // four initial colors (three test + one base) without rotation; one color per row
     this._rotColors = []; // rotated colors; one color per row
@@ -507,13 +333,55 @@ class discTestState {
     this._numTrials = 1;
     this._step1 = 0.02; // TODO: need to figure out how to better set this
     this._step2 = 0.002; // TODO: need to figure out how to better set this
+
+    this._confusion_lines_lin_srgb = this.get_confusion_lines_lin_srgb();
+    this._confusion_lines_lin_p3 = this.get_confusion_lines_lin_p3();
+    this._confusion_lines_xy = this.get_confusion_lines_xy();
+  }
+
+  get_confusion_lines_lin_srgb() {
+    // vectors for confusion lines (derived from Sharma LUTs)
+    //var p_line = [0.9795006397, -0.2013704401, 0.005333160206];
+    //var d_line = [-0.8959739281, 0.4425391762, -0.03727999099];
+    //var t_line = [0.1428342021, -0.1413451732, 0.9796019256];
+  
+    var p_line = normalize(math.multiply(color_consts.LMS_to_lin_sRGB, [1, 0, 0]));
+    var d_line = normalize(math.multiply(color_consts.LMS_to_lin_sRGB, [0, 1, 0]));
+    var t_line = normalize(math.multiply(color_consts.LMS_to_lin_sRGB, [0, 0, 1]));
+  
+    return [p_line, d_line, t_line];
+  }
+
+  get_confusion_lines_lin_p3() {
+    var p_line = normalize(math.multiply(color_consts.LMS_to_lin_P3, [1, 0, 0]));
+    var d_line = normalize(math.multiply(color_consts.LMS_to_lin_P3, [0, 1, 0]));
+    var t_line = normalize(math.multiply(color_consts.LMS_to_lin_P3, [0, 0, 1]));
+  
+    return [p_line, d_line, t_line];
+  }
+
+  get_confusion_lines_xy() {
+    var lines = [];
+
+    for (var t of [0, 1, 2]) {
+      for (var p of [[1, 0, 0], [0, 1, 0], [0, 0, 1]]) {
+        var line_RGB = this.confusion_lines_rgb[t];
+        var p0_RGB = new colorObj(math.add(p, math.multiply(line_RGB, 0.2)), 'v_rgb');
+        var p0_xy = p0_RGB.xy;
+        var p1_RGB = new colorObj(p, 'v_rgb');
+        var p1_xy = p1_RGB.xy;
+        lines.push(normalize(math.subtract(p1_xy, p0_xy)));
+      }
+    }
+  
+    return lines;
   }
 
   setStep2() {
 	// TODO: the idea is to make sure in each step at least one channel changes
 	// by setting the step size based on the first reversal color, but the
 	// implementation using deltaLUT is a hack and for now works only for sRGB
-    var line_RGB = confusion_lines[1]; // D line in RGB
+    var line_RGB = this.confusion_lines_rgb[1]; // D line in RGB
     var deltaR = deltaLUT_8b[this.testColor.srgb[0]];
     var deltaG = deltaLUT_8b[this.testColor.srgb[1]];
     var deltaB = deltaLUT_8b[this.testColor.srgb[2]];
@@ -525,19 +393,18 @@ class discTestState {
 
   // take in a set of colorObj (not a pure numerical array)
   geoTrans(transMat, fromColors) {
-    // TODO: now assuming we want to transform from linear-srgb; generalize this later
-    var colors_in_linear_srgb = [fromColors[0].linear_srgb,
-                                 fromColors[1].linear_srgb,
-                                 fromColors[2].linear_srgb,
-                                 fromColors[3].linear_srgb]
-    return math.multiply(transMat, math.transpose(colors_in_linear_srgb));
+    var colors_in_linear_rgb = [fromColors[0].v_rgb,
+                                fromColors[1].v_rgb,
+                                fromColors[2].v_rgb,
+                                fromColors[3].v_rgb]
+    return math.multiply(transMat, math.transpose(colors_in_linear_rgb));
   }
 
   dichromatic_gamut_mapping(colors, mode) {
-    var colors_value = colors.map(color => color.linear_srgb);
-    var mapped_colors_value = dichromatic_gamut_mapping(colors_value, mode);
+    var colors_value = colors.map(color => color.v_rgb);
+    var mapped_colors_value = dichromatic_gamut_mapping(colors_value, this.confusion_lines_rgb[page.type], mode);
 
-    this.rotColorsMapped = mapped_colors_value.map(c => new colorObj(c, 'linear_srgb'));
+    this.rotColorsMapped = mapped_colors_value.map(c => new colorObj(c, 'v_rgb'));
   }
 
   rotate_colors(theta) {
@@ -556,7 +423,7 @@ class discTestState {
     var rotated_colors_col = this.geoTrans(rotMat, this.colors);
     var rotated_colors_row = math.transpose(rotated_colors_col);
 
-    this.rotColors = rotated_colors_row.map(c => new colorObj(c, 'linear_srgb'));
+    this.rotColors = rotated_colors_row.map(c => new colorObj(c, 'v_rgb'));
   }
 
   simulate() {
@@ -567,16 +434,19 @@ class discTestState {
     this.simColors = sim_colors_lms.map(c => new colorObj(c, 'lms'));
   }
 
-  get baseColor() {
-    return this._baseColor;
-  }
-
   get scalesAtRevs() {
     return this._scalesAtRevs;
   }
 
   get colors() {
     return this._colors;
+  }
+
+  set baseColor(v) {
+    this._baseColor = v;
+  }
+  get baseColor() {
+    return this._baseColor;
   }
 
   set rotColors(v) {
@@ -662,5 +532,14 @@ class discTestState {
   get step2() {
     return this._step2;
   }
+
+  get confusion_lines_rgb() {
+    return page.cs ? this._confusion_lines_lin_p3 : this._confusion_lines_lin_srgb;
+  }
+
+  get confusion_lines_xy() {
+    return this._confusion_lines_xy;
+  }
 }
 
+state = new discTestState();

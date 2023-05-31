@@ -11,8 +11,8 @@ function updatePlot(theta, plotId_rgb, plotId_lab, plotId_xy, action) {
   var xy_plot = document.getElementById(plotId_xy);
 
   function update_rgb(rotColors_css, simColors_css) {
-    var rotPoints_RGB = math.transpose(state.rotColorsMapped.map(c => c.linear_srgb));
-    var simPoints_RGB = math.transpose(state.simColors.map(c => c.linear_srgb));
+    var rotPoints_RGB = math.transpose(state.rotColorsMapped.map(c => c.v_rgb));
+    var simPoints_RGB = math.transpose(state.simColors.map(c => c.v_rgb));
 
     // update actual colors
     var data_update = {'x': [rotPoints_RGB[0]], 'y': [rotPoints_RGB[1]], 'z': [rotPoints_RGB[2]],
@@ -93,6 +93,7 @@ function updatePlot(theta, plotId_rgb, plotId_lab, plotId_xy, action) {
 
   // Convention: in |Points| each color is a column and in |Colors| each color is a row
   var rotColors_css = state.rotColorsMapped.map(c => c.legacy_rgb_css);
+  //var rotColors_css = state.rotColorsMapped.map(c => 'rgb(25, 100, 170)');
   var simColors_css = state.simColors.map(c => c.legacy_rgb_css);
 
   //update_rgb(rotColors_css, simColors_css);
@@ -103,13 +104,13 @@ function updatePlot(theta, plotId_rgb, plotId_lab, plotId_xy, action) {
 
   /* update square colors */
   if (page.sim) {
-    var temp = state.simColors.map(c => c.linear_srgb_css);
+    var temp = state.simColors.map(c => c.v_rgb_css);
     $('#s11').css('background-color', temp[0]);
     $('#s12').css('background-color', temp[1]);
     $('#s13').css('background-color', temp[2]);
     $('#s14').css('background-color', temp[3]);
   } else {
-    var temp = state.rotColorsMapped.map(c => c.linear_srgb_css);
+    var temp = state.rotColorsMapped.map(c => c.v_rgb_css);
     $('#s11').css('background-color', temp[0]);
     $('#s12').css('background-color', temp[1]);
     $('#s13').css('background-color', temp[2]);
@@ -117,10 +118,10 @@ function updatePlot(theta, plotId_rgb, plotId_lab, plotId_xy, action) {
   }
 
   // good for debugging
-  //$('#s11').text(rotColors_css[0]);
-  //$('#s12').text(rotColors_css[1]);
-  //$('#s13').text(rotColors_css[2]);
-  //$('#s14').text(rotColors_css[3]);
+  $('#s11').text(rotColors_css[0]);
+  $('#s12').text(rotColors_css[1]);
+  $('#s13').text(rotColors_css[2]);
+  $('#s14').text(rotColors_css[3]);
   //$('#n11').text(name1);
   //$('#n12').text(name2);
   //$('#n13').text(name3);
@@ -171,7 +172,7 @@ function registerPickSimMethod() {
       // two planes
       page.simMethod = 0;
     }
-    proj_mat = get_proj_mat();
+    page.proj_mat = page.get_proj_mat();
 
     // automatically update colors and re-plot
     if (page.init) updatePlot($('#customRange').val(), 'rgbDiv', 'labDiv', 'xyDiv', 2);
@@ -193,22 +194,22 @@ function genTestColor(mode) {
 
   if (mode == 0) {
     // sample in xy space using equi-luminance (for trichromats)
-    var p0_RGB = math.add(state.baseColor.linear_srgb, math.multiply(line_RGB, 0.2));
+    var p0_RGB = math.add(state.baseColor.v_rgb, math.multiply(line_RGB, 0.2));
     var p0_xy = XYZ2xy(math.multiply(RGB2xyz, p0_RGB));
-    var p1_xy = XYZ2xy(math.multiply(RGB2xyz, state.baseColor.linear_srgb));
+    var p1_xy = XYZ2xy(math.multiply(RGB2xyz, state.baseColor.v_rgb));
     var dir = normalize(math.subtract(p1_xy, p0_xy));
 
-    var baseColor_xy = XYZ2xy(math.multiply(RGB2xyz, state.baseColor.linear_srgb));
+    var baseColor_xy = XYZ2xy(math.multiply(RGB2xyz, state.baseColor.v_rgb));
     var testColor_xy = math.add(baseColor_xy, math.multiply(dir, state.scale));
-    var baseLum = math.multiply(RGB2xyz[1], state.baseColor.linear_srgb);
+    var baseLum = math.multiply(RGB2xyz[1], state.baseColor.v_rgb);
     var mag = baseLum / testColor_xy[1];
 
     testColor = new colorObj(math.multiply(XYZ2RGB, math.multiply(testColor_xy.concat([1-math.sum(testColor_xy)]), mag)),
-        'linear_srgb');
+        'v_rgb');
   } else if (mode == 1) {
     // sample in RGB
-    testColor = new colorObj(math.add(state.baseColor.linear_srgb, math.multiply(line_RGB, state.scale)),
-        'linear_srgb');
+    testColor = new colorObj(math.add(state.baseColor.v_rgb, math.multiply(line_RGB, state.scale)),
+        'v_rgb');
   }
 
   return testColor;
@@ -231,9 +232,7 @@ function testOneColor(random) {
 
 function submit(rangeId) {
   // set the base color.
-  //var baseColor_sRGB_linear = sRGB2RGB([0.85, 0.5, 0.25]);
-  var baseColor_sRGB_linear = new colorObj([0.85, 0.5, 0.25], 'norm_srgb');
-  state = new discTestState(baseColor_sRGB_linear);
+  state.baseColor = new colorObj([0.85, 0.5, 0.25], 'v_rgb');
 
   $(rangeId).val(0);
   $('.rot-label').html('Rotation Angle (Degree): 0&#176;');
@@ -351,6 +350,55 @@ class pageObj {
     this._hassRGB = false;
     this._hasP3 = false;
     this._hasRec2020 = false;
+    this._cs = null;
+    this._proj_mat = null;
+  }
+
+  get_proj_mat() {
+    // https://daltonlens.org/understanding-cvd-simulation/
+    if (this.simMethod == 1) {
+      // Viénot 1999 (one plane); an approximation of Brettel 1997 (two planes).
+      // for protanopia and deuteranopia they use the black-blue-yellow-white plane;
+      // for tritanopia the paper didn't say what to do here we simply use black-red-cyan-white plane.
+      var RGBWhite = new colorObj([1, 1, 1], 'v_rgb');
+      var RGBBlue = new colorObj([0, 0, 1], 'v_rgb');
+      var RGBRed = new colorObj([1, 0, 0], 'v_rgb');
+      var RGBYellow = new colorObj([1, 1, 0], 'v_rgb');
+      var RGBCyan = new colorObj([0, 1, 1], 'v_rgb');
+  
+      var p_norm1 = math.cross(RGBBlue, RGBYellow);
+      var d_norm1 = p_norm1;
+      var t_norm1 = math.cross(RGBRed, RGBCyan);
+  
+      var p_proj_mat = [[0, -p_norm1[1]/p_norm1[0], -p_norm1[2]/p_norm1[0]], [0, 1, 0], [0, 0, 1]];
+      var d_proj_mat = [[1, 0, 0], [-d_norm1[0]/d_norm1[1], 0, -d_norm1[2]/d_norm1[1]], [0, 0, 1]];
+      var t_proj_mat = [[1, 0, 0], [0, 1, 0], [-t_norm1[0]/t_norm1[2], -t_norm1[1]/t_norm1[2], 0]];
+  
+      return [p_proj_mat, d_proj_mat, t_proj_mat];
+    } else {
+      // Brettel 1997 (two planes).
+      // in LMS space (transformed from JV-modified XYZ)
+      var RGBWhite = new colorObj([1, 1, 1], 'v_rgb');
+      var aWhite = color_consts.aEEW_lms; // (Brettel 97 uses EEW and Vienot 99 uses sRGBWhite)
+  
+      var p_norm1 = math.cross(aWhite, color_consts.a475_lms);
+      var p_norm2 = math.cross(aWhite, color_consts.a575_lms);
+      var d_norm1 = p_norm1;
+      var d_norm2 = p_norm2;
+      var t_norm1 = math.cross(aWhite, color_consts.a485_lms);
+      var t_norm2 = math.cross(aWhite, color_consts.a660_lms);
+  
+      // the results are close to values calculated by https://daltonlens.org/understanding-cvd-simulation/
+      var p_proj_mat1 = [[0, -p_norm1[1]/p_norm1[0], -p_norm1[2]/p_norm1[0]], [0, 1, 0], [0, 0, 1]]; // 475
+      var d_proj_mat1 = [[1, 0, 0], [-d_norm1[0]/d_norm1[1], 0, -d_norm1[2]/d_norm1[1]], [0, 0, 1]]; // 475
+      var t_proj_mat1 = [[1, 0, 0], [0, 1, 0], [-t_norm1[0]/t_norm1[2], -t_norm1[1]/t_norm1[2], 0]]; // 485
+  
+      var p_proj_mat2 = [[0, -p_norm2[1]/p_norm2[0], -p_norm2[2]/p_norm2[0]], [0, 1, 0], [0, 0, 1]]; // 575
+      var d_proj_mat2 = [[1, 0, 0], [-d_norm2[0]/d_norm2[1], 0, -d_norm2[2]/d_norm2[1]], [0, 0, 1]]; // 575
+      var t_proj_mat2 = [[1, 0, 0], [0, 1, 0], [-t_norm2[0]/t_norm2[2], -t_norm2[1]/t_norm2[2], 0]]; // 660
+  
+      return [p_proj_mat1, d_proj_mat1, t_proj_mat1, p_proj_mat2, d_proj_mat2, t_proj_mat2];
+    }
   }
 
   get init() {
@@ -401,6 +449,31 @@ class pageObj {
   set hasRec2020(v) {
     this._hasRec2020 = v;
   }
+
+  get cs() {
+    return this._cs;
+  }
+  set cs(v) {
+    this._cs = v;
+  }
+
+  get proj_mat() {
+    return this._proj_mat;
+  }
+  set proj_mat(v) {
+    this._proj_mat = v;
+  }
+
+  toCSS(c) {
+    // TODO: for now uses srgb, because plotly doesn't accept others
+    if (this.cs == 0) {
+      return c.legacy_rgb_css;
+    } else if (this.cs == 1) {
+      return c.legacy_rgb_css;
+    } else if (this.cs == 2) {
+      return c.legacy_rgb_css;
+    }
+  }
 }
 
 var page = new pageObj();
@@ -428,6 +501,8 @@ function test_color_support() {
   page.hassRGB = srgb_browser && srgb_display;
   page.hasP3 = p3_browser && p3_display;
   page.hasRec2020 = rec2020_browser && rec2020_display;
+
+  page.cs = 1;
 }
 
 d3.csv('ciexyzjv.csv').then(function(rows){
