@@ -92,6 +92,7 @@ function updatePlot(theta, plotId_rgb, plotId_lab, plotId_xy, action) {
   state.simulate();
 
   // Convention: in |Points| each color is a column and in |Colors| each color is a row
+  // The reason to use the legacy rgb format is because plotly supports only that
   var rotColors_css = state.rotColorsMapped.map(c => c.legacy_rgb_css);
   //var rotColors_css = state.rotColorsMapped.map(c => 'rgb(25, 100, 170)');
   var simColors_css = state.simColors.map(c => c.legacy_rgb_css);
@@ -118,10 +119,10 @@ function updatePlot(theta, plotId_rgb, plotId_lab, plotId_xy, action) {
   }
 
   // good for debugging
-  $('#s11').text(rotColors_css[0]);
-  $('#s12').text(rotColors_css[1]);
-  $('#s13').text(rotColors_css[2]);
-  $('#s14').text(rotColors_css[3]);
+  //$('#s11').text(rotColors_css[0]);
+  //$('#s12').text(rotColors_css[1]);
+  //$('#s13').text(rotColors_css[2]);
+  //$('#s14').text(rotColors_css[3]);
   //$('#n11').text(name1);
   //$('#n12').text(name2);
   //$('#n13').text(name3);
@@ -351,6 +352,7 @@ class pageObj {
     this._hassRGB = false;
     this._hasP3 = false;
     this._hasRec2020 = false;
+    this._hasHDR = false;
     this._cs = null;
     this._proj_mat = null;
   }
@@ -449,6 +451,13 @@ class pageObj {
     this._hasRec2020 = v;
   }
 
+  get hasHDR() {
+    return this._hasHDR;
+  }
+  set hasHDR(v) {
+    this._hasHDR = v;
+  }
+
   get cs() {
     return this._cs;
   }
@@ -475,7 +484,7 @@ function test_color_support() {
   var srgb_display = window.matchMedia('(color-gamut: srgb)').matches;
   var p3_display = window.matchMedia('(color-gamut: p3)').matches;
   var rec2020_display = window.matchMedia('(color-gamut: rec2020)').matches;
-  
+
   $('#bsrgb').html(srgb_browser ? '&#10003;' : '');
   $('#bp3').html(p3_browser ? '&#10003;' : '');
   $('#b2020').html(rec2020_browser ? '&#10003;' : '');
@@ -486,6 +495,7 @@ function test_color_support() {
   page.hassRGB = srgb_browser && srgb_display;
   page.hasP3 = p3_browser && p3_display;
   page.hasRec2020 = rec2020_browser && rec2020_display;
+  page.hasHDR = window.matchMedia('(dynamic-range: high)').matches;
 
   // TODO: better logic (e.g., use P3 if it's supported)
   page.cs = 1;
