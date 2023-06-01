@@ -389,6 +389,12 @@ class pageObj {
     }
   }
 
+  // TODO: true to assume that sRGB is always 8 bits?
+  // TODO: can we query the exact depth?
+  get bitdepth() {
+    return (page.hasHDR && page.cs) ? 10 : 8;
+  }
+
   get init() {
     return this._init;
   }
@@ -486,6 +492,8 @@ function test_color_support() {
 
   // TODO: better logic (e.g., use P3 if it's supported)
   page.cs = 0;
+  $('#usedcs').html(page.cs ? 'Display P3' : 'sRGB');
+  $('#usedbd').html(page.bitdepth);
 }
 
 var page, state;

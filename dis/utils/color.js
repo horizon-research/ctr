@@ -169,7 +169,7 @@ class colorObj {
     this._p3 = null;
     this._norm_p3 = null;
     this._linear_p3 = null;
-    this._bitdepth = page.hasHDR ? 10 : 8; // TODO: can we query the exact depth?
+    this._bitdepth = page.bitdepth;
 
     // _space:
     // norm_srgb: [0, 1] with gamma; this is 'srgb' in CSS Color L4/L5
@@ -193,7 +193,7 @@ class colorObj {
       this._linear_srgb = this.value.map(c => math.multiply(color_consts.lin_P3_to_lin_sRGB, removeGamma(c/255)));
     }
     this._norm_srgb = this._linear_srgb.map(c => applyGamma(c));
-    this._srgb = this._norm_srgb.map(c => quantize(c)); // TODO: true to assume that sRGB is always 8 bits?
+    this._srgb = this._norm_srgb.map(c => quantize(c, this._bitdepth)); 
     this._lms = math.multiply(color_consts.lin_sRGB_to_LMS, this._linear_srgb);
     this._xyz = math.multiply(color_consts.lin_sRGB_to_XYZ, this._linear_srgb);
     this._xy = math.divide(this._xyz, math.sum(this._xyz)).slice(0, 2);
@@ -397,7 +397,7 @@ class discTestState {
     // TODO: there are a few uses of this line. should be part of the test object
     var line_RGB = this.confusion_lines_rgb[1]; // D line in RGB
 
-    var deltaLUT = (page.hasHDR && page.cs) ? deltaLUT_10b : deltaLUT_8b;
+    var deltaLUT = (page.bitdepth) ? deltaLUT_10b : deltaLUT_8b;
     var deltaR = deltaLUT[this.testColor.v_quan_rgb[0]];
     var deltaG = deltaLUT[this.testColor.v_quan_rgb[1]];
     var deltaB = deltaLUT[this.testColor.v_quan_rgb[2]];

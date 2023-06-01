@@ -20,6 +20,8 @@ class cConst {
                            ];
 
     // expose to externals
+    $('#usedxyz').html(useJV ? 'Judd-Vos Modified XYZ' : 'CIE 1931 XYZ');
+    $('#usedlms').html(useJV ? 'Smith & Pokorny (1975) 2-deg' : 'Hunt-Pointer-Estevez D65-adapted');
     if (useJV == true) {
       this.lin_sRGB_to_XYZ = linear_sRGB_to_JV_XYZ;
       this.lin_sRGB_to_LMS = math.multiply(JV_XYZ_to_SP_LMS, this.lin_sRGB_to_XYZ);
