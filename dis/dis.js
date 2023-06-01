@@ -248,6 +248,7 @@ function setupNextColor() {
   $('#customRange').val(0);
   $('.rot-label').html('Rotation Angle (Degree): 0&#176;')
   $('#customRange').prop('disabled', true);
+  $('#s11, #s12, #s13, #s14').unbind("click");
 
 
   $('#s12').css('zIndex', '-1');
@@ -266,6 +267,7 @@ function setupNextColor() {
 
       testOneColor(true);
       $('#customRange').prop('disabled', false);
+      $('#s11, #s12, #s13, #s14').bind("click", getAnswer);
       return;
     }
   
@@ -273,73 +275,75 @@ function setupNextColor() {
   }, 20);
 }
 
-function registerGetAns() {
-  $('#s11, #s12, #s13, #s14').click(function() {
-    var correct = true;
-    var rev = false;
+var getAnswer = function() {
+  var correct = true;
+  var rev = false;
 
-    // add a new result to the threshold plot
-    var exp_plot = document.getElementById('expDiv');
-    exp_plot.data[1].x.push(state.numTrials);
-    exp_plot.data[1].y.push(state.scale);
-    var data_update = {'x': [exp_plot.data[1].x], 'y': [exp_plot.data[1].y]};
-    Plotly.update(exp_plot, data_update, {}, [1]);
+  // add a new result to the threshold plot
+  var exp_plot = document.getElementById('expDiv');
+  exp_plot.data[1].x.push(state.numTrials);
+  exp_plot.data[1].y.push(state.scale);
+  var data_update = {'x': [exp_plot.data[1].x], 'y': [exp_plot.data[1].y]};
+  Plotly.update(exp_plot, data_update, {}, [1]);
 
-    state.numTrials++;
-    if (Number(this.id[2]) != (state.testId + 1))
-      correct = false;
+  state.numTrials++;
+  if (Number(this.id[2]) != (state.testId + 1))
+    correct = false;
 
-    if ((!correct && (state.lastAns == 1)) ||
-        (correct && (state.lastAns == 0))) { // reversal
-      rev = true;
-      state.scalesAtRevs.push(state.scale);
-      state.numRevs++;
-    }
-    state.lastAns = correct;
+  if ((!correct && (state.lastAns == 1)) ||
+      (correct && (state.lastAns == 0))) { // reversal
+    rev = true;
+    state.scalesAtRevs.push(state.scale);
+    state.numRevs++;
+  }
+  state.lastAns = correct;
 
-    // reduce step size upon the first reversal or when we will hit the baseColor if using the original step size
-    if ((state.numRevs == 1) || ((state.numRevs == 0) && ((state.scale - state.step) <= 0)))
-      state.adjustStep();
+  // reduce step size upon the first reversal or when we will hit the baseColor if using the original step size
+  if ((state.numRevs == 1) || ((state.numRevs == 0) && ((state.scale - state.step) <= 0)))
+    state.adjustStep();
 
-    if (!correct) { // 1-up
-      state.scale += state.step;
-      state.numRight = 0; // reset numRight upon an incorrect answer
-    } else if (state.numRevs == 0) { // 1-down before first reversal
+  if (!correct) { // 1-up
+    state.scale += state.step;
+    state.numRight = 0; // reset numRight upon an incorrect answer
+  } else if (state.numRevs == 0) { // 1-down before first reversal
+    state.scale = Math.max(0, state.scale - state.step);
+  } else { // 2-down
+    state.numRight++;
+    if (state.numRight == 2) {
       state.scale = Math.max(0, state.scale - state.step);
-    } else { // 2-down
-      state.numRight++;
-      if (state.numRight == 2) {
-        state.scale = Math.max(0, state.scale - state.step);
-        state.numRight = 0;
-      }
+      state.numRight = 0;
     }
+  }
 
-    // restyle markers to better visualize results
-    exp_plot.data[1].marker.color.push(correct ? '#63bf7d' : '#d61e49');
-    exp_plot.data[1].marker.line.width.push(rev ? 2 : 0);
-    data_update = {'marker.color': [exp_plot.data[1].marker.color],
-                   'marker.line.width': [exp_plot.data[1].marker.line.width]};
-    Plotly.update(exp_plot, data_update, {}, [1]);
+  // restyle markers to better visualize results
+  exp_plot.data[1].marker.color.push(correct ? '#63bf7d' : '#d61e49');
+  exp_plot.data[1].marker.line.width.push(rev ? 2 : 0);
+  data_update = {'marker.color': [exp_plot.data[1].marker.color],
+                 'marker.line.width': [exp_plot.data[1].marker.line.width]};
+  Plotly.update(exp_plot, data_update, {}, [1]);
 
-    if (state.numRevs == 6) {
-      // terminate
-      threshold = math.mean(state.scalesAtRevs.slice(-3));
+  if (state.numRevs == 6) {
+    // terminate
+    threshold = math.mean(state.scalesAtRevs.slice(-3));
 
-      // add threshold line
-      data_update = {'x': [[0, 30]], 'y': [[threshold, threshold]]};
-      var layout_update = {
-        'annotations[0].visible': true,
-        'annotations[0].text': 'threshold is:&nbsp;&nbsp;' + threshold.toFixed(4)
-      };
-      Plotly.update(exp_plot, data_update, layout_update, [0]);
+    // add threshold line
+    data_update = {'x': [[0, 30]], 'y': [[threshold, threshold]]};
+    var layout_update = {
+      'annotations[0].visible': true,
+      'annotations[0].text': 'threshold is:&nbsp;&nbsp;' + threshold.toFixed(4)
+    };
+    Plotly.update(exp_plot, data_update, layout_update, [0]);
 
-      // show marker legends
-      data_update = {'visible': [true, true, true]};
-      Plotly.update(exp_plot, data_update, {}, [2, 3, 4]);
-    } else {
-      setupNextColor();
-    }
-  });
+    // show marker legends
+    data_update = {'visible': [true, true, true]};
+    Plotly.update(exp_plot, data_update, {}, [2, 3, 4]);
+  } else {
+    setupNextColor();
+  }
+}
+
+function registerGetAns() {
+  $('#s11, #s12, #s13, #s14').bind("click", getAnswer);
 }
 
 class pageObj {
