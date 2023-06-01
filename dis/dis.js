@@ -123,10 +123,10 @@ function updatePlot(theta, plotId_rgb, plotId_lab, plotId_xy, action) {
   //$('#s12').text(rotColors_css[1]);
   //$('#s13').text(rotColors_css[2]);
   //$('#s14').text(rotColors_css[3]);
-  //$('#n11').text(name1);
-  //$('#n12').text(name2);
-  //$('#n13').text(name3);
-  //$('#n14').text(name4);
+  //$('#n11').text(rotColors_css[0].srgb_name);
+  //$('#n12').text(rotColors_css[1].srgb_name);
+  //$('#n13').text(rotColors_css[2].srgb_name);
+  //$('#n14').text(rotColors_css[3].srgb_name);
 }
 
 function registerSlider(id) {
@@ -225,8 +225,6 @@ function testOneColor(random) {
   for (var i = 0; i <= 3; i++) {
     if (i == state.testId) state.colors[i] = state.testColor;
     else state.colors[i] = state.baseColor;
-
-    //names[i] = sRGB2Name(RGB2sRGB(state.colors[i], true));
   }
 
   updatePlot(0, 'rgbDiv', 'labDiv', 'xyDiv', 3);
