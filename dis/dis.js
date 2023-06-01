@@ -240,11 +240,6 @@ function submit(rangeId) {
 }
 
 function setupNextColor() {
-  $("#p1").prop('checked', false); 
-  $("#p2").prop('checked', false); 
-  $("#p3").prop('checked', false); 
-  $("#p4").prop('checked', false); 
-
   // briefly blank the colors to reset the visual field
   $('#s11').css('background-color', 'rgb(248, 249, 250)');
   $('#s12').css('background-color', 'rgb(248, 249, 250)');
@@ -254,10 +249,29 @@ function setupNextColor() {
   $('#customRange').val(0);
   $('.rot-label').html('Rotation Angle (Degree): 0&#176;')
   $('#customRange').prop('disabled', true);
-  setTimeout(() => {
-    testOneColor(true);
-    $('#customRange').prop('disabled', false);
-  }, 1000); // caveat: this is async
+
+
+  $('#s12').css('zIndex', '-1');
+  $('#s13').css('zIndex', '-1');
+  $('#s14').css('zIndex', '-1');
+  let start = Date.now();
+  let timer = setInterval(function() {
+    let timePassed = Date.now() - start;
+  
+    if (timePassed >= 1000) {
+      clearInterval(timer);
+      $('#s12').css('zIndex', '1');
+      $('#s13').css('zIndex', '1');
+      $('#s14').css('zIndex', '1');
+      context.clearRect(0, 0, canvas.width, canvas.height);
+
+      testOneColor(true);
+      $('#customRange').prop('disabled', false);
+      return;
+    }
+  
+    createBlueDots();
+  }, 20);
 }
 
 function registerGetAns() {
