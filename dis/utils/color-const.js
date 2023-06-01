@@ -45,7 +45,7 @@ class cConst {
       this.a660_lms = math.multiply(this.XYZ_to_LMS, [0.164900000000, 0.061000000000, 0.000000000000]);
       this.aEEW_lms = math.multiply(this.XYZ_to_LMS, [1, 1, 1]);
     }
-    // TODO: this needs to changed to JV XYZ if useJV is true
+    // TODO: technically P32XYZ should change with useJV, but it's impossible to know P3's primaries in JV XYZ, so...
     this.lin_P3_to_XYZ = P3_to_CIEXYZ_D65;
     this.XYZ_to_lin_sRGB = math.inv(this.lin_sRGB_to_XYZ);
     this.LMS_to_lin_sRGB = math.inv(this.lin_sRGB_to_LMS);
