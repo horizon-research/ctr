@@ -440,7 +440,7 @@ class discTestState {
 	// TODO: the idea is to make sure in each step at least one channel changes
 	// by setting the step size based on the first reversal color, but the
 	// implementation using deltaLUT is a hack and for now works only for sRGB
-    var line_RGB = this.confusion_lines_rgb[1]; // D line in RGB
+    var line_RGB = this.confusion_lines_rgb[page.type];
 
     var deltaLUT = (page.bitdepth == 10) ? deltaLUT_10b : deltaLUT_8b;
     var deltaR = deltaLUT[this.testColor.v_quan_rgb[0]];

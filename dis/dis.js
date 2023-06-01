@@ -189,8 +189,7 @@ function registerReset(resetId) {
 }
 
 function genTestColor(mode) {
-  // TODO: should also accommodate other blindness types
-  var line_RGB = state.confusion_lines_rgb[1]; // D line in RGB
+  var line_RGB = state.confusion_lines_rgb[page.type];
   var testColor;
 
   if (mode == 0) {
@@ -477,9 +476,10 @@ function initPage() {
   // choose to show actual colors
   $('#yes').prop("checked", true).trigger('change');
 
-  // set the mode to play and update the plot with the initial setting
   $('input[type=radio][name=sim]').prop('disabled', false);
   $('input[type=radio][name=method]').prop('disabled', false);
+  // we don't want to change blindness type during test
+  $('input[type=radio][name=pick]').prop('disabled', true);
   $('#customRange').prop('disabled', false);
   $('#reset').prop('disabled', false);
 
