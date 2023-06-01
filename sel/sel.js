@@ -1,3 +1,92 @@
+var redColor = '#FF0000';
+var greenColor = '#00FF00';
+var blueColor = '#0000FF';
+var magentaColor = '#FF00FF';
+var cyanColor = '#00FFFF';
+var yellowColor = '#FFFF00';
+
+var blackColor = '#000000';
+var greyColor = '#888888';
+var purpleColor = '#5c32a8';
+var brightYellowColor = '#fcd303'; 
+var orangeColor = '#DC7B2E';
+var blueGreenColor = '#63BFAB'; 
+var oRedColor = 'rgba(218, 37, 0, 0.3)';
+var oGreenColor = 'rgba(0, 143, 0, 0.3)';
+var oBlueColor = 'rgba(1, 25, 147, 0.5)';
+
+/* Constants */
+
+var a475_lms = [0.0509384206, 0.0618970658, 0.015150576];
+var a485_lms = [0.0818313433, 0.0880318619, 0.009429312];
+var a575_lms = [0.6281339073, 0.2874094695, 0.000031687248];
+var a660_lms = [0.05820210417, 0.002795455831, 0.00000019144848];
+var aEEW_lms = [14.30506543, 7.190126944, 0.3379046085];
+
+// XYZ <--> LMS mats based on Smith & Pokorny using Judd corrected XYZ (used by Brettel 1997 & Viénot 1999)
+// http://cvrl.ioo.ucl.ac.uk/database/text/cones/sp.htm
+var xyz2lms = [[0.15514, 0.54312, -0.03286], [-0.15514, 0.45684, 0.03286], [0, 0, 0.01608]];
+var RGB2xyz = [[40.9568, 35.5041, 17.9167], [21.3389, 70.6743, 7.9868], [1.86297, 11.462, 91.2367]];
+
+// XYZ <--> LMS mats using HPE
+// (used by https://ixora.io/projects/colorblindness/color-blindness-simulation-research/)
+//var hpe_xyz2lms_eew = [[0.3897,0.689,-0.0787], [-0.2298,1.1834,0.0464], [0,0,1]]; // EEW normalized
+//var hpe_xyz2lms_d65 = [[0.4002,0.7076,-0.0808], [-0.2263,1.1653,0.0457], [0,0,0.9182]]; // D65 adapted
+//var xyz2lms = hpe_xyz2lms_d65;
+// this is D65 adapted
+//var RGB2xyz = [[0.4124564, 0.3575761, 0.1804375], [0.2126729, 0.7151522, 0.0721750], [0.0193339, 0.1191920, 0.9503041]];
+
+// TODO: clean this up
+function get_RGB2lms() {
+  var RGB2lms = math.multiply(xyz2lms, RGB2xyz);
+  return RGB2lms;
+}
+
+var RGB2lms = get_RGB2lms();
+var lms2RGB = math.inv(RGB2lms);
+
+function XYZ2xy(XYZ) {
+  var XYZ_sum = math.add(XYZ[0], XYZ[1], XYZ[2]);
+  var x = math.dotDivide(XYZ[0], XYZ_sum);
+  var y = math.dotDivide(XYZ[1], XYZ_sum);
+
+  return [x, y]
+}
+
+function get_confusion_lines() {
+  // vectors for confusion lines (derived from Sharma LUTs)
+  //var p_line = [0.9795006397, -0.2013704401, 0.005333160206];
+  //var d_line = [-0.8959739281, 0.4425391762, -0.03727999099];
+  //var t_line = [0.1428342021, -0.1413451732, 0.9796019256];
+
+  // vectors for confusion lines (derived using lms2RGB matrix) in RGB
+  var p_line = normalize(math.multiply(lms2RGB, [1, 0, 0]));
+  var d_line = normalize(math.multiply(lms2RGB, [0, 1, 0]));
+  var t_line = normalize(math.multiply(lms2RGB, [0, 0, 1]));
+
+  return [p_line, d_line, t_line];
+}
+
+var confusion_lines = get_confusion_lines();
+
+function get_confusion_lines_xy() {
+  var lines = [];
+
+  for (t of [0, 1, 2]) {
+    for (p of [[1, 0, 0], [0, 1, 0], [0, 0, 1]]) {
+      var line_RGB = confusion_lines[t];
+      var p0_RGB = math.add(p, math.multiply(line_RGB, 0.2));
+      var p0_xy = XYZ2xy(math.multiply(RGB2xyz, p0_RGB));
+      var p1_xy = XYZ2xy(math.multiply(RGB2xyz, p));
+      lines.push(normalize(math.subtract(p1_xy, p0_xy)));
+    }
+  }
+
+  return lines;
+}
+
+var confusion_lines_xy = get_confusion_lines_xy();
+
 // creating a set of confusing colors
 function create_confusing_colors_prot() {
   var line = confusion_lines[0];
@@ -262,6 +351,165 @@ function create_confusing_colors_trit() {
 var c_lines_prot = create_confusing_colors_prot();
 var c_lines_deut = create_confusing_colors_deut();
 var c_lines_trit = create_confusing_colors_trit();
+
+function get_proj_mat() {
+  // https://daltonlens.org/understanding-cvd-simulation/
+  if (simMethod == 1) {
+    // Viénot 1999 (one plane); an approximation of Brettel 1997 (two planes).
+    // for protanopia and deuteranopia they use the black-blue-yellow-white plane;
+    // for tritanopia the paper didn't say what to do here we simply use black-red-cyan-white plane.
+    var sRGBWhite = math.multiply(get_RGB2lms(), [1, 1, 1]);
+    var sRGBBlue = math.multiply(get_RGB2lms(), [0, 0, 1]);
+    var sRGBRed = math.multiply(get_RGB2lms(), [1, 0, 0]);
+    var sRGBYellow = math.multiply(get_RGB2lms(), [1, 1, 0]);
+    var sRGBCyan = math.multiply(get_RGB2lms(), [0, 1, 1]);
+
+    var p_norm1 = math.cross(sRGBBlue, sRGBYellow);
+    var d_norm1 = p_norm1;
+    var t_norm1 = math.cross(sRGBRed, sRGBCyan);
+
+    var p_proj_mat = [[0, -p_norm1[1]/p_norm1[0], -p_norm1[2]/p_norm1[0]], [0, 1, 0], [0, 0, 1]];
+    var d_proj_mat = [[1, 0, 0], [-d_norm1[0]/d_norm1[1], 0, -d_norm1[2]/d_norm1[1]], [0, 0, 1]];
+    var t_proj_mat = [[1, 0, 0], [0, 1, 0], [-t_norm1[0]/t_norm1[2], -t_norm1[1]/t_norm1[2], 0]];
+
+    return [p_proj_mat, d_proj_mat, t_proj_mat];
+  } else {
+    // Brettel 1997 (two planes).
+    // in LMS space (transformed from JV-modified XYZ)
+    var sRGBWhite = math.multiply(get_RGB2lms(), [1, 1, 1]);
+    var aWhite = aEEW_lms; // (Brettel 97 uses EEW and Vienot 99 uses sRGBWhite)
+
+    var p_norm1 = math.cross(aWhite, a475_lms);
+    var p_norm2 = math.cross(aWhite, a575_lms);
+    var d_norm1 = p_norm1;
+    var d_norm2 = p_norm2;
+    var t_norm1 = math.cross(aWhite, a485_lms);
+    var t_norm2 = math.cross(aWhite, a660_lms);
+
+    // the results are close to values calculated by https://daltonlens.org/understanding-cvd-simulation/
+    var p_proj_mat1 = [[0, -p_norm1[1]/p_norm1[0], -p_norm1[2]/p_norm1[0]], [0, 1, 0], [0, 0, 1]]; // 475
+    var d_proj_mat1 = [[1, 0, 0], [-d_norm1[0]/d_norm1[1], 0, -d_norm1[2]/d_norm1[1]], [0, 0, 1]]; // 475
+    var t_proj_mat1 = [[1, 0, 0], [0, 1, 0], [-t_norm1[0]/t_norm1[2], -t_norm1[1]/t_norm1[2], 0]]; // 485
+
+    var p_proj_mat2 = [[0, -p_norm2[1]/p_norm2[0], -p_norm2[2]/p_norm2[0]], [0, 1, 0], [0, 0, 1]]; // 575
+    var d_proj_mat2 = [[1, 0, 0], [-d_norm2[0]/d_norm2[1], 0, -d_norm2[2]/d_norm2[1]], [0, 0, 1]]; // 575
+    var t_proj_mat2 = [[1, 0, 0], [0, 1, 0], [-t_norm2[0]/t_norm2[2], -t_norm2[1]/t_norm2[2], 0]]; // 660
+
+    return [p_proj_mat1, d_proj_mat1, t_proj_mat1, p_proj_mat2, d_proj_mat2, t_proj_mat2];
+  }
+}
+
+// https://docs.mathjax.org/en/v2.1-latest/typeset.html
+var QUEUE = MathJax.Hub.queue; // shorthand for the queue
+var transMatText;
+QUEUE.Push(function () {
+  transMatText = MathJax.Hub.getAllJax('mat');
+});
+
+// https://stackoverflow.com/questions/1740700/how-to-get-hex-color-value-rather-than-rgb-value
+// It converts 'rgb(255, 255, 255)' to '#FFFFFF'
+const rgb2hex = (rgb) => `#${rgb.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/).slice(1).map(n => parseInt(n, 10).toString(16).padStart(2, '0')).join('')}`
+
+// It converts an array [255, 255, 255] to '#FFFFFF'
+function rgbToHex(c) {
+  function componentToHex(c) {
+    var hex = c.toString(16);
+    return hex.length == 1 ? "0" + hex : hex;
+  }
+
+  return "#" + componentToHex(c[0]) + componentToHex(c[1]) + componentToHex(c[2]);
+}
+
+// From linear RGB to sRGB in Hex
+// if |clip| true, use the absolute rendering intent to clip
+function RGB2sRGB(color, clip) {
+  var out = [];
+
+  for(var i = 0; i < 3; i++) {
+    if (color[i] <= 0.0031308) out[i] = parseInt((12.92 * color[i] * 255).toFixed());
+    else out[i] = parseInt(((1.055 * Math.pow(color[i], 1/2.4) - 0.055) * 255).toFixed());
+
+    if (clip) {
+      if (out[i] < 0) out[i] = 0;
+      else if (out[i] > 255) out[i] = 255; 
+    } else {
+      if (out[i] < 0 || out[i] > 255)
+        return '#000000';
+    }
+  }
+
+  return rgbToHex(out);
+}
+
+// From sRGB hex to linear RGB
+function sRGB2RGB(hex) {
+  var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  var color = [
+    parseInt(result[1], 16)/255,
+    parseInt(result[2], 16)/255,
+    parseInt(result[3], 16)/255
+  ];
+
+  var out = [];
+  for(var i = 0; i < 3; i++) {
+    if (color[i] <= 0.04045) out[i] = color[i]/12.92;
+    else out[i] = Math.pow((color[i]+0.055)/1.055, 2.4);
+  }
+
+  return out;
+}
+
+// https://chir.ag/projects/ntc/
+function sRGB2Name(color) {
+  var n_match  = ntc.name(color);
+  //var n_rgb        = n_match[0]; // This is the RGB value of the closest matching color
+  var n_name       = n_match[1]; // This is the text string for the name of the match
+  //var n_exactmatch = n_match[2]; // True if exact color match, False if close-match
+  return n_name;
+}
+
+function normalize(vec) {
+  return math.divide(vec, math.norm(vec));
+}
+
+function project(colors_LMS) {
+  // in input each column is a color
+
+  if (simMethod == 1) {
+    // one plane
+    return math.multiply(proj_mat[type], colors_LMS);
+  } else {
+    // two planes
+    var outColors1 = math.multiply(proj_mat[type], colors_LMS);
+    var outColors2 = math.multiply(proj_mat[type + 3], colors_LMS);
+    var outColors = [];
+
+    var whiteLMS = aEEW_lms;
+    var wL = whiteLMS[0], wM = whiteLMS[1], wS = whiteLMS[2];
+
+    for (var i = 0; i < colors_LMS[0].length; i++) {
+      var L = colors_LMS[0][i];
+      var M = colors_LMS[1][i];
+      var S = colors_LMS[2][i];
+
+      if (type == 0) {
+        if (S/M < wS/wM) mask = 0;
+        else mask = 1;
+      } else if (type == 1) {
+        if (S/L < wS/wL) mask = 0;
+        else mask = 1;
+      } else {
+        if (M/L < wM/wL) mask = 0;
+        else mask = 1;
+      }
+
+      if (mask == 0) outColors.push(math.transpose(outColors2)[i]);
+      else outColors.push(math.transpose(outColors1)[i]);
+    }
+
+    return math.transpose(outColors);
+  }
+}
 
 function plotXy(plotId, chrm, wlen, a475, a575, a485, a660) {
   var xyTrace = {
@@ -1548,6 +1796,97 @@ function plotRGB(plotId) {
   return plot;
 }
 
+function RGBtoLab(rgb_color) {
+  var c0 = new Color("srgb-linear", rgb_color[0]);
+  var c1 = new Color("srgb-linear", rgb_color[1]);
+  var c2 = new Color("srgb-linear", rgb_color[2]);
+
+  return [c0.lab_d65, c1.lab_d65, c2.lab_d65];
+}
+
+function dichromatic_gamut_mapping(colors, mode) {
+  // mode:
+  // 0: clipping
+  // 1: confusion line
+
+  function inCube(p) {
+    //if (p[0] >= 0 && p[0] <= 1 && p[1] >= 0 && p[1] <= 1 && p[2] >= 0 && p[2] <= 1)
+    if (p[0] >= 0 && p[1] >= 0 && p[2] >= 0)
+      return true;
+    return false;
+  }
+
+  function reduce_lum(p) {
+    if (Math.max(...p) > 1) {
+      return math.divide(p, Math.max(...p));
+    }
+
+    return p;
+  }
+
+  var mapped_colors = [];
+
+  if (mode == 0) {
+    colors.forEach((color) => {
+      for (var j = 0; j < 3; j++) {
+        if (color[j] < 0) color[j] = 0;
+        else if (color[j] > 1) color[j] = 1; 
+      }
+      mapped_colors.push(color);
+    });
+
+    return mapped_colors;
+  }
+
+  // a dichromatic gamut mapping algorithm, which has two components: 1. move
+  // an OOG gamut along its confusion line until it hits the cube; this mapping
+  // doesn't change the color perception of a dichromate 2. if a color is OOG
+  // simply because its absolute luminance is too high, we reduce its
+  // luminance; this mapping will reduce the brightness of the color by a
+  // dichromate
+  for (base of colors) {
+    if (inCube(base)) {
+      mapped_colors.push(base);
+      continue;
+    }
+
+    var line = confusion_lines[type];
+    var hit = Number.MAX_VALUE;
+    var hit_pos = [0, 0, 0];
+
+    var Tr0 = -base[0]/line[0]; // R=0
+    var Tr1 = (1-base[0])/line[0];
+    var Tg0 = -base[1]/line[1];
+    var Tg1 = (1-base[1])/line[1];
+    var Tb0 = -base[2]/line[2];
+    var Tb1 = (1-base[2])/line[2];
+
+    var hits = [Tr0, Tr1, Tg0, Tg1, Tb0, Tb1];
+
+    for (var i = 0; i < hits.length; i++) {
+      var p = math.add(base, math.multiply(line, hits[i]));
+
+      // override numerical precision issue
+      if (i == 0) p[0] = 0;
+      else if (i == 1) p[0] = 1;
+      else if (i == 2) p[1] = 0;
+      else if (i == 3) p[1] = 1;
+      else if (i == 4) p[2] = 0;
+      else p[2] = 1; // i == 5
+
+      if (inCube(p) && Math.abs(hits[i]) < hit) {
+        // pick the one with the absolute shortest t
+        hit = Math.abs(hits[i]);
+        hit_pos = reduce_lum(p);
+      }
+    }
+
+    mapped_colors.push(hit_pos);
+  }
+
+  return mapped_colors;
+}
+
 function updatePlot(theta, plotId_rgb, plotId_lab, plotId_xy, action) {
   // |action|:
   // 0: rotate (slider)
@@ -1578,9 +1917,12 @@ function updatePlot(theta, plotId_rgb, plotId_lab, plotId_xy, action) {
     var rotPoints_RGB = math.multiply(rotMat, math.transpose([color1, color2, color3]));
     var rotColors_RGB = math.transpose(rotPoints_RGB);
 
-    rotColors_RGB = dichromatic_gamut_mapping(rotColors_RGB, mapping);
-    // this is the position of the mapped colors
-    var rotPoints_RGB_mapped = math.transpose(rotColors_RGB);
+    var rotPoints_RGB_mapped = rotPoints_RGB;
+    if (mapping) {
+      rotColors_RGB = dichromatic_gamut_mapping(rotColors_RGB, 0);
+      // this is the position of the mapped colors
+      rotPoints_RGB_mapped = math.transpose(rotColors_RGB);
+    }
 
     // Option 1: return actual rotated position but mapped color
     //return [rotPoints_RGB, rotColors_RGB];
@@ -1588,7 +1930,7 @@ function updatePlot(theta, plotId_rgb, plotId_lab, plotId_xy, action) {
     return [rotPoints_RGB_mapped, rotColors_RGB];
   }
 
-  var res = rotate_colors(1);
+  var res = rotate_colors(true);
   var rotPoints_RGB = res[0];
   var rotColors_RGB = res[1];
 
@@ -1819,7 +2161,7 @@ function registerColorPicker(baseId, squareId, nameId) {
 
 function registerSetScale(buttonId, baseId, textId, squareId, colorId, nameId) {
   $(buttonId).on('click', function(evt) {
-    var baseColor = hex2RGB(rgb2hex($(baseId).css('background-color')));
+    var baseColor = sRGB2RGB(rgb2hex($(baseId).css('background-color')));
     var scale = $(textId).val();
     var colorVal;
 
@@ -1885,9 +2227,9 @@ function registerSelectPresets() {
 }
 
 function submit(rangeId) {
-  color1 = hex2RGB(rgb2hex($('#s11').css('background-color')));
-  color2 = hex2RGB(rgb2hex($('#s12').css('background-color')));
-  color3 = hex2RGB(rgb2hex($('#s13').css('background-color')));
+  color1 = sRGB2RGB(rgb2hex($('#s11').css('background-color')));
+  color2 = sRGB2RGB(rgb2hex($('#s12').css('background-color')));
+  color3 = sRGB2RGB(rgb2hex($('#s13').css('background-color')));
   name1 = sRGB2Name(rgb2hex($('#s11').css('background-color')));
   name2 = sRGB2Name(rgb2hex($('#s12').css('background-color')));
   name3 = sRGB2Name(rgb2hex($('#s13').css('background-color')));
@@ -1942,7 +2284,7 @@ var setter; // 0 for using color picker, 1 for using scale, 3 for using presets
 var color1, color2, color3;
 var name1, name2, name3;
 
-d3.csv('ciexyzjv.csv').then(function(rows){
+d3.csv('../ciexyzjv.csv').then(function(rows){
   function unpack(rows, key, toNum) {
     return rows.map(function(row) {
         if (toNum == false) return row[key];
@@ -2021,4 +2363,5 @@ const queryString = window.location.search;
 const urlParams = new URLSearchParams(queryString);
 const tab = urlParams.get('tab')
 $('#' + tab + '-tab').trigger('click');
+
 
