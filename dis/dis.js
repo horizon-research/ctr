@@ -173,7 +173,7 @@ function registerPickSimMethod() {
       // two planes
       page.simMethod = 0;
     }
-    page.proj_mat = page.get_proj_mat();
+    state.proj_mat = state.get_proj_mat();
 
     // automatically update colors and re-plot
     if (page.init) updatePlot($('#customRange').val(), 'rgbDiv', 'labDiv', 'xyDiv', 2);
@@ -341,52 +341,6 @@ class pageObj {
     this._hasRec2020 = false;
     this._hasHDR = false;
     this._cs = null;
-    this._proj_mat = null;
-  }
-
-  get_proj_mat() {
-    // https://daltonlens.org/understanding-cvd-simulation/
-    if (this.simMethod == 1) {
-      // Viénot 1999 (one plane); an approximation of Brettel 1997 (two planes).
-      // for protanopia and deuteranopia they use the black-blue-yellow-white plane;
-      // for tritanopia the paper didn't say what to do here we simply use black-red-cyan-white plane.
-      var RGBBlue = (new colorObj([0, 0, 1], 'v_rgb')).lms;
-      var RGBRed = (new colorObj([1, 0, 0], 'v_rgb')).lms;
-      var RGBYellow = (new colorObj([1, 1, 0], 'v_rgb')).lms;
-      var RGBCyan = (new colorObj([0, 1, 1], 'v_rgb')).lms;
-  
-      var p_norm1 = math.cross(RGBBlue, RGBYellow);
-      var d_norm1 = p_norm1;
-      var t_norm1 = math.cross(RGBRed, RGBCyan);
-  
-      var p_proj_mat = [[0, -p_norm1[1]/p_norm1[0], -p_norm1[2]/p_norm1[0]], [0, 1, 0], [0, 0, 1]];
-      var d_proj_mat = [[1, 0, 0], [-d_norm1[0]/d_norm1[1], 0, -d_norm1[2]/d_norm1[1]], [0, 0, 1]];
-      var t_proj_mat = [[1, 0, 0], [0, 1, 0], [-t_norm1[0]/t_norm1[2], -t_norm1[1]/t_norm1[2], 0]];
-  
-      return [p_proj_mat, d_proj_mat, t_proj_mat];
-    } else {
-      // Brettel 1997 (two planes).
-      // in LMS space (transformed from JV-modified XYZ)
-      var aWhite = color_consts.aEEW_lms; // (Brettel 97 uses EEW and Vienot 99 uses sRGBWhite)
-  
-      var p_norm1 = math.cross(aWhite, color_consts.a475_lms);
-      var p_norm2 = math.cross(aWhite, color_consts.a575_lms);
-      var d_norm1 = p_norm1;
-      var d_norm2 = p_norm2;
-      var t_norm1 = math.cross(aWhite, color_consts.a485_lms);
-      var t_norm2 = math.cross(aWhite, color_consts.a660_lms);
-  
-      // the results are close to values calculated by https://daltonlens.org/understanding-cvd-simulation/
-      var p_proj_mat1 = [[0, -p_norm1[1]/p_norm1[0], -p_norm1[2]/p_norm1[0]], [0, 1, 0], [0, 0, 1]]; // 475
-      var d_proj_mat1 = [[1, 0, 0], [-d_norm1[0]/d_norm1[1], 0, -d_norm1[2]/d_norm1[1]], [0, 0, 1]]; // 475
-      var t_proj_mat1 = [[1, 0, 0], [0, 1, 0], [-t_norm1[0]/t_norm1[2], -t_norm1[1]/t_norm1[2], 0]]; // 485
-  
-      var p_proj_mat2 = [[0, -p_norm2[1]/p_norm2[0], -p_norm2[2]/p_norm2[0]], [0, 1, 0], [0, 0, 1]]; // 575
-      var d_proj_mat2 = [[1, 0, 0], [-d_norm2[0]/d_norm2[1], 0, -d_norm2[2]/d_norm2[1]], [0, 0, 1]]; // 575
-      var t_proj_mat2 = [[1, 0, 0], [0, 1, 0], [-t_norm2[0]/t_norm2[2], -t_norm2[1]/t_norm2[2], 0]]; // 660
-  
-      return [p_proj_mat1, d_proj_mat1, t_proj_mat1, p_proj_mat2, d_proj_mat2, t_proj_mat2];
-    }
   }
 
   // TODO: true to assume that sRGB is always 8 bits?
@@ -457,13 +411,6 @@ class pageObj {
   set cs(v) {
     this._cs = v;
   }
-
-  get proj_mat() {
-    return this._proj_mat;
-  }
-  set proj_mat(v) {
-    this._proj_mat = v;
-  }
 }
 
 function test_color_support() {
@@ -491,7 +438,7 @@ function test_color_support() {
   page.hasHDR = window.matchMedia('(dynamic-range: high)').matches;
 
   // TODO: better logic (e.g., use P3 if it's supported)
-  page.cs = 0;
+  page.cs = 1;
   $('#usedcs').html(page.cs ? 'Display P3' : 'sRGB');
   $('#usedbd').html(page.bitdepth);
 }
@@ -512,6 +459,7 @@ d3.csv('../ciexyzjv.csv').then(function(rows){
 
 function initPage() {
   page = new pageObj();
+  state = new discTestState();
 
   test_color_support();
 
@@ -535,7 +483,6 @@ function initPage() {
   $('#customRange').prop('disabled', false);
   $('#reset').prop('disabled', false);
 
-  state = new discTestState();
   page.init = true;
 }
 

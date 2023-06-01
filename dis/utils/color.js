@@ -30,11 +30,11 @@ function project(colors_LMS) {
 
   if (page.simMethod == 1) {
     // one plane
-    return math.multiply(page.proj_mat[page.type], colors_LMS);
+    return math.multiply(state.proj_mat[page.type], colors_LMS);
   } else {
     // two planes
-    var outColors1 = math.multiply(page.proj_mat[page.type], colors_LMS);
-    var outColors2 = math.multiply(page.proj_mat[page.type + 3], colors_LMS);
+    var outColors1 = math.multiply(state.proj_mat[page.type], colors_LMS);
+    var outColors2 = math.multiply(state.proj_mat[page.type + 3], colors_LMS);
     var outColors = [];
 
     var whiteLMS = color_consts.aEEW_lms; // EEW is used as white
@@ -337,10 +337,56 @@ class discTestState {
     this._lastAns = true; // just so that if the first respose is incorrect it gets counted as a reversal
     this._numTrials = 1;
     this._step = 0.02; // TODO: need to figure out how to better set this
+    this._proj_mat = null;
 
     this._confusion_lines_lin_srgb = this.get_confusion_lines_lin_srgb();
     this._confusion_lines_lin_p3 = this.get_confusion_lines_lin_p3();
     this._confusion_lines_xy = this.get_confusion_lines_xy();
+  }
+
+  get_proj_mat() {
+    // https://daltonlens.org/understanding-cvd-simulation/
+    if (this.simMethod == 1) {
+      // Viénot 1999 (one plane); an approximation of Brettel 1997 (two planes).
+      // for protanopia and deuteranopia they use the black-blue-yellow-white plane;
+      // for tritanopia the paper didn't say what to do here we simply use black-red-cyan-white plane.
+      var RGBBlue = (new colorObj([0, 0, 1], 'v_rgb')).lms;
+      var RGBRed = (new colorObj([1, 0, 0], 'v_rgb')).lms;
+      var RGBYellow = (new colorObj([1, 1, 0], 'v_rgb')).lms;
+      var RGBCyan = (new colorObj([0, 1, 1], 'v_rgb')).lms;
+  
+      var p_norm1 = math.cross(RGBBlue, RGBYellow);
+      var d_norm1 = p_norm1;
+      var t_norm1 = math.cross(RGBRed, RGBCyan);
+  
+      var p_proj_mat = [[0, -p_norm1[1]/p_norm1[0], -p_norm1[2]/p_norm1[0]], [0, 1, 0], [0, 0, 1]];
+      var d_proj_mat = [[1, 0, 0], [-d_norm1[0]/d_norm1[1], 0, -d_norm1[2]/d_norm1[1]], [0, 0, 1]];
+      var t_proj_mat = [[1, 0, 0], [0, 1, 0], [-t_norm1[0]/t_norm1[2], -t_norm1[1]/t_norm1[2], 0]];
+  
+      return [p_proj_mat, d_proj_mat, t_proj_mat];
+    } else {
+      // Brettel 1997 (two planes).
+      // in LMS space (transformed from JV-modified XYZ)
+      var aWhite = color_consts.aEEW_lms; // (Brettel 97 uses EEW and Vienot 99 uses sRGBWhite)
+  
+      var p_norm1 = math.cross(aWhite, color_consts.a475_lms);
+      var p_norm2 = math.cross(aWhite, color_consts.a575_lms);
+      var d_norm1 = p_norm1;
+      var d_norm2 = p_norm2;
+      var t_norm1 = math.cross(aWhite, color_consts.a485_lms);
+      var t_norm2 = math.cross(aWhite, color_consts.a660_lms);
+  
+      // the results are close to values calculated by https://daltonlens.org/understanding-cvd-simulation/
+      var p_proj_mat1 = [[0, -p_norm1[1]/p_norm1[0], -p_norm1[2]/p_norm1[0]], [0, 1, 0], [0, 0, 1]]; // 475
+      var d_proj_mat1 = [[1, 0, 0], [-d_norm1[0]/d_norm1[1], 0, -d_norm1[2]/d_norm1[1]], [0, 0, 1]]; // 475
+      var t_proj_mat1 = [[1, 0, 0], [0, 1, 0], [-t_norm1[0]/t_norm1[2], -t_norm1[1]/t_norm1[2], 0]]; // 485
+  
+      var p_proj_mat2 = [[0, -p_norm2[1]/p_norm2[0], -p_norm2[2]/p_norm2[0]], [0, 1, 0], [0, 0, 1]]; // 575
+      var d_proj_mat2 = [[1, 0, 0], [-d_norm2[0]/d_norm2[1], 0, -d_norm2[2]/d_norm2[1]], [0, 0, 1]]; // 575
+      var t_proj_mat2 = [[1, 0, 0], [0, 1, 0], [-t_norm2[0]/t_norm2[2], -t_norm2[1]/t_norm2[2], 0]]; // 660
+  
+      return [p_proj_mat1, d_proj_mat1, t_proj_mat1, p_proj_mat2, d_proj_mat2, t_proj_mat2];
+    }
   }
 
   get_confusion_lines_lin_srgb() {
@@ -397,7 +443,7 @@ class discTestState {
     // TODO: there are a few uses of this line. should be part of the test object
     var line_RGB = this.confusion_lines_rgb[1]; // D line in RGB
 
-    var deltaLUT = (page.bitdepth) ? deltaLUT_10b : deltaLUT_8b;
+    var deltaLUT = (page.bitdepth == 10) ? deltaLUT_10b : deltaLUT_8b;
     var deltaR = deltaLUT[this.testColor.v_quan_rgb[0]];
     var deltaG = deltaLUT[this.testColor.v_quan_rgb[1]];
     var deltaB = deltaLUT[this.testColor.v_quan_rgb[2]];
@@ -540,6 +586,13 @@ class discTestState {
   }
   get step() {
     return this._step;
+  }
+
+  get proj_mat() {
+    return this._proj_mat;
+  }
+  set proj_mat(v) {
+    this._proj_mat = v;
   }
 }
 
