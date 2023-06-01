@@ -350,10 +350,10 @@ class pageObj {
       // Viénot 1999 (one plane); an approximation of Brettel 1997 (two planes).
       // for protanopia and deuteranopia they use the black-blue-yellow-white plane;
       // for tritanopia the paper didn't say what to do here we simply use black-red-cyan-white plane.
-      var RGBBlue = new colorObj([0, 0, 1], 'v_rgb');
-      var RGBRed = new colorObj([1, 0, 0], 'v_rgb');
-      var RGBYellow = new colorObj([1, 1, 0], 'v_rgb');
-      var RGBCyan = new colorObj([0, 1, 1], 'v_rgb');
+      var RGBBlue = (new colorObj([0, 0, 1], 'v_rgb')).lms;
+      var RGBRed = (new colorObj([1, 0, 0], 'v_rgb')).lms;
+      var RGBYellow = (new colorObj([1, 1, 0], 'v_rgb')).lms;
+      var RGBCyan = (new colorObj([0, 1, 1], 'v_rgb')).lms;
   
       var p_norm1 = math.cross(RGBBlue, RGBYellow);
       var d_norm1 = p_norm1;
