@@ -334,10 +334,9 @@ class discTestState {
     this._scale = 0.1; // TODO: need to figure out how to better set this
     this._numRight = 0;
     this._numRevs = 0;
-    this._lastAns = null;
+    this._lastAns = true; // just so that if the first respose is incorrect it gets counted as a reversal
     this._numTrials = 1;
-    this._step1 = 0.02; // TODO: need to figure out how to better set this
-    this._step2 = 0.002; // TODO: need to figure out how to better set this
+    this._step = 0.02; // TODO: need to figure out how to better set this
 
     this._confusion_lines_lin_srgb = this.get_confusion_lines_lin_srgb();
     this._confusion_lines_lin_p3 = this.get_confusion_lines_lin_p3();
@@ -391,7 +390,7 @@ class discTestState {
     return this._confusion_lines_xy;
   }
 
-  setStep2() {
+  adjustStep() {
 	// TODO: the idea is to make sure in each step at least one channel changes
 	// by setting the step size based on the first reversal color, but the
 	// implementation using deltaLUT is a hack and for now works only for sRGB
@@ -403,9 +402,9 @@ class discTestState {
     var deltaG = deltaLUT[this.testColor.v_quan_rgb[1]];
     var deltaB = deltaLUT[this.testColor.v_quan_rgb[2]];
   
-    this.step2 = Math.min(deltaR / Math.abs(line_RGB[0]),
-                          deltaG / Math.abs(line_RGB[1]),
-                          deltaB / Math.abs(line_RGB[2]));
+    this.step = Math.min(deltaR / Math.abs(line_RGB[0]),
+                         deltaG / Math.abs(line_RGB[1]),
+                         deltaB / Math.abs(line_RGB[2]));
   }
 
   // take in a set of colorObj (not a pure numerical array)
@@ -536,18 +535,11 @@ class discTestState {
     return this._numTrials;
   }
 
-  set step1(v) {
-    this._step1 = v;
+  set step(v) {
+    this._step = v;
   }
-  get step1() {
-    return this._step1;
-  }
-
-  set step2(v) {
-    this._step2 = v;
-  }
-  get step2() {
-    return this._step2;
+  get step() {
+    return this._step;
   }
 }
 

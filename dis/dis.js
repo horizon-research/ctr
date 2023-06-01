@@ -265,7 +265,7 @@ function setupNextColor() {
 
 function registerGetAns() {
   $('#s11, #s12, #s13, #s14').click(function() {
-    var correct;
+    var correct = true;
     var rev = false;
 
     // add a new result to the threshold plot
@@ -276,44 +276,33 @@ function registerGetAns() {
     Plotly.update(exp_plot, data_update, {}, [1]);
 
     state.numTrials++;
-
-    if (Number(this.id[2]) != (state.testId + 1)) {
-      // wrong answer
-
+    if (Number(this.id[2]) != (state.testId + 1))
       correct = false;
-      if (state.lastAns == 1) { // reversal
-        rev = true;
-        state.scalesAtRevs.push(state.scale);
-        state.numRevs++;
-      }
-      state.lastAns = 0;
 
-      if (state.numRevs == 1)
-        state.setStep2(); // calculate step2 at the first reversal (practically the first incorrect answer)
-      state.scale += state.step2; // TODO: figure out what to do if the first response is incorrect
+    if ((!correct && (state.lastAns == 1)) ||
+        (correct && (state.lastAns == 0))) { // reversal
+      rev = true;
+      state.scalesAtRevs.push(state.scale);
+      state.numRevs++;
+    }
+    state.lastAns = correct;
+
+    // reduce step size upon the first reversal or when we will hit the baseColor if using the original step size
+    if ((state.numRevs == 1) || ((state.numRevs == 0) && ((state.scale - state.step) <= 0)))
+      state.adjustStep();
+
+    if (!correct) { // 1-up
+      state.scale += state.step;
       state.numRight = 0; // reset numRight upon an incorrect answer
-    } else {
-      // right answer
-
-      correct = true;
-      if (state.lastAns == 0) { // reversal
-        rev = true;
-        state.scalesAtRevs.push(state.scale);
-        state.numRevs++;
-      }
-      state.lastAns = 1;
-
-      // 1 up 2 down (except before the first reversal)
-      if (state.numRevs == 0) state.scale = Math.max(0, state.scale-state.step1);
-      else {
-        state.numRight++;
-        if (state.numRight == 2) {
-          state.scale = Math.max(0, state.scale-state.step2);
-          state.numRight = 0;
-        }
+    } else if (state.numRevs == 0) { // 1-down before first reversal
+      state.scale = Math.max(0, state.scale - state.step);
+    } else { // 2-down
+      state.numRight++;
+      if (state.numRight == 2) {
+        state.scale = Math.max(0, state.scale - state.step);
+        state.numRight = 0;
       }
     }
-    //console.log(state.scale)
 
     // restyle markers to better visualize results
     exp_plot.data[1].marker.color.push(correct ? '#63bf7d' : '#d61e49');
@@ -498,7 +487,7 @@ function test_color_support() {
   page.hasHDR = window.matchMedia('(dynamic-range: high)').matches;
 
   // TODO: better logic (e.g., use P3 if it's supported)
-  page.cs = 1;
+  page.cs = 0;
 }
 
 var page, state;
