@@ -360,7 +360,6 @@ class pageObj {
       // Viénot 1999 (one plane); an approximation of Brettel 1997 (two planes).
       // for protanopia and deuteranopia they use the black-blue-yellow-white plane;
       // for tritanopia the paper didn't say what to do here we simply use black-red-cyan-white plane.
-      var RGBWhite = new colorObj([1, 1, 1], 'v_rgb');
       var RGBBlue = new colorObj([0, 0, 1], 'v_rgb');
       var RGBRed = new colorObj([1, 0, 0], 'v_rgb');
       var RGBYellow = new colorObj([1, 1, 0], 'v_rgb');
@@ -378,7 +377,6 @@ class pageObj {
     } else {
       // Brettel 1997 (two planes).
       // in LMS space (transformed from JV-modified XYZ)
-      var RGBWhite = new colorObj([1, 1, 1], 'v_rgb');
       var aWhite = color_consts.aEEW_lms; // (Brettel 97 uses EEW and Vienot 99 uses sRGBWhite)
   
       var p_norm1 = math.cross(aWhite, color_consts.a475_lms);
@@ -489,12 +487,12 @@ function test_color_support() {
   page.hasRec2020 = rec2020_browser && rec2020_display;
 
   // TODO: better logic (e.g., use P3 if it's supported)
-  page.cs = 0;
+  page.cs = 1;
 }
 
 var page, state;
 
-d3.csv('ciexyzjv.csv').then(function(rows){
+d3.csv('../ciexyzjv.csv').then(function(rows){
   initPage();
 
   // initial plot with no meaningful data

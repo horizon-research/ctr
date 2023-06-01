@@ -25,12 +25,25 @@ class cConst {
       this.lin_sRGB_to_LMS = math.multiply(JV_XYZ_to_SP_LMS, this.lin_sRGB_to_XYZ);
       this.XYZ_to_LMS = JV_XYZ_to_SP_LMS;
       this.LMS_to_XYZ = math.inv(this.XYZ_to_LMS);
+
+      this.a475_lms = [0.0509384206, 0.0618970658, 0.015150576];
+      this.a485_lms = [0.0818313433, 0.0880318619, 0.009429312];
+      this.a575_lms = [0.6281339073, 0.2874094695, 0.000031687248];
+      this.a660_lms = [0.05820210417, 0.002795455831, 0.00000019144848];
+      this.aEEW_lms = [14.30506543, 7.190126944, 0.3379046085];
     } else {
       this.lin_sRGB_to_XYZ = linear_sRGB_to_CIEXYZ_D65;
       this.lin_sRGB_to_LMS = math.multiply(CIEXYZ_to_LMS_D65, this.lin_sRGB_to_XYZ);
       this.XYZ_to_LMS = CIEXYZ_to_LMS_D65;
       this.LMS_to_XYZ = math.inv(this.XYZ_to_LMS);
+
+      this.a475_lms = math.multiply(this.XYZ_to_LMS, [0.142100000000, 0.112600000000, 1.041900000000]);
+      this.a485_lms = math.multiply(this.XYZ_to_LMS, [0.057950010000, 0.169300000000, 0.616200000000]);
+      this.a575_lms = math.multiply(this.XYZ_to_LMS, [0.842500000000, 0.915400000000, 0.001800000000]);
+      this.a660_lms = math.multiply(this.XYZ_to_LMS, [0.164900000000, 0.061000000000, 0.000000000000]);
+      this.aEEW_lms = math.multiply(this.XYZ_to_LMS, [1, 1, 1]);
     }
+    // TODO: this needs to changed to JV XYZ if useJV is true
     this.lin_P3_to_XYZ = P3_to_CIEXYZ_D65;
     this.XYZ_to_lin_sRGB = math.inv(this.lin_sRGB_to_XYZ);
     this.LMS_to_lin_sRGB = math.inv(this.lin_sRGB_to_LMS);
@@ -39,14 +52,9 @@ class cConst {
     this.lin_sRGB_to_lin_P3 = math.inv(this.lin_P3_to_lin_sRGB);
     this.LMS_to_lin_P3 = math.multiply(this.XYZ_to_lin_P3, this.LMS_to_XYZ);
 
-    this.a475_lms = [0.0509384206, 0.0618970658, 0.015150576];
-    this.a485_lms = [0.0818313433, 0.0880318619, 0.009429312];
-    this.a575_lms = [0.6281339073, 0.2874094695, 0.000031687248];
-    this.a660_lms = [0.05820210417, 0.002795455831, 0.00000019144848];
-    this.aEEW_lms = [14.30506543, 7.190126944, 0.3379046085];
   }
 }
-var color_consts = new cConst(true);
+var color_consts = new cConst(false);
 
 var deltaLUT_8b = [
 0.0005, //0.0003267973856

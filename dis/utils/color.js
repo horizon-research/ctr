@@ -47,7 +47,7 @@ function project(colors_LMS) {
     var outColors2 = math.multiply(page.proj_mat[page.type + 3], colors_LMS);
     var outColors = [];
 
-    var whiteLMS = (new colorObj([1, 1, 1], 'v_rgb')).lms;
+    var whiteLMS = color_consts.aEEW_lms; // EEW is used as white
     var wL = whiteLMS[0], wM = whiteLMS[1], wS = whiteLMS[2];
 
     for (var i = 0; i < colors_LMS[0].length; i++) {
