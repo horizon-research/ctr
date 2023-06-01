@@ -187,12 +187,6 @@ function plotXy(plotId, rows) {
 
 
   // Viénot 1999 single-plane approach
-  //var RGB2xyz = [[40.9568, 35.5041, 17.9167], [21.3389, 70.6743, 7.9868], [1.86297, 11.462, 91.2367]];
-  //var sRGB_R = math.multiply(RGB2xyz, [1, 0, 0]);
-  //var sRGB_B = math.multiply(RGB2xyz, [0, 0, 1]);
-  //var sRGB_Y = math.multiply(RGB2xyz, [1, 1, 0]);
-  //var sRGB_C = math.multiply(RGB2xyz, [0, 1, 1]);
-  //var sRGB_W = math.multiply(RGB2xyz, [1, 1, 1]);
   var W = (new colorObj([1, 1, 1], 'v_rgb')).xy;
   var B = (new colorObj([0, 0, 1], 'v_rgb')).xy;
   var R = (new colorObj([1, 0, 0], 'v_rgb')).xy;
@@ -342,16 +336,19 @@ function plotXy(plotId, rows) {
       '<br>Simulation: %{text}<extra></extra>',
   };
 
-  var srgb_gamut_lines = {
-    x: [0.6383673477, 0.301801932, 0.1529509084, 0.6383673477],
-    y: [0.3325957349, 0.6007655533, 0.06818154656, 0.3325957349],
+  var R_xy = (new colorObj([1, 0, 0], 'v_rgb')).xy;
+  var G_xy = (new colorObj([0, 1, 0], 'v_rgb')).xy;
+  var B_xy = (new colorObj([0, 0, 1], 'v_rgb')).xy;
+  var rgb_gamut_lines = {
+    x: [R_xy[0], G_xy[0], B_xy[0], R_xy[0]],
+    y: [R_xy[1], G_xy[1], B_xy[1], R_xy[1]],
     text: ['R', 'G', 'B', 'R'],
     mode: 'lines',
     line: {
       width: 1,
       color: orangeColor,
     },
-    name: 'sRGB gamut',
+    name: page.cs ? 'Display P3 gamut' : 'sRGB gamut',
     visible: true,
     hovertemplate: 'x: %{x}' +
       '<br>y: %{y}' +
@@ -359,34 +356,34 @@ function plotXy(plotId, rows) {
   };
 
   line_p_R = math.transpose(
-     [math.add([0.6383673477, 0.3325957349], math.multiply(state.confusion_lines_xy[0*3+0], 2)),
-      math.add([0.6383673477, 0.3325957349], math.multiply(state.confusion_lines_xy[0*3+0], -2))]);
+     [math.add(R_xy, math.multiply(state.confusion_lines_xy[0*3+0], 2)),
+      math.add(R_xy, math.multiply(state.confusion_lines_xy[0*3+0], -2))]);
   line_p_G = math.transpose(
-     [math.add([0.301801932, 0.6007655533], math.multiply(state.confusion_lines_xy[0*3+1], -2)),
-      math.add([0.301801932, 0.6007655533], math.multiply(state.confusion_lines_xy[0*3+1], 2))]);
+     [math.add(G_xy, math.multiply(state.confusion_lines_xy[0*3+1], -2)),
+      math.add(G_xy, math.multiply(state.confusion_lines_xy[0*3+1], 2))]);
   line_p_B = math.transpose(
-     [math.add([0.1529509084, 0.06818154656], math.multiply(state.confusion_lines_xy[0*3+2], 2)),
-      math.add([0.1529509084, 0.06818154656], math.multiply(state.confusion_lines_xy[0*3+2], -2))]);
+     [math.add(B_xy, math.multiply(state.confusion_lines_xy[0*3+2], 2)),
+      math.add(B_xy, math.multiply(state.confusion_lines_xy[0*3+2], -2))]);
 
   line_d_R = math.transpose(
-     [math.add([0.6383673477, 0.3325957349], math.multiply(state.confusion_lines_xy[1*3+0], 2)),
-      math.add([0.6383673477, 0.3325957349], math.multiply(state.confusion_lines_xy[1*3+0], -2))]);
+     [math.add(R_xy, math.multiply(state.confusion_lines_xy[1*3+0], 2)),
+      math.add(R_xy, math.multiply(state.confusion_lines_xy[1*3+0], -2))]);
   line_d_G = math.transpose(
-     [math.add([0.301801932, 0.6007655533], math.multiply(state.confusion_lines_xy[1*3+1], -2)),
-      math.add([0.301801932, 0.6007655533], math.multiply(state.confusion_lines_xy[1*3+1], 2))]);
+     [math.add(G_xy, math.multiply(state.confusion_lines_xy[1*3+1], -2)),
+      math.add(G_xy, math.multiply(state.confusion_lines_xy[1*3+1], 2))]);
   line_d_B = math.transpose(
-     [math.add([0.1529509084, 0.06818154656], math.multiply(state.confusion_lines_xy[1*3+2], 2)),
-      math.add([0.1529509084, 0.06818154656], math.multiply(state.confusion_lines_xy[1*3+2], -2))]);
+     [math.add(B_xy, math.multiply(state.confusion_lines_xy[1*3+2], 2)),
+      math.add(B_xy, math.multiply(state.confusion_lines_xy[1*3+2], -2))]);
 
   line_t_R = math.transpose(
-     [math.add([0.6383673477, 0.3325957349], math.multiply(state.confusion_lines_xy[2*3+0], 2)),
-      math.add([0.6383673477, 0.3325957349], math.multiply(state.confusion_lines_xy[2*3+0], -2))]);
+     [math.add(R_xy, math.multiply(state.confusion_lines_xy[2*3+0], 2)),
+      math.add(R_xy, math.multiply(state.confusion_lines_xy[2*3+0], -2))]);
   line_t_G = math.transpose(
-     [math.add([0.301801932, 0.6007655533], math.multiply(state.confusion_lines_xy[2*3+1], -2)),
-      math.add([0.301801932, 0.6007655533], math.multiply(state.confusion_lines_xy[2*3+1], 2))]);
+     [math.add(G_xy, math.multiply(state.confusion_lines_xy[2*3+1], -2)),
+      math.add(G_xy, math.multiply(state.confusion_lines_xy[2*3+1], 2))]);
   line_t_B = math.transpose(
-     [math.add([0.1529509084, 0.06818154656], math.multiply(state.confusion_lines_xy[2*3+2], 2)),
-      math.add([0.1529509084, 0.06818154656], math.multiply(state.confusion_lines_xy[2*3+2], -2))]);
+     [math.add(B_xy, math.multiply(state.confusion_lines_xy[2*3+2], 2)),
+      math.add(B_xy, math.multiply(state.confusion_lines_xy[2*3+2], -2))]);
 
   var p_conf = {
     x: line_p_R[0].concat(line_p_G[0]).concat(line_p_B[0]),
@@ -426,7 +423,7 @@ function plotXy(plotId, rows) {
 
   var data = [xyTrace,
               isochrome_line_pd, isochrome_line_tri, isochrome_line_pd_single, isochrome_line_tri_single,
-              line, sim_line, srgb_gamut_lines,
+              line, sim_line, rgb_gamut_lines,
               p_conf, d_conf, t_conf,
              ];
 

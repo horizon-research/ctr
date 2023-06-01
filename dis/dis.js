@@ -208,6 +208,7 @@ function genTestColor(mode) {
         'v_rgb');
   } else if (mode == 1) {
     // sample in RGB
+    // TODO: this might go OOG. what do we do?
     testColor = new colorObj(math.add(state.baseColor.v_rgb, math.multiply(line_RGB, state.scale)),
         'v_rgb');
   }
@@ -232,7 +233,7 @@ function testOneColor(random) {
 
 function submit(rangeId) {
   // set the base color.
-  state.baseColor = new colorObj([0.85, 0.5, 0.25], 'v_rgb');
+  state.baseColor = new colorObj([0.5, 0.9, 0.25], 'v_rgb');
 
   $(rangeId).val(0);
   $('.rot-label').html('Rotation Angle (Degree): 0&#176;');

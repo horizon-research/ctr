@@ -378,12 +378,22 @@ class discTestState {
     return lines;
   }
 
+  get confusion_lines_rgb() {
+    return page.cs ? this._confusion_lines_lin_p3 : this._confusion_lines_lin_srgb;
+  }
+
+  get confusion_lines_xy() {
+    return this._confusion_lines_xy;
+  }
+
   setStep2() {
 	// TODO: the idea is to make sure in each step at least one channel changes
 	// by setting the step size based on the first reversal color, but the
 	// implementation using deltaLUT is a hack and for now works only for sRGB
     // TODO: there are a few uses of this line. should be part of the test object
     var line_RGB = this.confusion_lines_rgb[1]; // D line in RGB
+
+    // TODO: fix this. should just be using srgb
     var deltaR = deltaLUT_8b[this.testColor.srgb[0]];
     var deltaG = deltaLUT_8b[this.testColor.srgb[1]];
     var deltaB = deltaLUT_8b[this.testColor.srgb[2]];
@@ -533,14 +543,6 @@ class discTestState {
   }
   get step2() {
     return this._step2;
-  }
-
-  get confusion_lines_rgb() {
-    return page.cs ? this._confusion_lines_lin_p3 : this._confusion_lines_lin_srgb;
-  }
-
-  get confusion_lines_xy() {
-    return this._confusion_lines_xy;
   }
 }
 
