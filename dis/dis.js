@@ -129,9 +129,8 @@ function updatePlot(theta, plotId_rgb, plotId_lab, plotId_xy, action) {
   //$('#n14').text(rotColors_css[3].srgb_name);
 }
 
-function registerSlider(id) {
-  //$('input[type=range]').on('input', function() {
-  $(id).on('input', function() {
+function registerSlider() {
+  $('#customRange').on('input', function() {
     $('.rot-label').html('Rotation Angle (Degree): ' + (this.value/Math.PI*180).toFixed(2) + '&#176;')
     updatePlot(this.value, 'rgbDiv', 'labDiv', 'xyDiv', 0)
   });
@@ -180,8 +179,8 @@ function registerPickSimMethod() {
   });
 }
 
-function registerReset(resetId) {
-  $(resetId).on('click', function(evt) {
+function registerReset() {
+  $('#reset').on('click', function(evt) {
     $('#customRange').val(0);
     // need to explicitly trigger input event
     $('#customRange').trigger('input');
@@ -476,11 +475,11 @@ function initPage() {
 
   test_color_support();
 
-  registerSlider('#customRange');
+  registerSlider();
   registerSimMode();
   registerPickType();
   registerPickSimMethod();
-  registerReset('#reset');
+  registerReset();
   registerGetAns();
 
   // init color blindness type
