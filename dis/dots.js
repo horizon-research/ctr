@@ -19,7 +19,7 @@ var createBlueDots = function () {
     var rand_x = Math.random() * canvas.width;
     var rand_y = Math.random() * canvas.height;
     context.arc(rand_x, rand_y, 2, 1, 2 * Math.PI);
-    context.fillStyle = '#888888';
+    context.fillStyle = 'rgb(160, 160, 160)';
     context.fill();
     context.closePath();
   }
