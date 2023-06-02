@@ -134,6 +134,8 @@ function registerSlider() {
     $('.rot-label').html('Rotation Angle (Degree): ' + (this.value/Math.PI*180).toFixed(2) + '&#176;')
     updatePlot(this.value, 'rgbDiv', 'labDiv', 'xyDiv', 0)
   });
+
+  $('#customRange').prop('disabled', false);
 }
 
 function registerSimMode() {
@@ -146,6 +148,11 @@ function registerSimMode() {
 
     if (page.init) updatePlot($('#customRange').val(), 'rgbDiv', 'labDiv', 'xyDiv', 1);
   });
+
+  // choose to show actual colors
+  $('#yes').prop("checked", true).trigger('change');
+
+  $('input[type=radio][name=sim]').prop('disabled', false);
 }
 
 function registerPickType() {
@@ -161,6 +168,12 @@ function registerPickType() {
     // automatically update colors and re-plot
     if (page.init) updatePlot($('#customRange').val(), 'rgbDiv', 'labDiv', 'xyDiv', 4);
   });
+
+  // init color blindness type
+  $('#pickd').prop("checked", true).trigger('change');
+
+  // we don't want to change blindness type during test
+  $('input[type=radio][name=pick]').prop('disabled', true);
 }
 
 function registerPickSimMethod() {
@@ -177,6 +190,11 @@ function registerPickSimMethod() {
     // automatically update colors and re-plot
     if (page.init) updatePlot($('#customRange').val(), 'rgbDiv', 'labDiv', 'xyDiv', 2);
   });
+
+  // init simulation method
+  $('#m2').prop("checked", true).trigger('change');
+
+  $('input[type=radio][name=method]').prop('disabled', false);
 }
 
 function registerReset() {
@@ -185,6 +203,8 @@ function registerReset() {
     // need to explicitly trigger input event
     $('#customRange').trigger('input');
   });
+
+  $('#reset').prop('disabled', false);
 }
 
 function genTestColor(mode) {
@@ -464,7 +484,17 @@ class pageObj {
 var page, state;
 
 d3.csv('../ciexyzjv.csv').then(function(rows){
-  initPage();
+  page = new pageObj();
+  state = new discTestState();
+
+  registerSlider();
+  registerReset();
+  registerSimMode();
+  registerPickType();
+  registerPickSimMethod();
+  registerGetAns();
+
+  page.init = true;
 
   // initial plot with no meaningful data
   plotXy('xyDiv', rows);
@@ -474,34 +504,6 @@ d3.csv('../ciexyzjv.csv').then(function(rows){
 
   submit('#customRange');
 });
-
-function initPage() {
-  page = new pageObj();
-  state = new discTestState();
-
-  registerSlider();
-  registerSimMode();
-  registerPickType();
-  registerPickSimMethod();
-  registerReset();
-  registerGetAns();
-
-  // init color blindness type
-  $('#pickd').prop("checked", true).trigger('change');
-  // init simulation method
-  $('#m2').prop("checked", true).trigger('change');
-  // choose to show actual colors
-  $('#yes').prop("checked", true).trigger('change');
-
-  $('input[type=radio][name=sim]').prop('disabled', false);
-  $('input[type=radio][name=method]').prop('disabled', false);
-  // we don't want to change blindness type during test
-  $('input[type=radio][name=pick]').prop('disabled', true);
-  $('#customRange').prop('disabled', false);
-  $('#reset').prop('disabled', false);
-
-  page.init = true;
-}
 
 // https://www.sitepoint.com/get-url-parameters-with-javascript/
 const queryString = window.location.search;
