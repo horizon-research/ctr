@@ -1,23 +1,26 @@
+var canvas = document.querySelector('canvas#c11');
+const context = canvas.getContext("2d");
+
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
 // dot count
-const dots = 500;
+const dots = 2000;
 // center point
-const center = { x: 100, y: 100 };
+const center = { x: canvas.width/2, y: canvas.height/2};
 // max distance from the center
 const radius = 150;
 // centripetal force, the larger it gets the more concentrated the dots are
 const centripetal = 0.5;
 
-var canvas = document.querySelector('canvas#c11');
-const context = canvas.getContext("2d");
+$('#c11').css('zIndex', '-10');
 
 var createBlueDots = function () {
   context.clearRect(0, 0, canvas.width, canvas.height);
   for (var i = 0; i <= dots; i++) {
     context.beginPath();
-    const dist = (Math.random() ** centripetal) * radius;
-    const angle = Math.random() * Math.PI * 2;
-    var rand_x = dist * Math.cos(angle) + center.x;
-    var rand_y = dist * Math.sin(angle) + center.y;
+    var rand_x = Math.random() * canvas.width;
+    var rand_y = Math.random() * canvas.height;
     context.arc(rand_x, rand_y, 2, 1, 2 * Math.PI);
     context.fillStyle = '#888888';
     context.fill();
