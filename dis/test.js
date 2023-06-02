@@ -1,10 +1,29 @@
 $('#next').on('click', function(evt) {
   page.submit(new colorObj([0.5, 0.9, 0.25], 'v_rgb'));
+
+  $("body").keydown(function(e){
+    var current = parseFloat($('#customRange').val());
+    if ((e.keyCode || e.which) == 37) {
+      // left arrow
+      current = (current - 0.02);
+    } else if ((e.keyCode || e.which) == 39) {
+      // right arrow
+      current = (current + 0.02);
+    } else if ((e.keyCode || e.which) == 32) {
+      // space
+      current = 0;
+    }
+
+    $('#customRange').val(current);
+    $('#customRange').trigger('input');
+  });
+
   $('#test-tab').trigger('click');
 });
 
 $('#expDiv').on('finish', function(evt) {
   $('#res-tab').trigger('click');
+  $("body").unbind('keydown');
 });
 
 // TODO: set some basic color config here?
