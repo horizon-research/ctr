@@ -64,7 +64,8 @@ d3.csv('../ciexyzjv.csv').then(function(rows){
 
   var showXy = true, showRGB = false, showLab = false, showExp = true, showConfig = true;
 
-  page.configPage(registerPickType, registerSimMode, registerPickSimMethod, showXy, showRGB, showLab, showExp, showConfig, rows);
+  page.configPage(registerPickType, registerSimMode, registerPickSimMethod,
+    showXy, showRGB, showLab, showExp, showConfig, rows);
 
   // set baseColor here
   page.submit(new colorObj([0.5, 0.9, 0.25], 'v_rgb'));

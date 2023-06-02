@@ -93,20 +93,19 @@ function updatePlot(theta, plotId_rgb, plotId_lab, plotId_xy, action) {
   state.rotate_colors(theta);
   // state.rotColorsMapped has gamut-mapped rotated colors
   state.dichromatic_gamut_mapping(state.rotColors, 1); // 0 for no mapping; 1 for clipping; 2 for confusion line mapping
+  // state.simColors has simulated, gamut-mapped rotated colors
+  state.simulate(); // always run simulation (might not be needed in test if page.sim = 0)
+
   // The reason to use the legacy rgb format is because plotly supports only that
   var rotColors_css = state.rotColorsMapped.map(c => c.legacy_rgb_css);
+  var simColors_css = state.simColors.map(c => c.legacy_rgb_css);
+
+  if (page.showRGB) update_rgb(rotColors_css, simColors_css);
+  if (page.showLab) update_lab(rotColors_css, simColors_css);
+  if (page.showXy) update_xy(rotColors_css, simColors_css);
+  update_legends(page.showXy, page.showRGB);
 
   if (page.sim) {
-    // state.simColors has simulated, gamut-mapped rotated colors
-    state.simulate();
-    var simColors_css = state.simColors.map(c => c.legacy_rgb_css);
-
-    // do not support showPlots without simulation
-    if (page.showRGB) update_rgb(rotColors_css, simColors_css);
-    if (page.showLab) update_lab(rotColors_css, simColors_css);
-    if (page.showXy) update_xy(rotColors_css, simColors_css);
-    update_legends(page.showXy, page.showRGB);
-
     /* update square colors */
     var temp = state.simColors.map(c => c.v_rgb_css);
     $('#s11').css('background-color', temp[0]);
