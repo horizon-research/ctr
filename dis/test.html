@@ -155,57 +155,61 @@
         </div>
 
         <div class="tab-pane" id="res-tab-pane" role="tabpanel" aria-labelledby="res-tab" tabindex="0">
-          <div class="row mt-3 d-flex justify-content-center align-items-center">
-            <div class="col-sm-6">
-              <div id="expDiv"></div>
+          <div class="d-grid gap-3" style="grid-template-columns: 2fr 2fr;">
+            <div class="pt-3 mb-4 px-3 bg-light border rounded-3">
+              <div class="col-sm-12">
+                <div id="expDiv"></div>
+              </div>
             </div>
-            <div class="col-sm-6">
-              <table class="table text-center caption-top mb-4">
-                <caption>Color space support in your system</caption>
-                <thead>
-                  <tr>
-                    <th scope="col"></th>
-                    <th scope="col">sRGB</th>
-                    <th scope="col">Display P3</th>
-                    <th scope="col">Rec2020</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <th scope="row">Browser</th>
-                    <td id="bsrgb"></td>
-                    <td id="bp3"></td>
-                    <td id="b2020"></td>
-                  </tr>
-                  <tr>
-                    <th scope="row">Display</th>
-                    <td id="dsrgb"></td>
-                    <td id="dp3"></td>
-                    <td id="d2020"></td>
-                  </tr>
-                </tbody>
-              </table>
-              <table class="table text-left caption-top">
-                <caption>Color settings used in the experiment</caption>
-                <tbody>
-                  <tr>
-                    <th scope="row">Used Color Space</th>
-                    <td id="usedcs"></td>
-                  </tr>
-                  <tr>
-                    <th scope="row">Used XYZ CMFs</th>
-                    <td id="usedxyz"></td>
-                  </tr>
-                  <tr>
-                    <th scope="row">Used Cone Fundamentals</th>
-                    <td id="usedlms"></td>
-                  </tr>
-                  <tr>
-                    <th scope="row">Used Bit Depth</th>
-                    <td id="usedbd"></td>
-                  </tr>
-                </tbody>
-              </table>
+            <div class="pt-3 mb-4 px-3 bg-light border rounded-3 d-flex justify-content-center align-items-center">
+              <div class="row px-4">
+                <table class="table text-center caption-top">
+                  <caption>Color space support in your system</caption>
+                  <thead>
+                    <tr>
+                      <th scope="col"></th>
+                      <th scope="col">sRGB</th>
+                      <th scope="col">Display P3</th>
+                      <th scope="col">Rec2020</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <th scope="row">Browser</th>
+                      <td id="bsrgb"></td>
+                      <td id="bp3"></td>
+                      <td id="b2020"></td>
+                    </tr>
+                    <tr>
+                      <th scope="row">Display</th>
+                      <td id="dsrgb"></td>
+                      <td id="dp3"></td>
+                      <td id="d2020"></td>
+                    </tr>
+                  </tbody>
+                </table>
+                <table class="table text-left caption-top">
+                  <caption>Color settings used in the experiment</caption>
+                  <tbody>
+                    <tr>
+                      <th scope="row">Used Color Space</th>
+                      <td id="usedcs"></td>
+                    </tr>
+                    <tr>
+                      <th scope="row">Used XYZ CMFs</th>
+                      <td id="usedxyz"></td>
+                    </tr>
+                    <tr>
+                      <th scope="row">Used Cone Fundamentals</th>
+                      <td id="usedlms"></td>
+                    </tr>
+                    <tr>
+                      <th scope="row">Used Bit Depth</th>
+                      <td id="usedbd"></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
         </div>

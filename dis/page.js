@@ -212,7 +212,7 @@ function setupNextColor() {
   let timer = setInterval(function() {
     let timePassed = Date.now() - start;
   
-    if (timePassed >= 1000) {
+    if (timePassed >= 100) {
       clearInterval(timer);
       $('#s12').css('zIndex', '1');
       $('#s13').css('zIndex', '1');

@@ -1,3 +1,7 @@
+// init canvas size here so that it doesn't conflict with canvas in dis
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
 $('#next').on('click', function(evt) {
   page.submit(new colorObj([0.5, 0.9, 0.25], 'v_rgb'));
 
