@@ -1,6 +1,7 @@
+$('#myTab').css('display', 'none');
+
 $('#next').on('click', function(evt) {
   $('#test-tab').trigger('click');
-  $('#myTab').css('display', 'none');
 });
 
 $('#expDiv').on('finish', function(evt) {
