@@ -9,8 +9,8 @@ d3.csv('../ciexyzjv.csv').then(function(rows){
   var showXy = true, showRGB = false, showLab = false, showExp = true;
   configPage(simMode, blindnessType, simMethod, showXy, showRGB, showLab, showExp, rows);
 
-  // TODO: set baseColor here?
-  submit();
+  // set baseColor here
+  page.submit(new colorObj([0.5, 0.9, 0.25], 'v_rgb'));
 });
 
 // https://www.sitepoint.com/get-url-parameters-with-javascript/

@@ -280,16 +280,6 @@ function testOneColor(random) {
   updatePlot(0, 'rgbDiv', 'labDiv', 'xyDiv', 3);
 }
 
-function submit() {
-  // set the base color.
-  state.baseColor = new colorObj([0.5, 0.9, 0.25], 'v_rgb');
-
-  $('#customRange').val(0);
-  $('.rot-label').html('Rotation Angle (Degree): 0&#176;');
-
-  testOneColor(true);
-}
-
 function setupNextColor() {
   // briefly blank the colors to reset the visual field
   $('#s11').css('background-color', 'rgb(248, 249, 250)');
@@ -445,6 +435,16 @@ class pageObj {
     this.cs = 1;
     $('#usedcs').html(this.cs ? 'Display P3' : 'sRGB');
     $('#usedbd').html(this.bitdepth);
+  }
+
+  submit(color) {
+    // set the base color.
+    state.baseColor = color;
+  
+    $('#customRange').val(0);
+    $('.rot-label').html('Rotation Angle (Degree): 0&#176;');
+  
+    testOneColor(true);
   }
 
   // TODO: true to assume that sRGB is always 8 bits?
