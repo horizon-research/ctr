@@ -37,16 +37,3 @@
   border-radius: 2px;
 }
 
-/* This checks browser support of the css syntax */
-/* @supports (background: color(display-p3 0 0 0)) { */
-/* This checks display support (using the current ICC profile) */
-/*
-@media (color-gamut: p3) {
-  #color1 {
-    background-color: color(srgb 0 0.995 0);
-  }
-  #color2 {
-    background-color: color(srgb 0 1 0);
-  }
-}
-*/

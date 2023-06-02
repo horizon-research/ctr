@@ -22,6 +22,7 @@ $('#next').on('click', function(evt) {
     $('#customRange').trigger('input');
   });
 
+  $('body').css('background-color', 'rgb(120, 120, 120)');
   $('#test-tab').trigger('click');
 });
 
@@ -30,8 +31,7 @@ $('#expDiv').on('finish', function(evt) {
   $("body").unbind('keydown');
 });
 
-// TODO: set some basic color config here?
-page = new pageObj();
+page = new pageObj(1);
 state = new discTestState();
 
 function registerPickType() {
