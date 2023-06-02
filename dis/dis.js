@@ -138,46 +138,83 @@ function registerSlider() {
   $('#customRange').prop('disabled', false);
 }
 
-function registerSimMode() {
-  $('input[type=radio][name=sim]').change(function() {
-    if (this.id == 'yes') {
+function registerSimMode(simMode) {
+  if (simMode[0]) {
+    $('input[type=radio][name=sim]').change(function() {
+      if (this.id == 'yes') {
+        page.sim = true;
+      } else {
+        page.sim = false;
+      }
+
+      if (page.init) updatePlot($('#customRange').val(), 'rgbDiv', 'labDiv', 'xyDiv', 1);
+    });
+
+    // choose to show actual colors
+    $('#'+simMode[1]).prop("checked", true).trigger('change');
+
+    $('input[type=radio][name=sim]').prop('disabled', false);
+  } else {
+    if (simMode[1] == 'yes') {
       page.sim = true;
     } else {
       page.sim = false;
     }
-
-    if (page.init) updatePlot($('#customRange').val(), 'rgbDiv', 'labDiv', 'xyDiv', 1);
-  });
-
-  // choose to show actual colors
-  $('#yes').prop("checked", true).trigger('change');
-
-  $('input[type=radio][name=sim]').prop('disabled', false);
+  }
 }
 
-function registerPickType() {
-  $('input[type=radio][name=pick]').change(function() {
-    if (this.id == 'pickp') {
+function registerPickType(blindnessType) {
+  if (blindnessType[0]) {
+    $('input[type=radio][name=pick]').change(function() {
+      if (this.id == 'pickp') {
+        page.type = 0;
+      } else if (this.id == 'pickd') {
+        page.type = 1;
+      } else if (this.id == 'pickt') {
+        page.type = 2;
+      }
+
+      // automatically update colors and re-plot
+      if (page.init) updatePlot($('#customRange').val(), 'rgbDiv', 'labDiv', 'xyDiv', 4);
+    });
+
+    // init color blindness type
+    $('#'+blindnessType[1]).prop("checked", true).trigger('change');
+
+    // we don't want to change blindness type during test
+    $('input[type=radio][name=pick]').prop('disabled', true);
+  } else {
+    if (blindnessType[1] == 'pickp') {
       page.type = 0;
     } else if (this.id == 'pickd') {
       page.type = 1;
     } else if (this.id == 'pickt') {
       page.type = 2;
     }
-
-    // automatically update colors and re-plot
-    if (page.init) updatePlot($('#customRange').val(), 'rgbDiv', 'labDiv', 'xyDiv', 4);
-  });
-
-  // init color blindness type
-  $('#pickd').prop("checked", true).trigger('change');
-
-  // we don't want to change blindness type during test
-  $('input[type=radio][name=pick]').prop('disabled', true);
+  }
 }
 
-function registerPickSimMethod() {
-  $('input[type=radio][name=method]').change(function() {
+function registerPickSimMethod(simMethod) {
+  if (simMethod[0]) {
+    $('input[type=radio][name=method]').change(function() {
+      if (this.id == 'm1') {
+        // one plane
+        page.simMethod = 1;
+      } else {
+        // two planes
+        page.simMethod = 0;
+      }
+      state.proj_mat = state.get_proj_mat();
+
+      // automatically update colors and re-plot
+      if (page.init) updatePlot($('#customRange').val(), 'rgbDiv', 'labDiv', 'xyDiv', 2);
+    });
+
+    // init simulation method
+    $('#'+simMethod[1]).prop("checked", true).trigger('change');
+
+    $('input[type=radio][name=method]').prop('disabled', false);
+  } else {
     if (this.id == 'm1') {
       // one plane
       page.simMethod = 1;
@@ -186,15 +223,7 @@ function registerPickSimMethod() {
       page.simMethod = 0;
     }
     state.proj_mat = state.get_proj_mat();
-
-    // automatically update colors and re-plot
-    if (page.init) updatePlot($('#customRange').val(), 'rgbDiv', 'labDiv', 'xyDiv', 2);
-  });
-
-  // init simulation method
-  $('#m2').prop("checked", true).trigger('change');
-
-  $('input[type=radio][name=method]').prop('disabled', false);
+  }
 }
 
 function registerReset() {
@@ -483,16 +512,23 @@ class pageObj {
 
 var page, state;
 
+function configPage(simMode, blindnessType, simMethod) {
+  registerSlider();
+  registerReset();
+  registerSimMode(simMode);
+  registerPickType(blindnessType);
+  registerPickSimMethod(simMethod);
+  registerGetAns();
+}
+
 d3.csv('../ciexyzjv.csv').then(function(rows){
   page = new pageObj();
   state = new discTestState();
 
-  registerSlider();
-  registerReset();
-  registerSimMode();
-  registerPickType();
-  registerPickSimMethod();
-  registerGetAns();
+  var simMode = [true, 'yes']; // enabled, choice
+  var blindnessType = [true, 'pickd'];
+  var simMethod = [true, 'm2'];
+  configPage(simMode, blindnessType, simMethod);
 
   page.init = true;
 
