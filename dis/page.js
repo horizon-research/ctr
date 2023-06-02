@@ -193,10 +193,11 @@ function testOneColor(random) {
 
 function setupNextColor() {
   // briefly blank the colors to reset the visual field
-  $('#s11').css('background-color', 'rgb(248, 249, 250)');
-  $('#s12').css('background-color', 'rgb(248, 249, 250)');
-  $('#s13').css('background-color', 'rgb(248, 249, 250)');
-  $('#s14').css('background-color', 'rgb(248, 249, 250)');
+  var bg_color = $('#patches').css('background-color');
+  $('#s11').css('background-color', bg_color);
+  $('#s12').css('background-color', bg_color);
+  $('#s13').css('background-color', bg_color);
+  $('#s14').css('background-color', bg_color);
 
   $('#customRange').val(0);
   $('.rot-label').html('Rotation Angle (Degree): 0&#176;')

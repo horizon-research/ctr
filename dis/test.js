@@ -1,5 +1,3 @@
-$('#myTab').css('display', 'none');
-
 $('#next').on('click', function(evt) {
   page.submit(new colorObj([0.5, 0.9, 0.25], 'v_rgb'));
   $('#test-tab').trigger('click');
