@@ -86,6 +86,9 @@
           <li class="nav-item" role="presentation">
             <button class="nav-link" id="test-tab" data-bs-toggle="tab" data-bs-target="#test-tab-pane" type="button" role="tab" aria-controls="test-tab-pane" aria-selected="false">test</button>
           </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="res-tab" data-bs-toggle="tab" data-bs-target="#res-tab-pane" type="button" role="tab" aria-controls="res-tab-pane" aria-selected="false">results</button>
+          </li>
         </ul>
         <div class="tab-content" id="myTabContent">
           <div class="tab-pane show active" id="setting-tab-pane" role="tabpanel" aria-labelledby="setting-tab" tabindex="0">
@@ -128,6 +131,10 @@
                 <p>After each trial, the patches will briefly show random gray dots to reset your visual field, followed by the next trial. The patch with a different color is randomized across trials. Each trial is made to be more challenging if you keep identifying the correct patch, and vice versa. The experiment terminates when a threshold is found.</p>
               </div>
             </div>
+          </div>
+
+          <div class="tab-pane" id="res-tab-pane" role="tabpanel" aria-labelledby="res-tab" tabindex="0">
+            <div id="expDiv"></div>
           </div>
         </div>
       </div>

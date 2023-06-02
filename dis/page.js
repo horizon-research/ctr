@@ -364,7 +364,7 @@ var getAnswer = function() {
                  'marker.line.width': [exp_plot.data[1].marker.line.width]};
   Plotly.update(exp_plot, data_update, {}, [1]);
 
-  if (state.numRevs == 6) {
+  if (state.numRevs == 2) {
     // terminate
     threshold = math.mean(state.scalesAtRevs.slice(-3));
 
@@ -379,6 +379,8 @@ var getAnswer = function() {
     // show marker legends
     data_update = {'visible': [true, true, true]};
     Plotly.update(exp_plot, data_update, {}, [2, 3, 4]);
+
+    $('#expDiv').trigger('finish');
   } else {
     setupNextColor();
   }
