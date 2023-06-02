@@ -16,6 +16,8 @@ var oGreenColor = 'rgba(0, 143, 0, 0.3)';
 var oBlueColor = 'rgba(1, 25, 147, 0.5)';
 
 function plotExp(plotId) {
+  if (!page.showExp) return;
+
   var trace = {
     x: [],
     y: [],
@@ -138,6 +140,8 @@ function plotExp(plotId) {
 }
 
 function plotXy(plotId, rows) {
+  if (!page.showXy) return;
+
   function unpack(rows, key, toNum) {
     return rows.map(function(row) {
         if (toNum == false) return row[key];
@@ -472,6 +476,8 @@ function plotXy(plotId, rows) {
 }
 
 function plotLab(plotId) {
+  if (!page.showLab) return;
+
   var traces = [];
 
   var line = {
@@ -598,6 +604,8 @@ function plotLab(plotId) {
 }
 
 function plotRGB(plotId) {
+  if (!page.showRGB) return;
+
   var allPoints = math.transpose([[0, 0, 0], [1, 0, 0], [0, 1, 0], [0, 0, 1], [1, 1, 0], [1, 0, 1], [0, 1, 1], [1, 1, 1]]);
 
   var traces = [];

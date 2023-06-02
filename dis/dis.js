@@ -6,11 +6,9 @@ function updatePlot(theta, plotId_rgb, plotId_lab, plotId_xy, action) {
   // 3: submit
   // 4: pick blindness type
 
-  var rgb_plot = document.getElementById(plotId_rgb);
-  var lab_plot = document.getElementById(plotId_lab);
-  var xy_plot = document.getElementById(plotId_xy);
-
   function update_rgb(rotColors_css, simColors_css) {
+    var rgb_plot = document.getElementById(plotId_rgb);
+
     var rotPoints_RGB = math.transpose(state.rotColorsMapped.map(c => c.v_rgb));
     var simPoints_RGB = math.transpose(state.simColors.map(c => c.v_rgb));
 
@@ -26,6 +24,8 @@ function updatePlot(theta, plotId_rgb, plotId_lab, plotId_xy, action) {
   }
 
   function update_lab(rotColors_css, simColors_css) {
+    var lab_plot = document.getElementById(plotId_lab);
+
     // update actual colors
     var rotPoints_Lab = math.transpose(state.rotColorsMapped.map(c => c.lab));
     data_update = {'x': [rotPoints_Lab[1]], 'y': [rotPoints_Lab[2]], 'z': [rotPoints_Lab[0]],
@@ -40,6 +40,8 @@ function updatePlot(theta, plotId_rgb, plotId_lab, plotId_xy, action) {
   }
 
   function update_xy(rotColors_css, simColors_css) {
+    var xy_plot = document.getElementById(plotId_xy);
+
     var rotPoints_xy = math.transpose(state.rotColorsMapped.map(c => c.xy));
     data_update = {'x': [rotPoints_xy[0]], 'y': [rotPoints_xy[1]],
                    'marker.color': [rotColors_css], 'text': [rotColors_css]};
@@ -53,6 +55,9 @@ function updatePlot(theta, plotId_rgb, plotId_lab, plotId_xy, action) {
 
   /* update iso-chrome planes/lines visibility */
   function update_legends(update_xy, update_rgb) {
+    var rgb_plot = document.getElementById(plotId_rgb);
+    var xy_plot = document.getElementById(plotId_xy);
+
     if (action == 2 || action == 3 || action == 4) {
       if (page.type == 0 || page.type == 1) { // P and D
         if (page.simMethod == 0) { // 2-plane {
@@ -88,23 +93,21 @@ function updatePlot(theta, plotId_rgb, plotId_lab, plotId_xy, action) {
   state.rotate_colors(theta);
   // state.rotColorsMapped has gamut-mapped rotated colors
   state.dichromatic_gamut_mapping(state.rotColors, 1); // 0 for no mapping; 1 for clipping; 2 for confusion line mapping
-  // state.simColors has simulated, gamut-mapped rotated colors
-  state.simulate();
-
-  // Convention: in |Points| each color is a column and in |Colors| each color is a row
   // The reason to use the legacy rgb format is because plotly supports only that
   var rotColors_css = state.rotColorsMapped.map(c => c.legacy_rgb_css);
-  //var rotColors_css = state.rotColorsMapped.map(c => 'rgb(25, 100, 170)');
-  var simColors_css = state.simColors.map(c => c.legacy_rgb_css);
 
-  //update_rgb(rotColors_css, simColors_css);
-  //update_lab(rotColors_css, simColors_css);
-  update_xy(rotColors_css, simColors_css);
-
-  update_legends(true, false);
-
-  /* update square colors */
   if (page.sim) {
+    // state.simColors has simulated, gamut-mapped rotated colors
+    state.simulate();
+    var simColors_css = state.simColors.map(c => c.legacy_rgb_css);
+
+    // do not support showPlots without simulation
+    if (page.showRGB) update_rgb(rotColors_css, simColors_css);
+    if (page.showLab) update_lab(rotColors_css, simColors_css);
+    if (page.showXy) update_xy(rotColors_css, simColors_css);
+    update_legends(page.showXy, page.showRGB);
+
+    /* update square colors */
     var temp = state.simColors.map(c => c.v_rgb_css);
     $('#s11').css('background-color', temp[0]);
     $('#s12').css('background-color', temp[1]);
@@ -277,11 +280,11 @@ function testOneColor(random) {
   updatePlot(0, 'rgbDiv', 'labDiv', 'xyDiv', 3);
 }
 
-function submit(rangeId) {
+function submit() {
   // set the base color.
   state.baseColor = new colorObj([0.5, 0.9, 0.25], 'v_rgb');
 
-  $(rangeId).val(0);
+  $('#customRange').val(0);
   $('.rot-label').html('Rotation Angle (Degree): 0&#176;');
 
   testOneColor(true);
@@ -406,6 +409,10 @@ class pageObj {
     this._hasRec2020 = false;
     this._hasHDR = false;
     this._cs = null;
+    this._showXy = false;
+    this._showRGB = false;
+    this._showLab = false;
+    this._showExp = false;
 
     this.test_color_support();
   }
@@ -508,37 +515,72 @@ class pageObj {
   set cs(v) {
     this._cs = v;
   }
+
+  get showXy() {
+    return this._showXy;
+  }
+  set showXy(v) {
+    this._showXy = v;
+  }
+
+  get showRGB() {
+    return this._showRGB;
+  }
+  set showRGB(v) {
+    this._showRGB = v;
+  }
+
+  get showLab() {
+    return this._showLab;
+  }
+  set showLab(v) {
+    this._showLab = v;
+  }
+
+  get showExp() {
+    return this._showExp;
+  }
+  set showExp(v) {
+    this._showExp = v;
+  }
 }
 
 var page, state;
 
-function configPage(simMode, blindnessType, simMethod) {
+function configPage(simMode, blindnessType, simMethod, rows, showXy, showRGB, showLab, showExp) {
   registerSlider();
   registerReset();
   registerSimMode(simMode);
   registerPickType(blindnessType);
   registerPickSimMethod(simMethod);
   registerGetAns();
+
+  page.init = true;
+
+  // initial plot with no meaningful data
+  page.showXy = showXy;
+  page.showRGB = showRGB;
+  page.showLab = showLab;
+  page.showExp = showExp;
+  plotXy('xyDiv', rows);
+  plotRGB('rgbDiv');
+  plotLab('labDiv');
+  plotExp('expDiv');
 }
 
 d3.csv('../ciexyzjv.csv').then(function(rows){
+  // TODO: set some basic color config here?
   page = new pageObj();
   state = new discTestState();
 
   var simMode = [true, 'yes']; // enabled, choice
   var blindnessType = [true, 'pickd'];
   var simMethod = [true, 'm2'];
-  configPage(simMode, blindnessType, simMethod);
+  var showXy = true, showRGB = false, showLab = false, showExp = true;
+  configPage(simMode, blindnessType, simMethod, rows, showXy, showRGB, showLab, showExp);
 
-  page.init = true;
-
-  // initial plot with no meaningful data
-  plotXy('xyDiv', rows);
-  //plotRGB('rgbDiv');
-  //plotLab('labDiv');
-  plotExp('expDiv');
-
-  submit('#customRange');
+  // TODO: set baseColor here?
+  submit();
 });
 
 // https://www.sitepoint.com/get-url-parameters-with-javascript/
