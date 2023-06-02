@@ -93,7 +93,41 @@
         <div class="tab-content" id="myTabContent">
           <div class="tab-pane show active" id="setting-tab-pane" role="tabpanel" aria-labelledby="setting-tab" tabindex="0">
             <div id="settingDiv">
-              <button type="button" class="btn btn-primary btn-sm my-4" id="next">Take Test</button>
+              <div class="row d-flex justify-content-center align-items-center">
+                <div class="col-sm-6">
+                  <div class="row">
+                    <div class="btn-group mb-2" role="group" aria-label="Basic radio toggle button group">
+                      <input type="radio" class="btn-check" name="pick" id="pickp" autocomplete="off">
+                      <label class="btn btn-outline-primary" for="pickp">Protanopia</label>
+                    
+                      <input type="radio" class="btn-check" name="pick" id="pickd" autocomplete="off">
+                      <label class="btn btn-outline-primary" for="pickd">Deuteranopia</label>
+                    
+                      <input type="radio" class="btn-check" name="pick" id="pickt" autocomplete="off">
+                      <label class="btn btn-outline-primary" for="pickt">Tritanopia</label>
+                    </div>
+                    <div class="btn-group mb-2" role="group" aria-label="Basic radio toggle button group">
+                      <input type="radio" class="btn-check" name="sim" id="no" autocomplete="off">
+                      <label class="btn btn-outline-primary" for="no">Actual Colors</label>
+
+                      <input type="radio" class="btn-check" name="sim" id="yes" autocomplete="off">
+                      <label class="btn btn-outline-primary" for="yes">Simulation</label>
+                    </div>
+                    <div class="btn-group mb-2" role="group" aria-label="Basic radio toggle button group">
+                      <input type="radio" class="btn-check" name="method" id="m1" autocomplete="off">
+                      <label class="btn btn-outline-primary" for="m1">One Plane (Viénot et al. 1999)</label>
+                    
+                      <input type="radio" class="btn-check" name="method" id="m2" autocomplete="off">
+                      <label class="btn btn-outline-primary" for="m2">Two Plane (Brettel et al. 1997)</label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="row d-flex justify-content-end">
+                <div class="col-sm-4">
+                  <button type="button" class="btn btn-primary my-4" id="next">Next</button>
+                </div>
+              </div>
             </div>
           </div>
 

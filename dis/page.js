@@ -141,31 +141,6 @@ function registerSlider() {
   $('#customRange').prop('disabled', false);
 }
 
-function registerSimMode(simMode) {
-  if (simMode[0]) {
-    $('input[type=radio][name=sim]').change(function() {
-      if (this.id == 'yes') {
-        page.sim = true;
-      } else {
-        page.sim = false;
-      }
-
-      if (page.init) updatePlot($('#customRange').val(), 'rgbDiv', 'labDiv', 'xyDiv', 1);
-    });
-
-    // choose to show actual colors
-    $('#'+simMode[1]).prop("checked", true).trigger('change');
-
-    $('input[type=radio][name=sim]').prop('disabled', false);
-  } else {
-    if (simMode[1] == 'yes') {
-      page.sim = true;
-    } else {
-      page.sim = false;
-    }
-  }
-}
-
 function registerPickType(blindnessType) {
   if (blindnessType[0]) {
     $('input[type=radio][name=pick]').change(function() {
@@ -424,10 +399,10 @@ class pageObj {
   
   }
 
-  configPage(simMode, blindnessType, simMethod, showXy, showRGB, showLab, showExp, showConfig, rows=null) {
+  configPage(registerSimMode, blindnessType, simMethod, showXy, showRGB, showLab, showExp, showConfig, rows=null) {
     registerSlider();
     registerReset();
-    registerSimMode(simMode);
+    registerSimMode();
     registerPickType(blindnessType);
     registerPickSimMethod(simMethod);
     registerGetAns();

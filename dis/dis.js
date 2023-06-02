@@ -7,7 +7,25 @@ d3.csv('../ciexyzjv.csv').then(function(rows){
   var blindnessType = [true, 'pickd'];
   var simMethod = [true, 'm2'];
   var showXy = true, showRGB = false, showLab = false, showExp = true, showConfig = true;
-  page.configPage(simMode, blindnessType, simMethod, showXy, showRGB, showLab, showExp, showConfig, rows);
+
+  function registerSimMode() {
+    $('input[type=radio][name=sim]').change(function() {
+      if (this.id == 'yes') {
+        page.sim = true;
+      } else {
+        page.sim = false;
+      }
+  
+      if (page.init) updatePlot($('#customRange').val(), 'rgbDiv', 'labDiv', 'xyDiv', 1);
+    });
+  
+    // choose to show actual colors
+    $('#no').prop("checked", true).trigger('change');
+  
+    $('input[type=radio][name=sim]').prop('disabled', false);
+  }
+
+  page.configPage(registerSimMode, blindnessType, simMethod, showXy, showRGB, showLab, showExp, showConfig, rows);
 
   // set baseColor here
   page.submit(new colorObj([0.5, 0.9, 0.25], 'v_rgb'));
