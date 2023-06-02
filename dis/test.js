@@ -1,6 +1,7 @@
 $('#myTab').css('display', 'none');
 
 $('#next').on('click', function(evt) {
+  page.submit(new colorObj([0.5, 0.9, 0.25], 'v_rgb'));
   $('#test-tab').trigger('click');
 });
 
@@ -12,20 +13,32 @@ $('#expDiv').on('finish', function(evt) {
 page = new pageObj();
 state = new discTestState();
 
-var simMode = [true, 'no']; // enabled, choice
-var blindnessType = [true, 'pickd'];
-var simMethod = [true, 'm2'];
-var showXy = false, showRGB = false, showLab = false, showExp = true, showConfig = true;
+function registerPickType() {
+  $('input[type=radio][name=pick]').change(function() {
+    if (this.id == 'pickp') {
+      page.type = 0;
+    } else if (this.id == 'pickd') {
+      page.type = 1;
+    } else if (this.id == 'pickt') {
+      page.type = 2;
+    }
+  });
+
+  // init color blindness type
+  $('#pickd').prop("checked", true).trigger('change');
+
+  $('input[type=radio][name=pick]').prop('disabled', false);
+}
 
 function registerSimMode() {
   $('input[type=radio][name=sim]').change(function() {
     if (this.id == 'yes') {
       page.sim = true;
+      $('input[type=radio][name=method]').prop('disabled', false);
     } else {
       page.sim = false;
+      $('input[type=radio][name=method]').prop('disabled', true);
     }
-
-    if (page.init) updatePlot($('#customRange').val(), 'rgbDiv', 'labDiv', 'xyDiv', 1);
   });
 
   // choose to show actual colors
@@ -33,6 +46,27 @@ function registerSimMode() {
 
   $('input[type=radio][name=sim]').prop('disabled', false);
 }
-page.configPage(registerSimMode, blindnessType, simMethod, showXy, showRGB, showLab, showExp, showConfig);
 
-page.submit(new colorObj([0.5, 0.9, 0.25], 'v_rgb'));
+function registerPickSimMethod() {
+  $('input[type=radio][name=method]').change(function() {
+    if (this.id == 'm1') {
+      // one plane
+      page.simMethod = 1;
+    } else {
+      // two planes
+      page.simMethod = 0;
+    }
+    state.proj_mat = state.get_proj_mat();
+  });
+
+  $('#m2').prop("checked", true).trigger('change');
+
+  // only enable when simulation is on
+  $('input[type=radio][name=method]').prop('disabled', true);
+}
+
+var showXy = false, showRGB = false, showLab = false, showExp = true, showConfig = true;
+
+page.configPage(registerPickType, registerSimMode, registerPickSimMethod,
+    showXy, showRGB, showLab, showExp, showConfig);
+

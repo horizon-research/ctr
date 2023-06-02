@@ -141,69 +141,6 @@ function registerSlider() {
   $('#customRange').prop('disabled', false);
 }
 
-function registerPickType(blindnessType) {
-  if (blindnessType[0]) {
-    $('input[type=radio][name=pick]').change(function() {
-      if (this.id == 'pickp') {
-        page.type = 0;
-      } else if (this.id == 'pickd') {
-        page.type = 1;
-      } else if (this.id == 'pickt') {
-        page.type = 2;
-      }
-
-      // automatically update colors and re-plot
-      if (page.init) updatePlot($('#customRange').val(), 'rgbDiv', 'labDiv', 'xyDiv', 4);
-    });
-
-    // init color blindness type
-    $('#'+blindnessType[1]).prop("checked", true).trigger('change');
-
-    // we don't want to change blindness type during test
-    $('input[type=radio][name=pick]').prop('disabled', true);
-  } else {
-    if (blindnessType[1] == 'pickp') {
-      page.type = 0;
-    } else if (blindnessType[1] == 'pickd') {
-      page.type = 1;
-    } else if (blindnessType[1] == 'pickt') {
-      page.type = 2;
-    }
-  }
-}
-
-function registerPickSimMethod(simMethod) {
-  if (simMethod[0]) {
-    $('input[type=radio][name=method]').change(function() {
-      if (this.id == 'm1') {
-        // one plane
-        page.simMethod = 1;
-      } else {
-        // two planes
-        page.simMethod = 0;
-      }
-      state.proj_mat = state.get_proj_mat();
-
-      // automatically update colors and re-plot
-      if (page.init) updatePlot($('#customRange').val(), 'rgbDiv', 'labDiv', 'xyDiv', 2);
-    });
-
-    // init simulation method
-    $('#'+simMethod[1]).prop("checked", true).trigger('change');
-
-    $('input[type=radio][name=method]').prop('disabled', false);
-  } else {
-    if (simMethod[1] == 'm1') {
-      // one plane
-      page.simMethod = 1;
-    } else {
-      // two planes
-      page.simMethod = 0;
-    }
-    state.proj_mat = state.get_proj_mat();
-  }
-}
-
 function registerReset() {
   $('#reset').on('click', function(evt) {
     $('#customRange').val(0);
@@ -399,12 +336,13 @@ class pageObj {
   
   }
 
-  configPage(registerSimMode, blindnessType, simMethod, showXy, showRGB, showLab, showExp, showConfig, rows=null) {
+  configPage(registerPickType, registerSimMode, registerPickSimMethod,
+      showXy, showRGB, showLab, showExp, showConfig, rows=null) {
     registerSlider();
     registerReset();
     registerSimMode();
-    registerPickType(blindnessType);
-    registerPickSimMethod(simMethod);
+    registerPickType();
+    registerPickSimMethod();
     registerGetAns();
   
     this.init = true;
