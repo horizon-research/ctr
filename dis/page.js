@@ -389,7 +389,7 @@ function registerGetAns() {
 }
 
 class pageObj {
-  constructor() {
+  constructor(color_space) {
     this._init = false;
     this._simMethod = null; // 0 for Brettel 1997 (two planes) and 1 for Viénot 1999 (one plane)
     this._type = null; // 0 for P, 1 for D, 2 for T
@@ -398,7 +398,8 @@ class pageObj {
     this._hasP3 = false;
     this._hasRec2020 = false;
     this._hasHDR = false;
-    this._cs = null;
+    this._color_supports = null;
+    this._cs = color_space;
     this._showXy = false;
     this._showRGB = false;
     this._showLab = false;
@@ -407,7 +408,21 @@ class pageObj {
     this.test_color_support();
   }
 
-  configPage(simMode, blindnessType, simMethod, showXy, showRGB, showLab, showExp, rows=null) {
+  displayConfig() {
+    $('#usedcs').html(this.cs ? 'Display P3' : 'sRGB');
+    $('#usedbd').html(this.bitdepth);
+    $('#usedxyz').html(color_consts.useJV ? 'Judd-Vos Modified XYZ' : 'CIE 1931 XYZ');
+    $('#usedlms').html(color_consts.useJV ? 'Smith & Pokorny (1975) 2-deg' : 'Hunt-Pointer-Estevez D65-adapted');
+    $('#bsrgb').html(this.color_supports.srgb_b ? '&#10003;' : '');
+    $('#bp3').html(this.color_supports.p3_b ? '&#10003;' : '');
+    $('#b2020').html(this.color_supports.rec2020_b ? '&#10003;' : '');
+    $('#dsrgb').html(this.color_supports.srgb_d ? '&#10003;' : '');
+    $('#dp3').html(this.color_supports.p3_d ? '&#10003;' : '');
+    $('#d2020').html(this.color_supports.rec2020_d ? '&#10003;' : '');
+  
+  }
+
+  configPage(simMode, blindnessType, simMethod, showXy, showRGB, showLab, showExp, showConfig, rows=null) {
     registerSlider();
     registerReset();
     registerSimMode(simMode);
@@ -426,6 +441,8 @@ class pageObj {
     plotRGB('rgbDiv');
     plotLab('labDiv');
     plotExp('expDiv');
+
+    if (showConfig) this.displayConfig();
   }
 
   test_color_support() {
@@ -439,23 +456,22 @@ class pageObj {
     var srgb_display = window.matchMedia('(color-gamut: srgb)').matches;
     var p3_display = window.matchMedia('(color-gamut: p3)').matches;
     var rec2020_display = window.matchMedia('(color-gamut: rec2020)').matches;
-  
-    $('#bsrgb').html(srgb_browser ? '&#10003;' : '');
-    $('#bp3').html(p3_browser ? '&#10003;' : '');
-    $('#b2020').html(rec2020_browser ? '&#10003;' : '');
-    $('#dsrgb').html(srgb_display ? '&#10003;' : '');
-    $('#dp3').html(p3_display ? '&#10003;' : '');
-    $('#d2020').html(rec2020_display ? '&#10003;' : '');
+
+    this._color_supports = {srgb_b: srgb_browser,
+                            p3_b: p3_browser,
+                            rec2020_b: rec2020_browser,
+                            srgb_d: srgb_display,
+                            p3_d: p3_display,
+                            rec2020_d: rec2020_display
+                           };
   
     this.hassRGB = srgb_browser && srgb_display;
     this.hasP3 = p3_browser && p3_display;
     this.hasRec2020 = rec2020_browser && rec2020_display;
     this.hasHDR = window.matchMedia('(dynamic-range: high)').matches;
   
-    // TODO: better logic (e.g., use P3 if it's supported)
-    this.cs = 1;
-    $('#usedcs').html(this.cs ? 'Display P3' : 'sRGB');
-    $('#usedbd').html(this.bitdepth);
+    if (this.cs == 1 && !this.hasP3)
+      this.cs = 0;
   }
 
   submit(color) {
@@ -472,6 +488,10 @@ class pageObj {
   // TODO: can we query the exact depth?
   get bitdepth() {
     return (this.hasHDR && this.cs) ? 10 : 8;
+  }
+
+  get color_supports() {
+    return this._color_supports;
   }
 
   get init() {

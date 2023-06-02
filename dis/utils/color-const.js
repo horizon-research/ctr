@@ -1,5 +1,7 @@
 class cConst {
   constructor(useJV) {
+    this._useJV = useJV;
+
     // XYZ <--> LMS mats based on Smith & Pokorny using Judd corrected XYZ (used by Brettel 1997 & Viénot 1999)
     // http://cvrl.ioo.ucl.ac.uk/database/text/cones/sp.htm
     var JV_XYZ_to_SP_LMS = [[0.15514, 0.54312, -0.03286], [-0.15514, 0.45684, 0.03286], [0, 0, 0.01608]];
@@ -20,8 +22,6 @@ class cConst {
                            ];
 
     // expose to externals
-    $('#usedxyz').html(useJV ? 'Judd-Vos Modified XYZ' : 'CIE 1931 XYZ');
-    $('#usedlms').html(useJV ? 'Smith & Pokorny (1975) 2-deg' : 'Hunt-Pointer-Estevez D65-adapted');
     if (useJV == true) {
       this.lin_sRGB_to_XYZ = linear_sRGB_to_JV_XYZ;
       this.lin_sRGB_to_LMS = math.multiply(JV_XYZ_to_SP_LMS, this.lin_sRGB_to_XYZ);
@@ -53,7 +53,10 @@ class cConst {
     this.lin_P3_to_lin_sRGB = math.multiply(this.XYZ_to_lin_sRGB, this.lin_P3_to_XYZ);
     this.lin_sRGB_to_lin_P3 = math.inv(this.lin_P3_to_lin_sRGB);
     this.LMS_to_lin_P3 = math.multiply(this.XYZ_to_lin_P3, this.LMS_to_XYZ);
+  }
 
+  get useJV() {
+    return this._useJV;
   }
 }
 var color_consts = new cConst(false);
