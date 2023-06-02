@@ -339,6 +339,7 @@ class discTestState {
     this._step = 0.02; // TODO: need to figure out how to better set this
     this._proj_mat = null;
 
+    // compute once and cache for later
     this._confusion_lines_lin_srgb = this.get_confusion_lines_lin_srgb();
     this._confusion_lines_lin_p3 = this.get_confusion_lines_lin_p3();
     this._confusion_lines_xy = this.get_confusion_lines_xy();
@@ -346,7 +347,7 @@ class discTestState {
 
   get_proj_mat() {
     // https://daltonlens.org/understanding-cvd-simulation/
-    if (this.simMethod == 1) {
+    if (page.simMethod == 1) {
       // Viénot 1999 (one plane); an approximation of Brettel 1997 (two planes).
       // for protanopia and deuteranopia they use the black-blue-yellow-white plane;
       // for tritanopia the paper didn't say what to do here we simply use black-red-cyan-white plane.
