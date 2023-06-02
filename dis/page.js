@@ -407,6 +407,27 @@ class pageObj {
     this.test_color_support();
   }
 
+  configPage(simMode, blindnessType, simMethod, showXy, showRGB, showLab, showExp, rows=null) {
+    registerSlider();
+    registerReset();
+    registerSimMode(simMode);
+    registerPickType(blindnessType);
+    registerPickSimMethod(simMethod);
+    registerGetAns();
+  
+    this.init = true;
+  
+    // initial plot with no meaningful data
+    this.showXy = showXy;
+    this.showRGB = showRGB;
+    this.showLab = showLab;
+    this.showExp = showExp;
+    plotXy('xyDiv', rows);
+    plotRGB('rgbDiv');
+    plotLab('labDiv');
+    plotExp('expDiv');
+  }
+
   test_color_support() {
     // https://developer.chrome.com/articles/high-definition-css-color-guide/#checking-for-gamut-and-color-space-support
     // This checks browser support of the css syntax
@@ -543,27 +564,6 @@ class pageObj {
   set showExp(v) {
     this._showExp = v;
   }
-}
-
-function configPage(simMode, blindnessType, simMethod, showXy, showRGB, showLab, showExp, rows=null) {
-  registerSlider();
-  registerReset();
-  registerSimMode(simMode);
-  registerPickType(blindnessType);
-  registerPickSimMethod(simMethod);
-  registerGetAns();
-
-  page.init = true;
-
-  // initial plot with no meaningful data
-  page.showXy = showXy;
-  page.showRGB = showRGB;
-  page.showLab = showLab;
-  page.showExp = showExp;
-  plotXy('xyDiv', rows);
-  plotRGB('rgbDiv');
-  plotLab('labDiv');
-  plotExp('expDiv');
 }
 
 var page, state;

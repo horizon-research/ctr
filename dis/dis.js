@@ -7,7 +7,7 @@ d3.csv('../ciexyzjv.csv').then(function(rows){
   var blindnessType = [true, 'pickd'];
   var simMethod = [true, 'm2'];
   var showXy = true, showRGB = false, showLab = false, showExp = true;
-  configPage(simMode, blindnessType, simMethod, showXy, showRGB, showLab, showExp, rows);
+  page.configPage(simMode, blindnessType, simMethod, showXy, showRGB, showLab, showExp, rows);
 
   // set baseColor here
   page.submit(new colorObj([0.5, 0.9, 0.25], 'v_rgb'));
