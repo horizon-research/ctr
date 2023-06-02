@@ -134,65 +134,62 @@
           </div>
 
           <div class="tab-pane" id="res-tab-pane" role="tabpanel" aria-labelledby="res-tab" tabindex="0">
-            <div id="expDiv"></div>
+            <div class="row mt-3 d-flex justify-content-center align-items-center">
+              <div class="col-sm-6">
+                <div id="expDiv"></div>
+              </div>
+              <div class="col-sm-6">
+                <table class="table text-center caption-top mb-4">
+                  <caption>Color space support in your system</caption>
+                  <thead>
+                    <tr>
+                      <th scope="col"></th>
+                      <th scope="col">sRGB</th>
+                      <th scope="col">Display P3</th>
+                      <th scope="col">Rec2020</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <th scope="row">Browser</th>
+                      <td id="bsrgb"></td>
+                      <td id="bp3"></td>
+                      <td id="b2020"></td>
+                    </tr>
+                    <tr>
+                      <th scope="row">Display</th>
+                      <td id="dsrgb"></td>
+                      <td id="dp3"></td>
+                      <td id="d2020"></td>
+                    </tr>
+                  </tbody>
+                </table>
+                <table class="table text-left caption-top">
+                  <caption>Color settings used in the experiment</caption>
+                  <tbody>
+                    <tr>
+                      <th scope="row">Used Color Space</th>
+                      <td id="usedcs"></td>
+                    </tr>
+                    <tr>
+                      <th scope="row">Used XYZ CMFs</th>
+                      <td id="usedxyz"></td>
+                    </tr>
+                    <tr>
+                      <th scope="row">Used Cone Fundamentals</th>
+                      <td id="usedlms"></td>
+                    </tr>
+                    <tr>
+                      <th scope="row">Used Bit Depth</th>
+                      <td id="usedbd"></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-
-
-    <div class="d-grid gap-3 pt-3 mb-4 px-4 bg-light border rounded-3">
-      <div class="row mb-2">
-        <div class="col-sm-6">
-          <table class="table text-center">
-            <thead>
-              <tr>
-                <th scope="col"></th>
-                <th scope="col">sRGB</th>
-                <th scope="col">Display P3</th>
-                <th scope="col">Rec2020</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <th scope="row">Browser</th>
-                <td id="bsrgb"></td>
-                <td id="bp3"></td>
-                <td id="b2020"></td>
-              </tr>
-              <tr>
-                <th scope="row">Display</th>
-                <td id="dsrgb"></td>
-                <td id="dp3"></td>
-                <td id="d2020"></td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        <div class="col-sm-6">
-          <table class="table text-left">
-            <tbody>
-              <tr>
-                <th scope="row">Used Color Space</th>
-                <td id="usedcs"></td>
-              </tr>
-              <tr>
-                <th scope="row">Used XYZ CMFs</th>
-                <td id="usedxyz"></td>
-              </tr>
-              <tr>
-                <th scope="row">Used Cone Fundamentals</th>
-                <td id="usedlms"></td>
-              </tr>
-              <tr>
-                <th scope="row">Used Bit Depth</th>
-                <td id="usedbd"></td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-
     </div>
 
     <div class="b-example-divider"></div>
