@@ -357,12 +357,44 @@ class pageObj {
     this._hasRec2020 = false;
     this._hasHDR = false;
     this._cs = null;
+
+    this.test_color_support();
+  }
+
+  test_color_support() {
+    // https://developer.chrome.com/articles/high-definition-css-color-guide/#checking-for-gamut-and-color-space-support
+    // This checks browser support of the css syntax
+    var srgb_browser = CSS.supports('background: color(srgb 1 1 1)');
+    var p3_browser = CSS.supports('background: color(display-p3 1 1 1)');
+    var rec2020_browser = CSS.supports('background: color(rec2020 1 1 1)');
+    
+    // This checks display support (using the current ICC profile)
+    var srgb_display = window.matchMedia('(color-gamut: srgb)').matches;
+    var p3_display = window.matchMedia('(color-gamut: p3)').matches;
+    var rec2020_display = window.matchMedia('(color-gamut: rec2020)').matches;
+  
+    $('#bsrgb').html(srgb_browser ? '&#10003;' : '');
+    $('#bp3').html(p3_browser ? '&#10003;' : '');
+    $('#b2020').html(rec2020_browser ? '&#10003;' : '');
+    $('#dsrgb').html(srgb_display ? '&#10003;' : '');
+    $('#dp3').html(p3_display ? '&#10003;' : '');
+    $('#d2020').html(rec2020_display ? '&#10003;' : '');
+  
+    this.hassRGB = srgb_browser && srgb_display;
+    this.hasP3 = p3_browser && p3_display;
+    this.hasRec2020 = rec2020_browser && rec2020_display;
+    this.hasHDR = window.matchMedia('(dynamic-range: high)').matches;
+  
+    // TODO: better logic (e.g., use P3 if it's supported)
+    this.cs = 1;
+    $('#usedcs').html(this.cs ? 'Display P3' : 'sRGB');
+    $('#usedbd').html(this.bitdepth);
   }
 
   // TODO: true to assume that sRGB is always 8 bits?
   // TODO: can we query the exact depth?
   get bitdepth() {
-    return (page.hasHDR && page.cs) ? 10 : 8;
+    return (this.hasHDR && this.cs) ? 10 : 8;
   }
 
   get init() {
@@ -429,36 +461,6 @@ class pageObj {
   }
 }
 
-function test_color_support() {
-  // https://developer.chrome.com/articles/high-definition-css-color-guide/#checking-for-gamut-and-color-space-support
-  // This checks browser support of the css syntax
-  var srgb_browser = CSS.supports('background: color(srgb 1 1 1)');
-  var p3_browser = CSS.supports('background: color(display-p3 1 1 1)');
-  var rec2020_browser = CSS.supports('background: color(rec2020 1 1 1)');
-  
-  // This checks display support (using the current ICC profile)
-  var srgb_display = window.matchMedia('(color-gamut: srgb)').matches;
-  var p3_display = window.matchMedia('(color-gamut: p3)').matches;
-  var rec2020_display = window.matchMedia('(color-gamut: rec2020)').matches;
-
-  $('#bsrgb').html(srgb_browser ? '&#10003;' : '');
-  $('#bp3').html(p3_browser ? '&#10003;' : '');
-  $('#b2020').html(rec2020_browser ? '&#10003;' : '');
-  $('#dsrgb').html(srgb_display ? '&#10003;' : '');
-  $('#dp3').html(p3_display ? '&#10003;' : '');
-  $('#d2020').html(rec2020_display ? '&#10003;' : '');
-
-  page.hassRGB = srgb_browser && srgb_display;
-  page.hasP3 = p3_browser && p3_display;
-  page.hasRec2020 = rec2020_browser && rec2020_display;
-  page.hasHDR = window.matchMedia('(dynamic-range: high)').matches;
-
-  // TODO: better logic (e.g., use P3 if it's supported)
-  page.cs = 1;
-  $('#usedcs').html(page.cs ? 'Display P3' : 'sRGB');
-  $('#usedbd').html(page.bitdepth);
-}
-
 var page, state;
 
 d3.csv('../ciexyzjv.csv').then(function(rows){
@@ -476,8 +478,6 @@ d3.csv('../ciexyzjv.csv').then(function(rows){
 function initPage() {
   page = new pageObj();
   state = new discTestState();
-
-  test_color_support();
 
   registerSlider();
   registerSimMode();
