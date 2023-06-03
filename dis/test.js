@@ -94,8 +94,22 @@ function registerPickSimMethod() {
   $('input[type=radio][name=method]').prop('disabled', true);
 }
 
-var showXy = false, showRGB = false, showLab = false, showExp = true, showConfig = true, useKey = true;
+function registerGetAns() {
+  $("body").keydown(function(e){
+    if ((e.keyCode || e.which) == 81) {
+      getAnswer(1);
+    } else if ((e.keyCode || e.which) == 87) {
+      getAnswer(2);
+    } else if ((e.keyCode || e.which) == 65) {
+      getAnswer(3);
+    } else if ((e.keyCode || e.which) == 83) {
+      getAnswer(4);
+    }
+  });
+}
 
-page.configPage(registerPickType, registerSimMode, registerPickSimMethod,
-    showXy, showRGB, showLab, showExp, showConfig, useKey);
+var showXy = false, showRGB = false, showLab = false, showExp = true, showConfig = true;
+
+page.configPage(registerPickType, registerSimMode, registerPickSimMethod, registerGetAns,
+    showXy, showRGB, showLab, showExp, showConfig);
 

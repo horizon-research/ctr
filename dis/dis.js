@@ -62,10 +62,14 @@ d3.csv('../ciexyzjv.csv').then(function(rows){
     $('input[type=radio][name=method]').prop('disabled', false);
   }
 
-  var showXy = true, showRGB = false, showLab = false, showExp = true, showConfig = true, useKey = false;
+  function registerGetAns() {
+    $('#s11, #s12, #s13, #s14').bind("click", getAnswer);
+  }
 
-  page.configPage(registerPickType, registerSimMode, registerPickSimMethod,
-    showXy, showRGB, showLab, showExp, showConfig, useKey, rows);
+  var showXy = true, showRGB = false, showLab = false, showExp = true, showConfig = true;
+
+  page.configPage(registerPickType, registerSimMode, registerPickSimMethod, registerGetAns,
+    showXy, showRGB, showLab, showExp, showConfig, rows);
 
   // set baseColor here
   page.submit(new colorObj([0.5, 0.9, 0.25], 'v_rgb'));
