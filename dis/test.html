@@ -24,6 +24,14 @@
         height: 50px;
       }
 
+      #colorpicker {
+        height: 100px;
+        padding-top: 5px;
+        padding-right: 5px;
+        padding-bottom: 5px;
+        padding-left: 5px;
+      }
+
       .content_center {
         display: flex;
         justify-content: center;
@@ -109,6 +117,10 @@
                       <input type="radio" class="btn-check" name="method" id="m2" autocomplete="off">
                       <label class="btn btn-outline-secondary" for="m2">Two Plane (Brettel et al. 1997)</label>
                     </div>
+                  </div>
+                  <div class="row col-md-5 mx-auto my-4">
+                    Pick a base color
+                    <input type="color" id="colorpicker" value="#acf57a"/>
                   </div>
                   <div class="row col-md-5 mx-auto">
                     <button type="button" class="btn btn-secondary my-4" id="toInst">Next</button>

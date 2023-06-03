@@ -6,8 +6,23 @@ $('#toInst').on('click', function(evt) {
   $('#inst-tab').trigger('click');
 });
 
+function hex_to_srgb(hex) {
+  var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  var color = [
+    parseInt(result[1], 16),
+    parseInt(result[2], 16),
+    parseInt(result[3], 16)
+  ];
+
+  return color;
+}
+
 $('#toTest').on('click', function(evt) {
-  page.submit(new colorObj([0.5, 0.9, 0.25], 'v_rgb'));
+  var base_hex = $('#colorpicker').val();
+  var base_srgb = hex_to_srgb(base_hex);
+
+  //page.submit(new colorObj([0.5, 0.9, 0.25], 'v_rgb'));
+  page.submit(new colorObj(base_srgb, 'srgb'));
 
   $("body").keydown(function(e){
     var current = parseFloat($('#customRange').val());
@@ -38,9 +53,6 @@ $('#expDiv').on('finish', function(evt) {
   $("body").unbind('keydown');
   $('body').css('background-color', '#FFFFFF');
 });
-
-page = new pageObj(1);
-state = new discTestState();
 
 function registerPickType() {
   $('input[type=radio][name=pick]').change(function() {
@@ -107,6 +119,9 @@ function registerGetAns() {
     }
   });
 }
+
+page = new pageObj(1);
+state = new discTestState();
 
 var showXy = false, showRGB = false, showLab = false, showExp = true, showConfig = true;
 
