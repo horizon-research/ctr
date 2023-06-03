@@ -49,6 +49,13 @@ $('#toTest').on('click', function(evt) {
 });
 
 $('#expDiv').on('finish', function(evt) {
+  // update disDiv plot
+  var dis_plot = document.getElementById('disDiv');
+  var data_update = {'x': [[state.baseColor.xy[0], page.threshold_color.xy[0]]],
+                     'y': [[state.baseColor.xy[1], page.threshold_color.xy[1]]],
+                     'marker.color': [[state.baseColor.legacy_rgb_css, page.threshold_color.legacy_rgb_css]]};
+  Plotly.update(dis_plot, data_update, {}, [1]);
+
   $('#res-tab').trigger('click');
   $("body").unbind('keydown');
   $('body').css('background-color', '#FFFFFF');
@@ -124,6 +131,10 @@ page = new pageObj(1);
 state = new discTestState();
 
 var showXy = false, showRGB = false, showLab = false, showExp = true, showConfig = true;
+
+d3.csv('../ciexyzjv.csv').then(function(rows){
+  plotDis('disDiv', rows);
+});
 
 page.configPage(registerPickType, registerSimMode, registerPickSimMethod, registerGetAns,
     showXy, showRGB, showLab, showExp, showConfig);

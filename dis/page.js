@@ -249,7 +249,7 @@ function setupNextColor() {
   let timer = setInterval(function() {
     let timePassed = Date.now() - start;
   
-    if (timePassed >= 1000) {
+    if (timePassed >= 100) {
       clearInterval(timer);
       $('#s12').css('zIndex', '1');
       $('#s13').css('zIndex', '1');
@@ -314,9 +314,11 @@ var getAnswer = function(number) {
                  'marker.line.width': [exp_plot.data[1].marker.line.width]};
   Plotly.update(exp_plot, data_update, {}, [1]);
 
-  if (state.numRevs == 6) {
+  if (state.numRevs == 2) {
     // terminate
     threshold = math.mean(state.scalesAtRevs.slice(-3));
+    page.threshold_color = new colorObj(
+        math.add(state.baseColor.v_rgb, math.multiply(state.confusion_lines_rgb[page.type], threshold)), 'v_rgb');
 
     // add threshold line
     data_update = {'x': [[0, 30]], 'y': [[threshold, threshold]]};
@@ -352,6 +354,7 @@ class pageObj {
     this._showRGB = false;
     this._showLab = false;
     this._showExp = false;
+    this._threshold_color = null;
 
     this.test_color_support();
   }
@@ -532,6 +535,13 @@ class pageObj {
   }
   set showExp(v) {
     this._showExp = v;
+  }
+
+  get threshold_color() {
+    return this._threshold_color;
+  }
+  set threshold_color(v) {
+    this._threshold_color = v;
   }
 }
 

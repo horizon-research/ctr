@@ -139,6 +139,141 @@ function plotExp(plotId) {
   return plot;
 }
 
+function plotDis(plotId, rows) {
+  function unpack(rows, key, toNum) {
+    return rows.map(function(row) {
+        if (toNum == false) return row[key];
+        else return parseFloat(row[key]);
+      });
+  }
+
+  function range(start, end, stride) {
+    return Array((end - start) / stride + 1).fill().map((_, idx) => start + idx*stride)
+  }
+
+  var stride = 5;
+
+  wlen = unpack(rows, 'wavelength');
+  var firstW = wlen[0];
+  var lastW = wlen[wlen.length - 1];
+
+  var x_data = range(firstW, lastW, stride);
+
+  x_cmf = unpack(rows, 'x');
+  y_cmf = unpack(rows, 'y');
+  z_cmf = unpack(rows, 'z');
+
+  var x_chrm = math.dotDivide(x_cmf, math.add(x_cmf, y_cmf, z_cmf));
+  var y_chrm = math.dotDivide(y_cmf, math.add(x_cmf, y_cmf, z_cmf));
+
+  var a475 = (475 - firstW) / stride;
+  var a575 = (575 - firstW) / stride;
+  var a485 = (485 - firstW) / stride;
+  var a660 = (660 - firstW) / stride;
+
+  var xyTrace = {
+    x: x_chrm,
+    y: y_chrm,
+    text: wlen,
+    mode: 'lines+markers',
+    line: {
+      color: blackColor,
+      width: 1,
+      shape: 'spline',
+    },
+    name: 'Spectral Locus',
+    hovertemplate: 'x: %{x}' +
+      '<br>y: %{y}' +
+      '<br>wavelength: %{text}<extra></extra>',
+  };
+
+  var R_xy = (new colorObj([1, 0, 0], 'v_rgb')).xy;
+  var G_xy = (new colorObj([0, 1, 0], 'v_rgb')).xy;
+  var B_xy = (new colorObj([0, 0, 1], 'v_rgb')).xy;
+  var rgb_gamut_lines = {
+    x: [R_xy[0], G_xy[0], B_xy[0], R_xy[0]],
+    y: [R_xy[1], G_xy[1], B_xy[1], R_xy[1]],
+    text: ['R', 'G', 'B', 'R'],
+    mode: 'lines',
+    line: {
+      width: 1,
+      color: orangeColor,
+    },
+    name: page.cs ? 'Display P3 gamut' : 'sRGB gamut',
+    visible: true,
+    hovertemplate: 'x: %{x}' +
+      '<br>y: %{y}' +
+      '<br>%{text}<extra></extra>',
+  };
+
+  var line = {
+    x: [0],
+    y: [0],
+    text: ['base', 'threshold'],
+    mode: 'lines+markers',
+    marker: {
+      size: 5,
+      opacity: 1,
+      color: [0,0,0],
+    },
+    line: {
+      width: 1,
+      color: '#000000',
+    },
+    name: 'Colors',
+    hovertemplate: 'x: %{x}' +
+      '<br>y: %{y}' +
+      '<br>%{text}<extra></extra>',
+  };
+
+  var data = [xyTrace, line,
+              rgb_gamut_lines,
+             ];
+
+  var layout = {
+    height: 600,
+    width: 600,
+    margin: {
+      l: 0,
+      r: 0,
+      b: 80,
+      t: 50
+    },
+    showlegend: true,
+    paper_bgcolor: 'rgba(0, 0, 0, 0)',
+    plot_bgcolor: 'rgba(0, 0, 0, 0)',
+    legend: {
+      x: 1,
+      xanchor: 'right',
+      y: 1,
+    },
+    xaxis: {
+      //range: [0, 1],
+      title: {
+        text: 'x'
+      },
+      // https://community.plotly.com/t/get-mouses-position-on-click/4145/3
+      constrain: 'domain',
+      dtick: 0.2,
+      zerolinewidth: 1,
+    },
+    yaxis: {
+      //range: [-0.2, 1],
+      title: {
+        text: 'y'
+      },
+      scaleanchor: 'x',
+      dtick: 0.2,
+      zerolinewidth: 1,
+    }
+  };
+ 
+  var plot = document.getElementById(plotId);
+  Plotly.newPlot(plot, data, layout);
+
+  return plot;
+}
+
 function plotXy(plotId, rows) {
   if (!page.showXy) return;
 
