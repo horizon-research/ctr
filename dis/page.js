@@ -229,7 +229,7 @@ function setupNextColor() {
   }, 20);
 }
 
-var getAnswer = function() {
+var getAnswer = function(number) {
   var correct = true;
   var rev = false;
 
@@ -241,7 +241,9 @@ var getAnswer = function() {
   Plotly.update(exp_plot, data_update, {}, [1]);
 
   state.numTrials++;
-  if (Number(this.id[2]) != (state.testId + 1))
+  var answer = number ? number : Number(this.id[2]);
+  //if (Number(this.id[2]) != (state.testId + 1))
+  if (answer != (state.testId + 1))
     correct = false;
 
   if ((!correct && (state.lastAns == 1)) ||
@@ -298,8 +300,22 @@ var getAnswer = function() {
   }
 }
 
-function registerGetAns() {
-  $('#s11, #s12, #s13, #s14').bind("click", getAnswer);
+function registerGetAns(useKey) {
+  if (useKey) {
+    $("body").keydown(function(e){
+      if ((e.keyCode || e.which) == 81) {
+        getAnswer(1);
+      } else if ((e.keyCode || e.which) == 87) {
+        getAnswer(2);
+      } else if ((e.keyCode || e.which) == 65) {
+        getAnswer(3);
+      } else if ((e.keyCode || e.which) == 83) {
+        getAnswer(4);
+      }
+    });
+  } else {
+    $('#s11, #s12, #s13, #s14').bind("click", getAnswer);
+  }
 }
 
 class pageObj {
@@ -337,13 +353,13 @@ class pageObj {
   }
 
   configPage(registerPickType, registerSimMode, registerPickSimMethod,
-      showXy, showRGB, showLab, showExp, showConfig, rows=null) {
+      showXy, showRGB, showLab, showExp, showConfig, useKey, rows=null) {
     registerSlider();
     registerReset();
     registerSimMode();
     registerPickType();
     registerPickSimMethod();
-    registerGetAns();
+    registerGetAns(useKey);
   
     this.init = true;
   

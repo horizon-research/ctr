@@ -23,6 +23,12 @@
         width: 50px;
         height: 50px;
       }
+
+      .content_center {
+        display: flex;
+        justify-content: center;
+        align-items: center; 
+      }
     </style>
 
     
@@ -65,6 +71,9 @@
               <button class="nav-link active" id="setting-tab" data-bs-toggle="tab" data-bs-target="#setting-tab-pane" type="button" role="tab" aria-controls="setting-tab-pane" aria-selected="true">settings</button>
             </li>
             <li class="nav-item" role="presentation">
+              <button class="nav-link" id="inst-tab" data-bs-toggle="tab" data-bs-target="#inst-tab-pane" type="button" role="tab" aria-controls="inst-tab-pane" aria-selected="true">instructions</button>
+            </li>
+            <li class="nav-item" role="presentation">
               <button class="nav-link" id="test-tab" data-bs-toggle="tab" data-bs-target="#test-tab-pane" type="button" role="tab" aria-controls="test-tab-pane" aria-selected="false">test</button>
             </li>
             <li class="nav-item" role="presentation">
@@ -73,75 +82,96 @@
           </ul>
           <div class="tab-content" id="myTabContent">
             <div class="tab-pane show active" id="setting-tab-pane" role="tabpanel" aria-labelledby="setting-tab" tabindex="0">
-              <div id="settingDiv">
-                <div class="row d-flex justify-content-center align-items-center">
-                  <div class="col-sm-6">
-                    <div class="row">
-                      <div class="btn-group mb-2" role="group" aria-label="Basic radio toggle button group">
-                        <input type="radio" class="btn-check" name="pick" id="pickp" autocomplete="off">
-                        <label class="btn btn-outline-secondary" for="pickp">Protanopia</label>
-                      
-                        <input type="radio" class="btn-check" name="pick" id="pickd" autocomplete="off">
-                        <label class="btn btn-outline-secondary" for="pickd">Deuteranopia</label>
-                      
-                        <input type="radio" class="btn-check" name="pick" id="pickt" autocomplete="off">
-                        <label class="btn btn-outline-secondary" for="pickt">Tritanopia</label>
-                      </div>
-                      <div class="btn-group mb-2" role="group" aria-label="Basic radio toggle button group">
-                        <input type="radio" class="btn-check" name="sim" id="no" autocomplete="off">
-                        <label class="btn btn-outline-secondary" for="no">Actual Colors</label>
+              <div class="row d-flex justify-content-center align-items-center">
+                <div class="col-sm-6">
+                  <div class="row">
+                    <div class="btn-group mb-2" role="group" aria-label="Basic radio toggle button group">
+                      <input type="radio" class="btn-check" name="pick" id="pickp" autocomplete="off">
+                      <label class="btn btn-outline-secondary" for="pickp">Protanopia</label>
+                    
+                      <input type="radio" class="btn-check" name="pick" id="pickd" autocomplete="off">
+                      <label class="btn btn-outline-secondary" for="pickd">Deuteranopia</label>
+                    
+                      <input type="radio" class="btn-check" name="pick" id="pickt" autocomplete="off">
+                      <label class="btn btn-outline-secondary" for="pickt">Tritanopia</label>
+                    </div>
+                    <div class="btn-group mb-2" role="group" aria-label="Basic radio toggle button group">
+                      <input type="radio" class="btn-check" name="sim" id="no" autocomplete="off">
+                      <label class="btn btn-outline-secondary" for="no">Actual Colors</label>
     
-                        <input type="radio" class="btn-check" name="sim" id="yes" autocomplete="off">
-                        <label class="btn btn-outline-secondary" for="yes">Simulation</label>
-                      </div>
-                      <div class="btn-group mb-2" role="group" aria-label="Basic radio toggle button group">
-                        <input type="radio" class="btn-check" name="method" id="m1" autocomplete="off">
-                        <label class="btn btn-outline-secondary" for="m1">One Plane (Viénot et al. 1999)</label>
-                      
-                        <input type="radio" class="btn-check" name="method" id="m2" autocomplete="off">
-                        <label class="btn btn-outline-secondary" for="m2">Two Plane (Brettel et al. 1997)</label>
-                      </div>
+                      <input type="radio" class="btn-check" name="sim" id="yes" autocomplete="off">
+                      <label class="btn btn-outline-secondary" for="yes">Simulation</label>
                     </div>
-                    <div class="row my-4">
-                      <h5>Instructions</h5>
-                      <p>On the next page, you will see four color patches. Click on the one that appears to have a different colors than the other three. Use your Left Arrow and Right Arrow keys to change the colors to help you identify the unique one. Press the Space key to reset the change.</p>
-                      <p>After each trial, you will see random gray dots to reset your visual field, followed by the next trial. The patch with a different color is randomized across trials. Each trial is made to be more challenging if you keep identifying the correct patch, and vice versa. The experiment terminates when a threshold is found.</p>
+                    <div class="btn-group mb-2" role="group" aria-label="Basic radio toggle button group">
+                      <input type="radio" class="btn-check" name="method" id="m1" autocomplete="off">
+                      <label class="btn btn-outline-secondary" for="m1">One Plane (Viénot et al. 1999)</label>
+                    
+                      <input type="radio" class="btn-check" name="method" id="m2" autocomplete="off">
+                      <label class="btn btn-outline-secondary" for="m2">Two Plane (Brettel et al. 1997)</label>
                     </div>
-                    <div class="row col-md-5 mx-auto">
-                      <button type="button" class="btn btn-secondary my-4" id="next">Next</button>
-                    </div>
+                  </div>
+                  <div class="row col-md-5 mx-auto">
+                    <button type="button" class="btn btn-secondary my-4" id="toInst">Next</button>
                   </div>
                 </div>
               </div>
             </div>
     
+            <div class="tab-pane" id="inst-tab-pane" role="tabpanel" aria-labelledby="inst-tab" tabindex="0">
+              <div class="row d-flex justify-content-center">
+                <div class="col-sm-6">
+                  <div class="row">
+                    <h5>Instructions</h5>
+                    <p>On the next page, you will see four color patches laid out as below, one of which appears to have a different color than the other three. Press the number (<b>1/2/3/4</b>) on your keyboard to indicate the unique one. When uncertain, use <b>Left Arrow</b> and <b>Right Arrow</b> keys to shift the colors to help you. Press the <b>Space</b> key to reset the color shift. You must pick a color (forced choice).</p>
+                    <p>After each trial, you will see random gray dots to reset your visual field, followed by the next trial. The patch with a different color is randomized across trials. Each trial is made to be more challenging if you keep identifying the correct patch, and vice versa. The experiment terminates when a threshold is found.</p>
+                  </div>
+                  <div class="row justify-content-center mb-2">
+                    <div class="col col-lg-2 me-1 square content_center" style="background-color: #DE3412">
+                      <font size="4">Q</font>
+                    </div>
+                    <div class="col col-lg-2 ms-1 square content_center" style="background-color: #AD3600">
+                      <font size="4">W</font>
+                    </div>
+                  </div>
+                  <div class="row justify-content-center">
+                    <div class="col col-lg-2 me-1 square content_center" style="background-color: #DE3412">
+                      <font size="4">A</font>
+                    </div>
+                    <div class="col col-lg-2 ms-1 square content_center" style="background-color: #DE3412">
+                      <font size="4">S</font>
+                    </div>
+                  </div>
+                  <div class="row col-md-5 mx-auto">
+                    <button type="button" class="btn btn-secondary my-4" id="toTest">Next</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
             <div class="tab-pane" id="test-tab-pane" role="tabpanel" aria-labelledby="test-tab" tabindex="0">
-              <div id="testDiv">
-                <div class="container text-center">
-                  <div class="row justify-content-md-center mb-2">
-                    <div class="col col-lg-2 me-1 square" id="s11">
-                    </div>
-                    <div class="col col-lg-2 ms-1 square" id="s12">
-                    </div>
+              <div class="container text-center">
+                <div class="row justify-content-md-center mb-2">
+                  <div class="col col-lg-2 me-1 square" id="s11">
                   </div>
-                  <div class="row justify-content-md-center">
-                    <div class="col col-lg-2 me-1 square" id="s13">
-                    </div>
-                    <div class="col col-lg-2 ms-1 square" id="s14">
-                    </div>
+                  <div class="col col-lg-2 ms-1 square" id="s12">
                   </div>
                 </div>
-    
-                <div  style="display: none">
-                  <div class="col-sm-10">
-                    <label for="customRange" class="rot-label" style="font-size:20px;">Rotation Angle (Degree): 0&#176;</label>
-                    <input type="range" class="form-range" min="-3.14" max="3.14" step="0.02" id="customRange">
+                <div class="row justify-content-md-center">
+                  <div class="col col-lg-2 me-1 square" id="s13">
                   </div>
-                  <div class="col-sm-2">
-                    <button id="reset" class="btn btn-secondary">Reset</button>
+                  <div class="col col-lg-2 ms-1 square" id="s14">
                   </div>
                 </div>
+              </div>
     
+              <div  style="display: none">
+                <div class="col-sm-10">
+                  <label for="customRange" class="rot-label" style="font-size:20px;">Rotation Angle (Degree): 0&#176;</label>
+                  <input type="range" class="form-range" min="-3.14" max="3.14" step="0.02" id="customRange">
+                </div>
+                <div class="col-sm-2">
+                  <button id="reset" class="btn btn-secondary">Reset</button>
+                </div>
               </div>
             </div>
     

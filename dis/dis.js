@@ -62,10 +62,10 @@ d3.csv('../ciexyzjv.csv').then(function(rows){
     $('input[type=radio][name=method]').prop('disabled', false);
   }
 
-  var showXy = true, showRGB = false, showLab = false, showExp = true, showConfig = true;
+  var showXy = true, showRGB = false, showLab = false, showExp = true, showConfig = true, useKey = false;
 
   page.configPage(registerPickType, registerSimMode, registerPickSimMethod,
-    showXy, showRGB, showLab, showExp, showConfig, rows);
+    showXy, showRGB, showLab, showExp, showConfig, useKey, rows);
 
   // set baseColor here
   page.submit(new colorObj([0.5, 0.9, 0.25], 'v_rgb'));

@@ -2,7 +2,11 @@
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
-$('#next').on('click', function(evt) {
+$('#toInst').on('click', function(evt) {
+  $('#inst-tab').trigger('click');
+});
+
+$('#toTest').on('click', function(evt) {
   page.submit(new colorObj([0.5, 0.9, 0.25], 'v_rgb'));
 
   $("body").keydown(function(e){
@@ -10,16 +14,19 @@ $('#next').on('click', function(evt) {
     if ((e.keyCode || e.which) == 37) {
       // left arrow
       current = (current - 0.02);
+      $('#customRange').val(current);
+      $('#customRange').trigger('input');
     } else if ((e.keyCode || e.which) == 39) {
       // right arrow
       current = (current + 0.02);
+      $('#customRange').val(current);
+      $('#customRange').trigger('input');
     } else if ((e.keyCode || e.which) == 32) {
       // space
       current = 0;
+      $('#customRange').val(current);
+      $('#customRange').trigger('input');
     }
-
-    $('#customRange').val(current);
-    $('#customRange').trigger('input');
   });
 
   $('body').css('background-color', 'rgb(120, 120, 120)');
@@ -87,8 +94,8 @@ function registerPickSimMethod() {
   $('input[type=radio][name=method]').prop('disabled', true);
 }
 
-var showXy = false, showRGB = false, showLab = false, showExp = true, showConfig = true;
+var showXy = false, showRGB = false, showLab = false, showExp = true, showConfig = true, useKey = true;
 
 page.configPage(registerPickType, registerSimMode, registerPickSimMethod,
-    showXy, showRGB, showLab, showExp, showConfig);
+    showXy, showRGB, showLab, showExp, showConfig, useKey);
 
