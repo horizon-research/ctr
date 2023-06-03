@@ -150,6 +150,42 @@ function registerReset() {
   $('#reset').prop('disabled', false);
 }
 
+function getLimits(base, line){
+  function inCube(p) {
+    if (p[0] >= 0 && p[0] <= 1 && p[1] >= 0 && p[1] <= 1 && p[2] >= 0 && p[2] <= 1)
+      return true;
+    return false;
+  }
+
+  var Tr0 = -base[0]/line[0]; // R=0
+  var Tr1 = (1-base[0])/line[0];
+  var Tg0 = -base[1]/line[1];
+  var Tg1 = (1-base[1])/line[1];
+  var Tb0 = -base[2]/line[2];
+  var Tb1 = (1-base[2])/line[2];
+
+  var hits = [Tr0, Tr1, Tg0, Tg1, Tb0, Tb1];
+  var res = [];
+
+  for (var i = 0; i < hits.length; i++) {
+    var p = math.add(base, math.multiply(line, hits[i]));
+
+    // override numerical precision issue
+    if (i == 0) p[0] = 0;
+    else if (i == 1) p[0] = 1;
+    else if (i == 2) p[1] = 0;
+    else if (i == 3) p[1] = 1;
+    else if (i == 4) p[2] = 0;
+    else p[2] = 1; // i == 5
+
+    if (inCube(p)) {
+      res.push(hits[i])
+    }
+  }
+
+  return res.sort();
+}
+
 function genTestColor(mode) {
   var line_RGB = state.confusion_lines_rgb[page.type];
   var testColor;
@@ -169,8 +205,9 @@ function genTestColor(mode) {
     testColor = new colorObj(math.multiply(XYZ2RGB, math.multiply(testColor_xy.concat([1-math.sum(testColor_xy)]), mag)),
         'v_rgb');
   } else if (mode == 1) {
-    // sample in RGB
-    // TODO: this might go OOG. what do we do?
+    // TODO: only have to do this once
+    var hits = getLimits(state.baseColor.v_rgb, line_RGB);
+    if (state.scale > hits[1]) state.scale = hits[1];
     testColor = new colorObj(math.add(state.baseColor.v_rgb, math.multiply(line_RGB, state.scale)),
         'v_rgb');
   }
