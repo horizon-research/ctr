@@ -323,72 +323,34 @@ class colorObj {
 
 // contains the state one baseColor test (multiple testColors)
 class discTestState {
-  constructor() {
-    this._baseColor = null; // one single color
+  constructor(baseColor, dir, start_cb, finish_cb) {
+    this._baseColor = baseColor ; // one single color
     this._testColor = null; // one single color
     this._colors = []; // four initial colors (three test + one base) without rotation; one color per row
     this._rotColors = []; // rotated colors; one color per row
     this._rotColorsMapped = []; // rotated colors after gamut mapping; one color per row
     this._simColors = []; // simulated dichromatic colors; one color per row
     this._scalesAtRevs = [];
-    this._scale = 0.1; // must be positive. TODO: need to figure out how to better set this
+    this._scale = 0.1; // must be positive to simplify staircase implementation (i.e., scale always goes down). TODO: need to figure out how to better set this
     this._numRight = 0;
     this._numRevs = 0;
     this._lastAns = true; // just so that if the first respose is incorrect it gets counted as a reversal
     this._numTrials = 1;
     this._step = 0.02; // TODO: need to figure out how to better set this
-    this._proj_mat = null;
-    this._dir = 1; // 1 for add 0 for sub
+    this._dir = dir; // '+' for add '-' for sub
+
+    this._start_cb = start_cb; // called every page.submit
+    this._finish_cb = finish_cb; // called every time a test terminates
+
+    this._xy_plot = null;
+    this._rgb_plot = null;
+    this._lab_plot = null;
+    this._exp_plot = null;
 
     // compute once and cache for later
     this._confusion_lines_lin_srgb = this.get_confusion_lines_lin_srgb();
     this._confusion_lines_lin_p3 = this.get_confusion_lines_lin_p3();
     this._confusion_lines_xy = this.get_confusion_lines_xy();
-  }
-
-  get_proj_mat() {
-    // https://daltonlens.org/understanding-cvd-simulation/
-    if (page.simMethod == 1) {
-      // Viénot 1999 (one plane); an approximation of Brettel 1997 (two planes).
-      // for protanopia and deuteranopia they use the black-blue-yellow-white plane;
-      // for tritanopia the paper didn't say what to do here we simply use black-red-cyan-white plane.
-      var RGBBlue = (new colorObj([0, 0, 1], 'v_rgb')).lms;
-      var RGBRed = (new colorObj([1, 0, 0], 'v_rgb')).lms;
-      var RGBYellow = (new colorObj([1, 1, 0], 'v_rgb')).lms;
-      var RGBCyan = (new colorObj([0, 1, 1], 'v_rgb')).lms;
-  
-      var p_norm1 = math.cross(RGBBlue, RGBYellow);
-      var d_norm1 = p_norm1;
-      var t_norm1 = math.cross(RGBRed, RGBCyan);
-  
-      var p_proj_mat = [[0, -p_norm1[1]/p_norm1[0], -p_norm1[2]/p_norm1[0]], [0, 1, 0], [0, 0, 1]];
-      var d_proj_mat = [[1, 0, 0], [-d_norm1[0]/d_norm1[1], 0, -d_norm1[2]/d_norm1[1]], [0, 0, 1]];
-      var t_proj_mat = [[1, 0, 0], [0, 1, 0], [-t_norm1[0]/t_norm1[2], -t_norm1[1]/t_norm1[2], 0]];
-  
-      return [p_proj_mat, d_proj_mat, t_proj_mat];
-    } else {
-      // Brettel 1997 (two planes).
-      // in LMS space (transformed from JV-modified XYZ)
-      var aWhite = color_consts.aEEW_lms; // (Brettel 97 uses EEW and Vienot 99 uses sRGBWhite)
-  
-      var p_norm1 = math.cross(aWhite, color_consts.a475_lms);
-      var p_norm2 = math.cross(aWhite, color_consts.a575_lms);
-      var d_norm1 = p_norm1;
-      var d_norm2 = p_norm2;
-      var t_norm1 = math.cross(aWhite, color_consts.a485_lms);
-      var t_norm2 = math.cross(aWhite, color_consts.a660_lms);
-  
-      // the results are close to values calculated by https://daltonlens.org/understanding-cvd-simulation/
-      var p_proj_mat1 = [[0, -p_norm1[1]/p_norm1[0], -p_norm1[2]/p_norm1[0]], [0, 1, 0], [0, 0, 1]]; // 475
-      var d_proj_mat1 = [[1, 0, 0], [-d_norm1[0]/d_norm1[1], 0, -d_norm1[2]/d_norm1[1]], [0, 0, 1]]; // 475
-      var t_proj_mat1 = [[1, 0, 0], [0, 1, 0], [-t_norm1[0]/t_norm1[2], -t_norm1[1]/t_norm1[2], 0]]; // 485
-  
-      var p_proj_mat2 = [[0, -p_norm2[1]/p_norm2[0], -p_norm2[2]/p_norm2[0]], [0, 1, 0], [0, 0, 1]]; // 575
-      var d_proj_mat2 = [[1, 0, 0], [-d_norm2[0]/d_norm2[1], 0, -d_norm2[2]/d_norm2[1]], [0, 0, 1]]; // 575
-      var t_proj_mat2 = [[1, 0, 0], [0, 1, 0], [-t_norm2[0]/t_norm2[2], -t_norm2[1]/t_norm2[2], 0]]; // 660
-  
-      return [p_proj_mat1, d_proj_mat1, t_proj_mat1, p_proj_mat2, d_proj_mat2, t_proj_mat2];
-    }
   }
 
   get_confusion_lines_lin_srgb() {
@@ -436,6 +398,51 @@ class discTestState {
 
   get confusion_lines_xy() {
     return this._confusion_lines_xy;
+  }
+
+  get proj_mat() {
+    // https://daltonlens.org/understanding-cvd-simulation/
+    if (page.simMethod == 1) {
+      // Viénot 1999 (one plane); an approximation of Brettel 1997 (two planes).
+      // for protanopia and deuteranopia they use the black-blue-yellow-white plane;
+      // for tritanopia the paper didn't say what to do here we simply use black-red-cyan-white plane.
+      var RGBBlue = (new colorObj([0, 0, 1], 'v_rgb')).lms;
+      var RGBRed = (new colorObj([1, 0, 0], 'v_rgb')).lms;
+      var RGBYellow = (new colorObj([1, 1, 0], 'v_rgb')).lms;
+      var RGBCyan = (new colorObj([0, 1, 1], 'v_rgb')).lms;
+  
+      var p_norm1 = math.cross(RGBBlue, RGBYellow);
+      var d_norm1 = p_norm1;
+      var t_norm1 = math.cross(RGBRed, RGBCyan);
+  
+      var p_proj_mat = [[0, -p_norm1[1]/p_norm1[0], -p_norm1[2]/p_norm1[0]], [0, 1, 0], [0, 0, 1]];
+      var d_proj_mat = [[1, 0, 0], [-d_norm1[0]/d_norm1[1], 0, -d_norm1[2]/d_norm1[1]], [0, 0, 1]];
+      var t_proj_mat = [[1, 0, 0], [0, 1, 0], [-t_norm1[0]/t_norm1[2], -t_norm1[1]/t_norm1[2], 0]];
+  
+      return [p_proj_mat, d_proj_mat, t_proj_mat];
+    } else {
+      // Brettel 1997 (two planes).
+      // in LMS space (transformed from JV-modified XYZ)
+      var aWhite = color_consts.aEEW_lms; // (Brettel 97 uses EEW and Vienot 99 uses sRGBWhite)
+  
+      var p_norm1 = math.cross(aWhite, color_consts.a475_lms);
+      var p_norm2 = math.cross(aWhite, color_consts.a575_lms);
+      var d_norm1 = p_norm1;
+      var d_norm2 = p_norm2;
+      var t_norm1 = math.cross(aWhite, color_consts.a485_lms);
+      var t_norm2 = math.cross(aWhite, color_consts.a660_lms);
+  
+      // the results are close to values calculated by https://daltonlens.org/understanding-cvd-simulation/
+      var p_proj_mat1 = [[0, -p_norm1[1]/p_norm1[0], -p_norm1[2]/p_norm1[0]], [0, 1, 0], [0, 0, 1]]; // 475
+      var d_proj_mat1 = [[1, 0, 0], [-d_norm1[0]/d_norm1[1], 0, -d_norm1[2]/d_norm1[1]], [0, 0, 1]]; // 475
+      var t_proj_mat1 = [[1, 0, 0], [0, 1, 0], [-t_norm1[0]/t_norm1[2], -t_norm1[1]/t_norm1[2], 0]]; // 485
+  
+      var p_proj_mat2 = [[0, -p_norm2[1]/p_norm2[0], -p_norm2[2]/p_norm2[0]], [0, 1, 0], [0, 0, 1]]; // 575
+      var d_proj_mat2 = [[1, 0, 0], [-d_norm2[0]/d_norm2[1], 0, -d_norm2[2]/d_norm2[1]], [0, 0, 1]]; // 575
+      var t_proj_mat2 = [[1, 0, 0], [0, 1, 0], [-t_norm2[0]/t_norm2[2], -t_norm2[1]/t_norm2[2], 0]]; // 660
+  
+      return [p_proj_mat1, d_proj_mat1, t_proj_mat1, p_proj_mat2, d_proj_mat2, t_proj_mat2];
+    }
   }
 
   adjustStep() {
@@ -589,18 +596,53 @@ class discTestState {
     return this._step;
   }
 
-  get proj_mat() {
-    return this._proj_mat;
-  }
-  set proj_mat(v) {
-    this._proj_mat = v;
-  }
-
   get dir() {
     return this._dir;
   }
   set dir(v) {
     this._dir = v;
+  }
+
+  get start_cb() {
+    return this._start_cb;
+  }
+  set start_cb(v) {
+    this._start_cb = v;
+  }
+
+  get finish_cb() {
+    return this._finish_cb;
+  }
+  set finish_cb(v) {
+    this._finish_cb = v;
+  }
+
+  get xy_plot() {
+    return this._xy_plot;
+  }
+  set xy_plot(v) {
+    this._xy_plot = v;
+  }
+
+  get rgb_plot() {
+    return this._rgb_plot;
+  }
+  set rgb_plot(v) {
+    this._rgb_plot = v;
+  }
+
+  get lab_plot() {
+    return this._lab_plot;
+  }
+  set lab_plot(v) {
+    this._lab_plot = v;
+  }
+
+  get exp_plot() {
+    return this._exp_plot;
+  }
+  set exp_plot(v) {
+    this._exp_plot = v;
   }
 }
 

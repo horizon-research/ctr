@@ -7,83 +7,74 @@ function updatePlot(theta, plotId_rgb, plotId_lab, plotId_xy, action) {
   // 4: pick blindness type
 
   function update_rgb(rotColors_css, simColors_css) {
-    var rgb_plot = document.getElementById(plotId_rgb);
-
     var rotPoints_RGB = math.transpose(state.rotColorsMapped.map(c => c.v_rgb));
     var simPoints_RGB = math.transpose(state.simColors.map(c => c.v_rgb));
 
     // update actual colors
     var data_update = {'x': [rotPoints_RGB[0]], 'y': [rotPoints_RGB[1]], 'z': [rotPoints_RGB[2]],
                        'marker.color': [rotColors_css], 'text': [rotColors_css]};
-    Plotly.update(rgb_plot, data_update, {}, [13]);
+    Plotly.update(state.rgb_plot, data_update, {}, [13]);
 
     // update simulated colors
     data_update = {'x': [simPoints_RGB[0]], 'y': [simPoints_RGB[1]], 'z': [simPoints_RGB[2]],
                    'marker.color': [simColors_css], 'text': [simColors_css]};
-    Plotly.update(rgb_plot, data_update, {}, [14]);
+    Plotly.update(state.rgb_plot, data_update, {}, [14]);
   }
 
   function update_lab(rotColors_css, simColors_css) {
-    var lab_plot = document.getElementById(plotId_lab);
-
     // update actual colors
     var rotPoints_Lab = math.transpose(state.rotColorsMapped.map(c => c.lab));
     data_update = {'x': [rotPoints_Lab[1]], 'y': [rotPoints_Lab[2]], 'z': [rotPoints_Lab[0]],
                    'marker.color': [rotColors_css], 'text': [rotColors_css]};
-    Plotly.update(lab_plot, data_update, {}, [0]);
+    Plotly.update(state.lab_plot, data_update, {}, [0]);
 
     // update simulated colors
     var simPoints_Lab = math.transpose(state.simColors.map(c => c.lab));
     data_update = {'x': [simPoints_Lab[1]], 'y': [simPoints_Lab[2]], 'z': [simPoints_Lab[0]],
                    'marker.color': [simColors_css], 'text': [simColors_css]};
-    Plotly.update(lab_plot, data_update, {}, [1]);
+    Plotly.update(state.lab_plot, data_update, {}, [1]);
   }
 
   function update_xy(rotColors_css, simColors_css) {
-    var xy_plot = document.getElementById(plotId_xy);
-
     var rotPoints_xy = math.transpose(state.rotColorsMapped.map(c => c.xy));
     data_update = {'x': [rotPoints_xy[0]], 'y': [rotPoints_xy[1]],
                    'marker.color': [rotColors_css], 'text': [rotColors_css]};
-    Plotly.update(xy_plot, data_update, {}, [5]);
+    Plotly.update(state.xy_plot, data_update, {}, [5]);
 
     var simPoints_xy = math.transpose(state.simColors.map(c => c.xy));
     data_update = {'x': [simPoints_xy[0]], 'y': [simPoints_xy[1]],
                    'marker.color': [simColors_css], 'text': [simColors_css]};
-    Plotly.update(xy_plot, data_update, {}, [6]);
+    Plotly.update(state.xy_plot, data_update, {}, [6]);
   }
 
   /* update iso-chrome planes/lines visibility */
   function update_legends(update_xy, update_rgb) {
-    var rgb_plot = document.getElementById(plotId_rgb);
-    var xy_plot = document.getElementById(plotId_xy);
-
     if (action == 2 || action == 3 || action == 4) {
       if (page.type == 0 || page.type == 1) { // P and D
         if (page.simMethod == 0) { // 2-plane {
           data_update = {'visible': ['legendonly', false, false, false,
               (page.type==0)?'legendonly':false, (page.type==1)?'legendonly':false, false]};
-          if (update_xy) Plotly.update(xy_plot, data_update, {}, [1, 2, 3, 4, 8, 9, 10]);
+          if (state.xy_plot) Plotly.update(state.xy_plot, data_update, {}, [1, 2, 3, 4, 8, 9, 10]);
           data_update = {'visible': ['legendonly', 'legendonly', false, false, false, false, 'legendonly', false]};
-          if (update_rgb) Plotly.update(rgb_plot, data_update, {}, [15, 16, 17, 18, 19, 20, 21, 22]);
+          if (state.rgb_plot) Plotly.update(state.rgb_plot, data_update, {}, [15, 16, 17, 18, 19, 20, 21, 22]);
         } else { // 1-plane
           data_update = {'visible': [false, false, 'legendonly', false,
               (page.type==0)?'legendonly':false, (page.type==1)?'legendonly':false, false]};
-          if (update_xy) Plotly.update(xy_plot, data_update, {}, [1, 2, 3, 4, 8, 9, 10]);
+          if (state.xy_plot) Plotly.update(state.xy_plot, data_update, {}, [1, 2, 3, 4, 8, 9, 10]);
           data_update = {'visible': [false, false, false, false, 'legendonly', false, false, false]};
-          if (update_rgb) Plotly.update(rgb_plot, data_update, {}, [15, 16, 17, 18, 19, 20, 21, 22]);
+          if (state.rgb_plot) Plotly.update(rgb_plot, data_update, {}, [15, 16, 17, 18, 19, 20, 21, 22]);
         }
       } else { // T
         if (page.simMethod == 0) { // 2-plane {
           data_update = {'visible': [false, 'legendonly', false, false, false, false, 'legendonly']};
-          if (update_xy) Plotly.update(xy_plot, data_update, {}, [1, 2, 3, 4, 8, 9, 10]);
+          if (state.xy_plot) Plotly.update(state.xy_plot, data_update, {}, [1, 2, 3, 4, 8, 9, 10]);
           data_update = {'visible': [false, false, 'legendonly', 'legendonly', false, false, false, 'legendonly']};
-          if (update_rgb) Plotly.update(rgb_plot, data_update, {}, [15, 16, 17, 18, 19, 20, 21, 22]);
+          if (state.rgb_plot) Plotly.update(rgb_plot, data_update, {}, [15, 16, 17, 18, 19, 20, 21, 22]);
         } else { // 1-plane
           data_update = {'visible': [false, false, false, 'legendonly', false, false, 'legendonly']};
-          if (update_xy) Plotly.update(xy_plot, data_update, {}, [1, 2, 3, 4, 8, 9, 10]);
+          if (state.xy_plot) Plotly.update(state.xy_plot, data_update, {}, [1, 2, 3, 4, 8, 9, 10]);
           data_update = {'visible': [false, false, false, false, false, 'legendonly', false, false]};
-          if (update_rgb) Plotly.update(rgb_plot, data_update, {}, [15, 16, 17, 18, 19, 20, 21, 22]);
+          if (state.rgb_plot) Plotly.update(rgb_plot, data_update, {}, [15, 16, 17, 18, 19, 20, 21, 22]);
         }
       }
     }
@@ -97,13 +88,14 @@ function updatePlot(theta, plotId_rgb, plotId_lab, plotId_xy, action) {
   state.simulate(); // always run simulation (might not be needed in test if page.sim = 0)
 
   // The reason to use the legacy rgb format is because plotly supports only that
+  // will be an issue if display supports HDR because then we would be using 10 bits but that's not supported by plotly
   var rotColors_css = state.rotColorsMapped.map(c => c.legacy_rgb_css);
   var simColors_css = state.simColors.map(c => c.legacy_rgb_css);
 
-  if (page.showRGB) update_rgb(rotColors_css, simColors_css);
-  if (page.showLab) update_lab(rotColors_css, simColors_css);
-  if (page.showXy) update_xy(rotColors_css, simColors_css);
-  update_legends(page.showXy, page.showRGB);
+  if (state.rgb_plot) update_rgb(rotColors_css, simColors_css);
+  if (state.lab_plot) update_lab(rotColors_css, simColors_css);
+  if (state.xy_plot) update_xy(rotColors_css, simColors_css);
+  update_legends(state.xy_plot, state.rgb_plot);
 
   if (page.sim) {
     /* update square colors */
@@ -207,13 +199,13 @@ function genTestColor(mode) {
   } else if (mode == 1) {
     // TODO: only have to do this once
     var hits = getLimits(state.baseColor.v_rgb, line_RGB);
-    if (state.dir > 0) {
+    if (state.dir == '+') {
       state.scale = Math.min(state.scale, hits[1]);
       testColor = new colorObj(math.add(state.baseColor.v_rgb, math.multiply(line_RGB, state.scale)),
           'v_rgb');
-    } else if (state.dir < 0) {
+    } else if (state.dir == '-') {
       state.scale = Math.min(state.scale, Math.abs(hits[0]));
-      testColor = new colorObj(math.sub(state.baseColor.v_rgb, math.multiply(line_RGB, state.scale)),
+      testColor = new colorObj(math.subtract(state.baseColor.v_rgb, math.multiply(line_RGB, state.scale)),
           'v_rgb');
     }
   }
@@ -277,7 +269,8 @@ var getAnswer = function(number) {
   var rev = false;
 
   // add a new result to the threshold plot
-  var exp_plot = document.getElementById('expDiv');
+  //var exp_plot = document.getElementById('expDiv');
+  var exp_plot = state.exp_plot;
   exp_plot.data[1].x.push(state.numTrials);
   exp_plot.data[1].y.push(state.scale);
   var data_update = {'x': [exp_plot.data[1].x], 'y': [exp_plot.data[1].y]};
@@ -338,7 +331,7 @@ var getAnswer = function(number) {
     data_update = {'visible': [true, true, true]};
     Plotly.update(exp_plot, data_update, {}, [2, 3, 4]);
 
-    $('#expDiv').trigger('finish');
+    state.finish_cb();
   } else {
     setupNextColor();
   }
@@ -356,10 +349,6 @@ class pageObj {
     this._hasHDR = false;
     this._color_supports = null;
     this._cs = color_space; // 0 for sRGB, 1 for P3, 2 for Rec2020
-    this._showXy = false;
-    this._showRGB = false;
-    this._showLab = false;
-    this._showExp = false;
     this._threshold_color = null;
 
     this.test_color_support();
@@ -379,8 +368,7 @@ class pageObj {
   
   }
 
-  configPage(registerPickType, registerSimMode, registerPickSimMethod, registerGetAns,
-      showXy, showRGB, showLab, showExp, showConfig, rows=null) {
+  configPage(registerPickType, registerSimMode, registerPickSimMethod, registerGetAns, showConfig) {
     registerSlider();
     registerReset();
     registerSimMode();
@@ -389,16 +377,6 @@ class pageObj {
     registerGetAns();
   
     this.init = true;
-  
-    // initial plot with no meaningful data
-    this.showXy = showXy;
-    this.showRGB = showRGB;
-    this.showLab = showLab;
-    this.showExp = showExp;
-    plotXy('xyDiv', rows);
-    plotRGB('rgbDiv');
-    plotLab('labDiv');
-    plotExp('expDiv');
 
     if (showConfig) this.displayConfig();
   }
@@ -432,12 +410,11 @@ class pageObj {
       this.cs = 0;
   }
 
-  submit(color) {
-    // set the base color.
-    state.baseColor = color;
-  
+  submit() {
     $('#customRange').val(0);
     $('.rot-label').html('Rotation Angle (Degree): 0&#176;');
+
+    state.start_cb();
   
     testOneColor(true);
   }
@@ -513,34 +490,6 @@ class pageObj {
   }
   set cs(v) {
     this._cs = v;
-  }
-
-  get showXy() {
-    return this._showXy;
-  }
-  set showXy(v) {
-    this._showXy = v;
-  }
-
-  get showRGB() {
-    return this._showRGB;
-  }
-  set showRGB(v) {
-    this._showRGB = v;
-  }
-
-  get showLab() {
-    return this._showLab;
-  }
-  set showLab(v) {
-    this._showLab = v;
-  }
-
-  get showExp() {
-    return this._showExp;
-  }
-  set showExp(v) {
-    this._showExp = v;
   }
 
   get threshold_color() {

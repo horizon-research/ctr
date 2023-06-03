@@ -128,7 +128,7 @@ function registerGetAns() {
 }
 
 page = new pageObj(1);
-state = new discTestState();
+state = new discTestState('+');
 
 var showXy = false, showRGB = false, showLab = false, showExp = true, showConfig = true;
 
