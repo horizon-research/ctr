@@ -29,6 +29,7 @@ $('#next').on('click', function(evt) {
 $('#expDiv').on('finish', function(evt) {
   $('#res-tab').trigger('click');
   $("body").unbind('keydown');
+  $('body').css('background-color', '#FFFFFF');
 });
 
 page = new pageObj(1);
