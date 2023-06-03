@@ -207,9 +207,15 @@ function genTestColor(mode) {
   } else if (mode == 1) {
     // TODO: only have to do this once
     var hits = getLimits(state.baseColor.v_rgb, line_RGB);
-    if (state.scale > hits[1]) state.scale = hits[1];
-    testColor = new colorObj(math.add(state.baseColor.v_rgb, math.multiply(line_RGB, state.scale)),
-        'v_rgb');
+    if (state.dir > 0) {
+      state.scale = Math.min(state.scale, hits[1]);
+      testColor = new colorObj(math.add(state.baseColor.v_rgb, math.multiply(line_RGB, state.scale)),
+          'v_rgb');
+    } else if (state.dir < 0) {
+      state.scale = Math.min(state.scale, Math.abs(hits[0]));
+      testColor = new colorObj(math.sub(state.baseColor.v_rgb, math.multiply(line_RGB, state.scale)),
+          'v_rgb');
+    }
   }
 
   return testColor;

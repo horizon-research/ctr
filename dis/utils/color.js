@@ -331,13 +331,14 @@ class discTestState {
     this._rotColorsMapped = []; // rotated colors after gamut mapping; one color per row
     this._simColors = []; // simulated dichromatic colors; one color per row
     this._scalesAtRevs = [];
-    this._scale = 0.1; // TODO: need to figure out how to better set this
+    this._scale = 0.1; // must be positive. TODO: need to figure out how to better set this
     this._numRight = 0;
     this._numRevs = 0;
     this._lastAns = true; // just so that if the first respose is incorrect it gets counted as a reversal
     this._numTrials = 1;
     this._step = 0.02; // TODO: need to figure out how to better set this
     this._proj_mat = null;
+    this._dir = 1; // 1 for add 0 for sub
 
     // compute once and cache for later
     this._confusion_lines_lin_srgb = this.get_confusion_lines_lin_srgb();
@@ -593,6 +594,13 @@ class discTestState {
   }
   set proj_mat(v) {
     this._proj_mat = v;
+  }
+
+  get dir() {
+    return this._dir;
+  }
+  set dir(v) {
+    this._dir = v;
   }
 }
 
