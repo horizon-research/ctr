@@ -343,7 +343,12 @@ class pageObj {
     this._hasRec2020 = false;
     this._hasHDR = false;
     this._color_supports = null;
-    this._cs = color_space; // 0 for sRGB, 1 for P3, 2 for Rec2020
+    if (color_space == 'srgb')
+      this._cs = 0;
+    else if (color_space == 'p3')
+      this._cs = 1;
+    else if (color_space == 'rec2020') // no support for this yet
+      this._cs = 2;
 
     this.test_color_support();
   }

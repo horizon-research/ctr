@@ -188,7 +188,7 @@ function finish_cb() {
   }
 }
 
-page = new pageObj(1);
+page = new pageObj('p3');
 
 var showConfig = true;
 page.configPage(registerPickType, registerSimMode, registerPickSimMethod, registerGetAns, showConfig);

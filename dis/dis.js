@@ -81,7 +81,7 @@ function finish_cb() {
   }
 }
 
-page = new pageObj(0);
+page = new pageObj('srgb');
 state = new discTestState(new colorObj([0.95, 0.1, 0.1], 'v_rgb'), 0.1, start_cb, finish_cb);
 
 var showConfig = true;
