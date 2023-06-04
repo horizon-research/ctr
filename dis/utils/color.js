@@ -325,6 +325,7 @@ class colorObj {
 class discTestState {
   constructor(baseColor, scale, start_cb, finish_cb) {
     this._baseColor = baseColor ; // one single color
+    this._thresholdColor = null;
     this._testColor = null; // one single color
     this._colors = []; // four initial colors (three test + one base) without rotation; one color per row
     this._rotColors = []; // rotated colors; one color per row
@@ -517,6 +518,13 @@ class discTestState {
   }
   get baseColor() {
     return this._baseColor;
+  }
+
+  get thresholdColor() {
+    return this._thresholdColor;
+  }
+  set thresholdColor(v) {
+    this._thresholdColor = v;
   }
 
   set rotColors(v) {

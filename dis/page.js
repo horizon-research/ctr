@@ -311,7 +311,7 @@ var getAnswer = function(number) {
   if (state.numRevs == 2) {
     // terminate
     threshold = math.mean(state.scalesAtRevs.slice(-3));
-    page.threshold_color = new colorObj(
+    state.thresholdColor = new colorObj(
         math.add(state.baseColor.v_rgb, math.multiply(state.confusion_lines_rgb[page.type], state.dir * threshold)), 'v_rgb');
 
     // add threshold line
@@ -344,7 +344,6 @@ class pageObj {
     this._hasHDR = false;
     this._color_supports = null;
     this._cs = color_space; // 0 for sRGB, 1 for P3, 2 for Rec2020
-    this._threshold_color = null;
 
     this.test_color_support();
   }
@@ -485,13 +484,6 @@ class pageObj {
   }
   set cs(v) {
     this._cs = v;
-  }
-
-  get threshold_color() {
-    return this._threshold_color;
-  }
-  set threshold_color(v) {
-    this._threshold_color = v;
   }
 }
 

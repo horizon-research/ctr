@@ -1,5 +1,9 @@
 var all_tests = [[[0.5, 0.9, 0.25], 'v_rgb', 0.1],
-                 [[0.5, 0.9, 0.25], 'v_rgb', -0.1]];
+                 [[0.5, 0.9, 0.25], 'v_rgb', -0.1],
+                 [[0.9, 0.1, 0.1], 'v_rgb', 0.1],
+                 [[0.9, 0.1, 0.1], 'v_rgb', -0.1],
+                 [[0.2, 0.2, 0.85], 'v_rgb', 0.1],
+                 [[0.2, 0.2, 0.85], 'v_rgb', -0.1]];
 var testId = 0;
 
 // init canvas size here so that it doesn't conflict with canvas in dis
@@ -56,10 +60,10 @@ $('#toTest').on('click', function(evt) {
 
 $('#expDiv').on('finishOneTest', function(evt) {
   // update disDiv plot
-  page.dis_plot.data[1].x.push(page.threshold_color.xy[0]);
-  page.dis_plot.data[1].y.push(page.threshold_color.xy[1]);
-  page.dis_plot.data[1].marker.color.push(page.threshold_color.legacy_rgb_css);
+  page.dis_plot.data[1].x.push(state.thresholdColor.xy[0]);
+  page.dis_plot.data[1].y.push(state.thresholdColor.xy[1]);
   page.dis_plot.data[1].marker.size.push(7);
+  page.dis_plot.data[1].marker.color.push(state.thresholdColor.legacy_rgb_css);
   page.dis_plot.data[1].text.push('threshold');
   var data_update = {'x': [page.dis_plot.data[1].x],
                      'y': [page.dis_plot.data[1].y],
@@ -148,6 +152,19 @@ function start_cb() {
                          'text': [['base']]};
       Plotly.update(page.dis_plot, data_update, {}, [1]);
     });
+  } else if (testId % 2 == 0) {
+    // hopefully by the time we get to the second base csv is loaded
+    page.dis_plot.data[1].x.push(state.baseColor.xy[0]);
+    page.dis_plot.data[1].y.push(state.baseColor.xy[1]);
+    page.dis_plot.data[1].marker.size.push(10);
+    page.dis_plot.data[1].marker.color.push(state.baseColor.legacy_rgb_css);
+    page.dis_plot.data[1].text.push('base');
+    var data_update = {'x': [page.dis_plot.data[1].x],
+                       'y': [page.dis_plot.data[1].y],
+                       'marker.size': [page.dis_plot.data[1].marker.size],
+                       'marker.color': [page.dis_plot.data[1].marker.color],
+                       'text': [page.dis_plot.data[1].text]};
+    Plotly.update(page.dis_plot, data_update, {}, [1]);
   }
 
   testId++;
