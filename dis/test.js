@@ -1,9 +1,9 @@
-var all_tests = [[[0.5, 0.9, 0.25], 'v_rgb', 0.1],
-                 [[0.5, 0.9, 0.25], 'v_rgb', -0.1],
-                 //[[0.9, 0.1, 0.1], 'v_rgb', 0.1],
-                 //[[0.9, 0.1, 0.1], 'v_rgb', -0.1],
-                 //[[0.2, 0.2, 0.85], 'v_rgb', 0.1],
-                 //[[0.2, 0.2, 0.85], 'v_rgb', -0.1]
+var all_tests = [[[0.5, 0.9, 0.25], 'linear_srgb', 0.1],
+                 [[0.5, 0.9, 0.25], 'linear_srgb', -0.1],
+                 [[0.9, 0.1, 0.1], 'linear_sgb', 0.1],
+                 [[0.9, 0.1, 0.1], 'linear_sgb', -0.1],
+                 [[0.2, 0.2, 0.85], 'linear_sgb', 0.1],
+                 [[0.2, 0.2, 0.85], 'linear_sgb', -0.1]
                 ];
 var testId = 0;
 
@@ -188,7 +188,7 @@ function finish_cb() {
   }
 }
 
-page = new pageObj(0);
+page = new pageObj(1);
 
 var showConfig = true;
 page.configPage(registerPickType, registerSimMode, registerPickSimMethod, registerGetAns, showConfig);

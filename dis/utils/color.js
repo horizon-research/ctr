@@ -154,6 +154,7 @@ function dichromatic_gamut_mapping(colors, line, mode) {
 class colorObj {
   constructor(value, space) {
     this._value = value; // an array
+    // an interface for either linear_srgb or linear_p3 based on page.cs
     if (space == 'v_rgb') {
       this._space = page.cs ? 'linear_p3' : 'linear_srgb';
     } else {
@@ -214,7 +215,6 @@ class colorObj {
     return this._value;
   }
 
-  // an interface for either linear_srgb or linear_p3;
   get v_rgb() {
     return page.cs ? this.linear_p3 : this.linear_srgb;
   }
