@@ -59,9 +59,11 @@ $('#expDiv').on('finishOneTest', function(evt) {
   page.dis_plot.data[1].x.push(page.threshold_color.xy[0]);
   page.dis_plot.data[1].y.push(page.threshold_color.xy[1]);
   page.dis_plot.data[1].marker.color.push(page.threshold_color.legacy_rgb_css);
+  page.dis_plot.data[1].marker.size.push(7);
   page.dis_plot.data[1].text.push('threshold');
   var data_update = {'x': [page.dis_plot.data[1].x],
                      'y': [page.dis_plot.data[1].y],
+                     'marker.size': [page.dis_plot.data[1].marker.size],
                      'marker.color': [page.dis_plot.data[1].marker.color],
                      'text': [page.dis_plot.data[1].text]};
   Plotly.update(page.dis_plot, data_update, {}, [1]);
@@ -141,6 +143,7 @@ function start_cb() {
 
       var data_update = {'x': [[state.baseColor.xy[0]]],
                          'y': [[state.baseColor.xy[1]]],
+                         'marker.size': [[10]],
                          'marker.color': [[state.baseColor.legacy_rgb_css]],
                          'text': [['base']]};
       Plotly.update(page.dis_plot, data_update, {}, [1]);

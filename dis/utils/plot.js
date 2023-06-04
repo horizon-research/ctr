@@ -208,9 +208,9 @@ function plotDis(plotId, rows) {
     x: [0],
     y: [0],
     text: [''],
-    mode: 'lines+markers',
+    mode: 'markers',
     marker: {
-      size: 10,
+      size: [10],
       opacity: 1,
       color: [0,0,0],
     },
