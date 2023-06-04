@@ -37,6 +37,10 @@
         justify-content: center;
         align-items: center; 
       }
+
+      .nofocus:focus {
+          outline: 0px solid transparent;
+      }
     </style>
 
     
@@ -131,6 +135,14 @@
               </div>
             </div>
     
+            <div class="tab-pane" id="cme-tab-pane" role="tabpanel" aria-labelledby="cme-tab" tabindex="0">
+              <div class="row d-flex justify-content-center">
+                <div class="col-sm-6">
+                </div>
+              </div>
+            </div>
+
+
             <div class="tab-pane" id="inst-tab-pane" role="tabpanel" aria-labelledby="inst-tab" tabindex="0">
               <div class="row d-flex justify-content-center">
                 <div class="col-sm-6">
@@ -162,15 +174,15 @@
               </div>
             </div>
 
-            <div class="tab-pane" id="test-tab-pane" role="tabpanel" aria-labelledby="test-tab" tabindex="0">
-              <div class="container text-center">
-                <div class="row justify-content-md-center mb-2">
+            <div class="tab-pane" id="test-tab-pane" role="tabpanel" aria-labelledby="test-tab">
+              <div class="container text-center nofocus" tabindex="-1">
+                <div class="row justify-content-md-center mb-2 nofocus">
                   <div class="col col-lg-2 me-1 square" id="s11">
                   </div>
                   <div class="col col-lg-2 ms-1 square" id="s12">
                   </div>
                 </div>
-                <div class="row justify-content-md-center">
+                <div class="row justify-content-md-center nofocus">
                   <div class="col col-lg-2 me-1 square" id="s13">
                   </div>
                   <div class="col col-lg-2 ms-1 square" id="s14">
