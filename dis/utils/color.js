@@ -381,7 +381,7 @@ class discTestState {
     for (var t of [0, 1, 2]) {
       for (var p of [[1, 0, 0], [0, 1, 0], [0, 0, 1]]) {
         // using srgb is just fine, since the lines in xy won't change
-        var line_RGB = this.confusion_lines_rgb[t];
+        var line_RGB = this._confusion_lines_lin_srgb[t];
         var p0_RGB = new colorObj(math.add(p, math.multiply(line_RGB, 0.2)), 'linear_srgb');
         var p0_xy = p0_RGB.xy;
         var p1_RGB = new colorObj(p, 'linear_srgb');
