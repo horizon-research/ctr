@@ -183,6 +183,7 @@ function genTestColor(mode) {
   var testColor;
 
   if (mode == 0) {
+    // TODO: fix this at some point...
     // sample in xy space using equi-luminance (for trichromats)
     var p0_RGB = math.add(state.baseColor.v_rgb, math.multiply(line_RGB, 0.2));
     var p0_xy = XYZ2xy(math.multiply(RGB2xyz, p0_RGB));
@@ -199,15 +200,9 @@ function genTestColor(mode) {
   } else if (mode == 1) {
     // TODO: only have to do this once
     var hits = getLimits(state.baseColor.v_rgb, line_RGB);
-    if (state.dir == '+') {
-      state.scale = Math.min(state.scale, hits[1]);
-      testColor = new colorObj(math.add(state.baseColor.v_rgb, math.multiply(line_RGB, state.scale)),
-          'v_rgb');
-    } else if (state.dir == '-') {
-      state.scale = Math.min(state.scale, Math.abs(hits[0]));
-      testColor = new colorObj(math.subtract(state.baseColor.v_rgb, math.multiply(line_RGB, state.scale)),
-          'v_rgb');
-    }
+    state.scale = (state.dir == 1) ? Math.min(state.scale, hits[1]) : Math.min(state.scale, Math.abs(hits[0]));
+    testColor = new colorObj(math.add(state.baseColor.v_rgb, math.multiply(line_RGB, state.dir * state.scale)),
+        'v_rgb');
   }
 
   return testColor;
@@ -317,7 +312,7 @@ var getAnswer = function(number) {
     // terminate
     threshold = math.mean(state.scalesAtRevs.slice(-3));
     page.threshold_color = new colorObj(
-        math.add(state.baseColor.v_rgb, math.multiply(state.confusion_lines_rgb[page.type], threshold)), 'v_rgb');
+        math.add(state.baseColor.v_rgb, math.multiply(state.confusion_lines_rgb[page.type], state.dir * threshold)), 'v_rgb');
 
     // add threshold line
     data_update = {'x': [[0, 30]], 'y': [[threshold, threshold]]};

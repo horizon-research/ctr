@@ -207,10 +207,10 @@ function plotDis(plotId, rows) {
   var line = {
     x: [0],
     y: [0],
-    text: ['base', 'threshold'],
+    text: [''],
     mode: 'lines+markers',
     marker: {
-      size: 5,
+      size: 10,
       opacity: 1,
       color: [0,0,0],
     },

@@ -75,18 +75,17 @@ function finish_cb() {
   $('#expDiv').trigger('finish');
 
   if (num_tests != 0) {
-    state = new discTestState(new colorObj([0.85, 0.1, 0.25], 'v_rgb'), '-', start_cb, finish_cb);
+    state = new discTestState(new colorObj([0.5, 0.9, 0.25], 'v_rgb'), -0.1, start_cb, finish_cb);
     page.submit();
   }
 }
 
 page = new pageObj(0);
-state = new discTestState(new colorObj([0.5, 0.9, 0.25], 'v_rgb'), '+', start_cb, finish_cb);
+state = new discTestState(new colorObj([0.5, 0.9, 0.25], 'v_rgb'), 0.1, start_cb, finish_cb);
 
 var showConfig = true;
 page.configPage(registerPickType, registerSimMode, registerPickSimMethod, registerGetAns, showConfig);
 
-// set baseColor here
 page.submit();
 
 // https://www.sitepoint.com/get-url-parameters-with-javascript/

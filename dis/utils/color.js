@@ -323,7 +323,7 @@ class colorObj {
 
 // contains the state one baseColor test (multiple testColors)
 class discTestState {
-  constructor(baseColor, dir, start_cb, finish_cb) {
+  constructor(baseColor, scale, start_cb, finish_cb) {
     this._baseColor = baseColor ; // one single color
     this._testColor = null; // one single color
     this._colors = []; // four initial colors (three test + one base) without rotation; one color per row
@@ -331,13 +331,13 @@ class discTestState {
     this._rotColorsMapped = []; // rotated colors after gamut mapping; one color per row
     this._simColors = []; // simulated dichromatic colors; one color per row
     this._scalesAtRevs = [];
-    this._scale = 0.1; // must be positive to simplify staircase implementation (i.e., scale always goes down). TODO: need to figure out how to better set this
+    this._dir = (scale > 0) ? 1 : -1;
+    this._scale = Math.abs(scale); // always positive to simplify adjusting steps; TODO: need to figure out how to better set this
     this._numRight = 0;
     this._numRevs = 0;
     this._lastAns = true; // just so that if the first respose is incorrect it gets counted as a reversal
     this._numTrials = 1;
     this._step = 0.02; // TODO: need to figure out how to better set this
-    this._dir = dir; // '+' for add '-' for sub
 
     this._start_cb = start_cb; // called every page.submit
     this._finish_cb = finish_cb; // called every time a test terminates

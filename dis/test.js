@@ -1,3 +1,4 @@
+num_tests = 2;
 // init canvas size here so that it doesn't conflict with canvas in dis
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
@@ -21,8 +22,9 @@ $('#toTest').on('click', function(evt) {
   var base_hex = $('#colorpicker').val();
   var base_srgb = hex_to_srgb(base_hex);
 
-  //page.submit(new colorObj([0.5, 0.9, 0.25], 'v_rgb'));
-  page.submit(new colorObj(base_srgb, 'srgb'));
+  //state = new discTestState(new colorObj(base_srgb, 'srgb'), '+', start_cb, finish_cb);
+  state = new discTestState(new colorObj([0.5, 0.9, 0.25], 'v_rgb'), 0.1, start_cb, finish_cb);
+  page.submit();
 
   $("body").keydown(function(e){
     var current = parseFloat($('#customRange').val());
@@ -51,14 +53,15 @@ $('#toTest').on('click', function(evt) {
 $('#expDiv').on('finish', function(evt) {
   // update disDiv plot
   var dis_plot = document.getElementById('disDiv');
-  var data_update = {'x': [[state.baseColor.xy[0], page.threshold_color.xy[0]]],
-                     'y': [[state.baseColor.xy[1], page.threshold_color.xy[1]]],
-                     'marker.color': [[state.baseColor.legacy_rgb_css, page.threshold_color.legacy_rgb_css]]};
+  dis_plot.data[1].x.push(page.threshold_color.xy[0]);
+  dis_plot.data[1].y.push(page.threshold_color.xy[1]);
+  dis_plot.data[1].marker.color.push(page.threshold_color.legacy_rgb_css);
+  dis_plot.data[1].text.push('threshold');
+  var data_update = {'x': [dis_plot.data[1].x],
+                     'y': [dis_plot.data[1].y],
+                     'marker.color': [dis_plot.data[1].marker.color],
+                     'text': [dis_plot.data[1].text]};
   Plotly.update(dis_plot, data_update, {}, [1]);
-
-  $('#res-tab').trigger('click');
-  $("body").unbind('keydown');
-  $('body').css('background-color', '#FFFFFF');
 });
 
 function registerPickType() {
@@ -104,7 +107,6 @@ function registerPickSimMethod() {
       // two planes
       page.simMethod = 0;
     }
-    state.proj_mat = state.get_proj_mat();
   });
 
   $('#m2').prop("checked", true).trigger('change');
@@ -127,15 +129,41 @@ function registerGetAns() {
   });
 }
 
-page = new pageObj(1);
-state = new discTestState('+');
+function start_cb() {
+  if (num_tests == 2) {
+    var dis_plot = document.getElementById('disDiv');
+    var data_update = {'x': [[state.baseColor.xy[0]]],
+                       'y': [[state.baseColor.xy[1]]],
+                       'marker.color': [[state.baseColor.legacy_rgb_css]],
+                       'text': [['base']]};
+    Plotly.update(dis_plot, data_update, {}, [1]);
+  }
 
-var showXy = false, showRGB = false, showLab = false, showExp = true, showConfig = true;
+  num_tests--;
 
+  state.exp_plot = plotExp('expDiv');
+}
+
+function finish_cb() {
+  $('#expDiv').trigger('finish');
+
+  if (num_tests != 0) {
+    state = new discTestState(new colorObj([0.5, 0.9, 0.25], 'v_rgb'), -0.1, start_cb, finish_cb);
+    page.submit();
+  } else {
+    $('#res-tab').trigger('click');
+    $("body").unbind('keydown');
+    $('body').css('background-color', '#FFFFFF');
+  }
+}
+
+page = new pageObj(0);
+
+// TODO: this is done once each page rather than once each test. have a callback for it in page?
 d3.csv('../ciexyzjv.csv').then(function(rows){
   plotDis('disDiv', rows);
 });
 
-page.configPage(registerPickType, registerSimMode, registerPickSimMethod, registerGetAns,
-    showXy, showRGB, showLab, showExp, showConfig);
+var showConfig = true;
+page.configPage(registerPickType, registerSimMode, registerPickSimMethod, registerGetAns, showConfig);
 
