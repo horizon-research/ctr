@@ -74,7 +74,7 @@
     
         <div class="d-grid gap-3" id="patches">
     
-          <ul class="nav nav-tabs" id="myTab" role="tablist" style="display: none">
+          <ul class="nav nav-tabs" id="mainTab" role="tablist" style="display: none">
             <li class="nav-item" role="presentation">
               <button class="nav-link active" id="setting-tab" data-bs-toggle="tab" data-bs-target="#setting-tab-pane" type="button" role="tab" aria-controls="setting-tab-pane" aria-selected="true">settings</button>
             </li>
@@ -193,7 +193,22 @@
               <div class="d-grid gap-3" style="grid-template-columns: 2fr 2fr;">
                 <div class="pt-3 mb-4 px-3 bg-light border rounded-3">
                   <div class="col-sm-12">
-                    <div id="expDiv"></div>
+                    <ul class="nav nav-tabs" id="resTab">
+                      <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="e1-tab" data-bs-toggle="tab" data-bs-target="#e1-tab-pane" type="button" role="tab">Test 1</button>
+                      </li>
+                      <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="e2-tab" data-bs-toggle="tab" data-bs-target="#e2-tab-pane" type="button" role="tab">Test 2</button>
+                      </li>
+                    </ul>
+                    <div class="tab-content" id="myTabContent">
+                      <div class="tab-pane fade show active" id="e1-tab-pane">
+                        <div id="expDiv1"></div>
+                      </div>
+                      <div class="tab-pane" id="e2-tab-pane">
+                        <div id="expDiv2"></div>
+                      </div>
+                    </div>
                   </div>
                 </div>
                 <div class="pt-3 mb-4 px-3 bg-light border rounded-3">

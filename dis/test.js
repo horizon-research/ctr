@@ -1,9 +1,10 @@
 var all_tests = [[[0.5, 0.9, 0.25], 'v_rgb', 0.1],
                  [[0.5, 0.9, 0.25], 'v_rgb', -0.1],
-                 [[0.9, 0.1, 0.1], 'v_rgb', 0.1],
-                 [[0.9, 0.1, 0.1], 'v_rgb', -0.1],
-                 [[0.2, 0.2, 0.85], 'v_rgb', 0.1],
-                 [[0.2, 0.2, 0.85], 'v_rgb', -0.1]];
+                 //[[0.9, 0.1, 0.1], 'v_rgb', 0.1],
+                 //[[0.9, 0.1, 0.1], 'v_rgb', -0.1],
+                 //[[0.2, 0.2, 0.85], 'v_rgb', 0.1],
+                 //[[0.2, 0.2, 0.85], 'v_rgb', -0.1]
+                ];
 var testId = 0;
 
 // init canvas size here so that it doesn't conflict with canvas in dis
@@ -58,13 +59,13 @@ $('#toTest').on('click', function(evt) {
   $('#test-tab').trigger('click');
 });
 
-$('#expDiv').on('finishOneTest', function(evt) {
+$('#test-tab-pane').on('finishOneTest', function(evt) {
   // update disDiv plot
   page.dis_plot.data[1].x.push(state.thresholdColor.xy[0]);
   page.dis_plot.data[1].y.push(state.thresholdColor.xy[1]);
   page.dis_plot.data[1].marker.size.push(7);
   page.dis_plot.data[1].marker.color.push(state.thresholdColor.legacy_rgb_css);
-  page.dis_plot.data[1].text.push('threshold');
+  page.dis_plot.data[1].text.push('Test'+testId.toString()+' threshold');
   var data_update = {'x': [page.dis_plot.data[1].x],
                      'y': [page.dis_plot.data[1].y],
                      'marker.size': [page.dis_plot.data[1].marker.size],
@@ -149,7 +150,7 @@ function start_cb() {
                          'y': [[state.baseColor.xy[1]]],
                          'marker.size': [[10]],
                          'marker.color': [[state.baseColor.legacy_rgb_css]],
-                         'text': [['base']]};
+                         'text': [['Base']]};
       Plotly.update(page.dis_plot, data_update, {}, [1]);
     });
   } else if (testId % 2 == 0) {
@@ -169,12 +170,12 @@ function start_cb() {
 
   testId++;
 
-  state.exp_plot = plotExp('expDiv');
+  state.exp_plot = plotExp('expDiv'+testId.toString());
 }
 
 // called after each test terminates
 function finish_cb() {
-  $('#expDiv').trigger('finishOneTest');
+  $('#test-tab-pane').trigger('finishOneTest');
 
   if (testId != all_tests.length) {
     var test = all_tests[testId];
