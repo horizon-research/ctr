@@ -11,7 +11,7 @@ function registerPickType() {
     }
 
     // automatically update colors and re-plot
-    if (page.init) updatePlot($('#customRange').val(), 'rgbDiv', 'labDiv', 'xyDiv', 4);
+    if (page.init) updatePlot($('#customRange').val(), 4);
   });
 
   // init color blindness type
@@ -29,7 +29,7 @@ function registerSimMode() {
       page.sim = false;
     }
 
-    if (page.init) updatePlot($('#customRange').val(), 'rgbDiv', 'labDiv', 'xyDiv', 1);
+    if (page.init) updatePlot($('#customRange').val(), 1);
   });
 
   // choose to show actual colors
@@ -49,7 +49,7 @@ function registerPickSimMethod() {
     }
 
     // automatically update colors and re-plot
-    if (page.init) updatePlot($('#customRange').val(), 'rgbDiv', 'labDiv', 'xyDiv', 2);
+    if (page.init) updatePlot($('#customRange').val(), 2);
   });
 
   // init simulation method
@@ -67,6 +67,7 @@ function start_cb() {
 
   d3.csv('../ciexyzjv.csv').then(function(rows){
     state.xy_plot = plotXy('xyDiv', rows);
+    updatePlot(0, 1);
   });
   state.exp_plot = plotExp('expDiv');
 }

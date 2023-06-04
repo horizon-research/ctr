@@ -1,4 +1,4 @@
-function updatePlot(theta, plotId_rgb, plotId_lab, plotId_xy, action) {
+function updatePlot(theta, action) {
   // |action|:
   // 0: rotate (slider)
   // 1: show simulation/actual colors
@@ -126,7 +126,7 @@ function updatePlot(theta, plotId_rgb, plotId_lab, plotId_xy, action) {
 function registerSlider() {
   $('#customRange').on('input', function() {
     $('.rot-label').html('Rotation Angle (Degree): ' + (this.value/Math.PI*180).toFixed(2) + '&#176;')
-    updatePlot(this.value, 'rgbDiv', 'labDiv', 'xyDiv', 0)
+    updatePlot(this.value, 0)
   });
 
   $('#customRange').prop('disabled', false);
@@ -218,7 +218,7 @@ function testOneColor(random) {
     else state.colors[i] = state.baseColor;
   }
 
-  updatePlot(0, 'rgbDiv', 'labDiv', 'xyDiv', 3);
+  updatePlot(0, 3);
 }
 
 function setupNextColor() {
