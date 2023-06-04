@@ -1,4 +1,7 @@
-num_tests = 2;
+var all_tests = [[[0.5, 0.9, 0.25], 'v_rgb', 0.1],
+                 [[0.5, 0.9, 0.25], 'v_rgb', -0.1]];
+var testId = 0;
+
 // init canvas size here so that it doesn't conflict with canvas in dis
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
@@ -19,11 +22,12 @@ function hex_to_srgb(hex) {
 }
 
 $('#toTest').on('click', function(evt) {
-  var base_hex = $('#colorpicker').val();
-  var base_srgb = hex_to_srgb(base_hex);
-
+  //var base_hex = $('#colorpicker').val();
+  //var base_srgb = hex_to_srgb(base_hex);
   //state = new discTestState(new colorObj(base_srgb, 'srgb'), '+', start_cb, finish_cb);
-  state = new discTestState(new colorObj([0.5, 0.9, 0.25], 'v_rgb'), 0.1, start_cb, finish_cb);
+
+  var test = all_tests[0];
+  state = new discTestState(new colorObj(test[0], test[1]), test[2], start_cb, finish_cb);
   page.submit();
 
   $("body").keydown(function(e){
@@ -50,18 +54,17 @@ $('#toTest').on('click', function(evt) {
   $('#test-tab').trigger('click');
 });
 
-$('#expDiv').on('finish', function(evt) {
+$('#expDiv').on('finishOneTest', function(evt) {
   // update disDiv plot
-  var dis_plot = document.getElementById('disDiv');
-  dis_plot.data[1].x.push(page.threshold_color.xy[0]);
-  dis_plot.data[1].y.push(page.threshold_color.xy[1]);
-  dis_plot.data[1].marker.color.push(page.threshold_color.legacy_rgb_css);
-  dis_plot.data[1].text.push('threshold');
-  var data_update = {'x': [dis_plot.data[1].x],
-                     'y': [dis_plot.data[1].y],
-                     'marker.color': [dis_plot.data[1].marker.color],
-                     'text': [dis_plot.data[1].text]};
-  Plotly.update(dis_plot, data_update, {}, [1]);
+  page.dis_plot.data[1].x.push(page.threshold_color.xy[0]);
+  page.dis_plot.data[1].y.push(page.threshold_color.xy[1]);
+  page.dis_plot.data[1].marker.color.push(page.threshold_color.legacy_rgb_css);
+  page.dis_plot.data[1].text.push('threshold');
+  var data_update = {'x': [page.dis_plot.data[1].x],
+                     'y': [page.dis_plot.data[1].y],
+                     'marker.color': [page.dis_plot.data[1].marker.color],
+                     'text': [page.dis_plot.data[1].text]};
+  Plotly.update(page.dis_plot, data_update, {}, [1]);
 });
 
 function registerPickType() {
@@ -129,26 +132,33 @@ function registerGetAns() {
   });
 }
 
+// called during page.submit, which is called once per test
 function start_cb() {
-  if (num_tests == 2) {
-    var dis_plot = document.getElementById('disDiv');
-    var data_update = {'x': [[state.baseColor.xy[0]]],
-                       'y': [[state.baseColor.xy[1]]],
-                       'marker.color': [[state.baseColor.legacy_rgb_css]],
-                       'text': [['base']]};
-    Plotly.update(dis_plot, data_update, {}, [1]);
+  if (testId == 0) {
+    d3.csv('../ciexyzjv.csv').then(function(rows){
+      // dis_plot needs to be part of page, because we will get a new state for each test
+      page.dis_plot = plotDis('disDiv', rows);
+
+      var data_update = {'x': [[state.baseColor.xy[0]]],
+                         'y': [[state.baseColor.xy[1]]],
+                         'marker.color': [[state.baseColor.legacy_rgb_css]],
+                         'text': [['base']]};
+      Plotly.update(page.dis_plot, data_update, {}, [1]);
+    });
   }
 
-  num_tests--;
+  testId++;
 
   state.exp_plot = plotExp('expDiv');
 }
 
+// called after each test terminates
 function finish_cb() {
-  $('#expDiv').trigger('finish');
+  $('#expDiv').trigger('finishOneTest');
 
-  if (num_tests != 0) {
-    state = new discTestState(new colorObj([0.5, 0.9, 0.25], 'v_rgb'), -0.1, start_cb, finish_cb);
+  if (testId != all_tests.length) {
+    var test = all_tests[testId];
+    state = new discTestState(new colorObj(test[0], test[1]), test[2], start_cb, finish_cb);
     page.submit();
   } else {
     $('#res-tab').trigger('click');
@@ -158,11 +168,6 @@ function finish_cb() {
 }
 
 page = new pageObj(0);
-
-// TODO: this is done once each page rather than once each test. have a callback for it in page?
-d3.csv('../ciexyzjv.csv').then(function(rows){
-  plotDis('disDiv', rows);
-});
 
 var showConfig = true;
 page.configPage(registerPickType, registerSimMode, registerPickSimMethod, registerGetAns, showConfig);
