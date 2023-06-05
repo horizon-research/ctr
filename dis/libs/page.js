@@ -264,7 +264,6 @@ var getAnswer = function(number) {
   var rev = false;
 
   // add a new result to the threshold plot
-  //var exp_plot = document.getElementById('expDiv');
   var exp_plot = state.exp_plot;
   exp_plot.data[1].x.push(state.numTrials);
   exp_plot.data[1].y.push(state.scale);
@@ -326,13 +325,25 @@ var getAnswer = function(number) {
     data_update = {'visible': [true, true, true]};
     Plotly.update(exp_plot, data_update, {}, [2, 3, 4]);
 
+    // TODO: record rotation angles and resets
     var stats = {
-      base: state.baseColor.v_rgb,
+      sim: page.sim,
+      blindness_type: page.type,
+      simMethod: page.simMethod,
+      has_srgb: page.hassRGB,
+      has_p3: page.hasP3,
+      has_rec2020: page.hasRec2020,
+      has_hdr: page.hasHDR,
+      bitdepth: page.bitdepth,
+
+      base_rgb: state.baseColor.v_rgb,
+      base_xy: state.baseColor.xy,
       cs: page.cs,
       dir: state.dir,
       line: state.confusion_lines_rgb,
       threshold: threshold,
       threshold_color: state.thresholdColor.v_rgb,
+      scales: exp_plot.data[1].y,
     };
     state.finish_cb(stats);
   } else {

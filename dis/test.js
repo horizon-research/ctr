@@ -1,9 +1,23 @@
-var all_tests = [[[0.5, 0.9, 0.25], 'linear_srgb', 0.1],
-                 [[0.5, 0.9, 0.25], 'linear_srgb', -0.1],
-                 //[[0.9, 0.1, 0.1], 'linear_srgb', 0.1],
-                 //[[0.9, 0.1, 0.1], 'linear_srgb', -0.1],
-                 //[[0.2, 0.2, 0.85], 'linear_srgb', 0.1],
-                 //[[0.2, 0.2, 0.85], 'linear_srgb', -0.1]
+// for P
+//var all_tests = [[[211, 211, 2], 'srgb', 0.1], // reach gamut limit on the first trial and can't up more
+//                 [[17, 233, 11], 'srgb', -0.1],
+//                 [[58, 62, 233], 'srgb', 0.1],
+//                 [[141, 3, 216], 'srgb', -0.1], // reach gamut limit on the first trial and can't up more
+//                 [[206, 4, 2], 'srgb', 0.1],
+//                 [[141, 74, 45], 'srgb', -0.1]
+//                ];
+
+// for D
+var all_tests = [
+                 [[146, 33, 33], 'srgb', 0.1],    // dark red
+                 [[146, 33, 33], 'srgb', -0.1],    // dark red
+                 //[[121, 57, 19], 'srgb', -0.1],   // brown
+                 //[[136, 136, 136], 'srgb', 0.1],  // gray
+                 [[170, 121, 131], 'srgb', 0.1], // pink
+                 [[170, 121, 131], 'srgb', -0.1], // pink
+                 //[[184, 74, 74], 'srgb', 0.1],    // dark red
+                 [[39, 126, 39], 'srgb', 0.1],   // dark green
+                 [[39, 126, 39], 'srgb', -0.1],   // dark green
                 ];
 var testId = 0;
 var confusion_lines = [];
@@ -53,8 +67,8 @@ $('#toCme').on('click', function(evt) {
   if (page.sim) {
     $('#inst-tab').trigger('click');
   } else {
-    $('#cmepicker1').val('#3354ab');
-    $('#cmepicker2').val('#98f12a');
+    $('#cmepicker1').val(new colorObj([211, 211, 2], 'srgb').legacy_hex_css);
+    $('#cmepicker2').val(new colorObj([17, 233, 11], 'srgb').legacy_hex_css);
     $('#cme-tab').trigger('click');
   }
 });
@@ -71,11 +85,11 @@ $('#toInst').on('click', function(evt) {
   confusion_lines.push(normalize(math.subtract(color1.linear_srgb, color2.linear_srgb)));
 
   if (num_cal == 1) {
-    $('#cmepicker1').val('#34ab35');
-    $('#cmepicker2').val('#1298fa');
+    $('#cmepicker1').val(new colorObj([58, 62, 233], 'srgb').legacy_hex_css);
+    $('#cmepicker2').val(new colorObj([141, 3, 216], 'srgb').legacy_hex_css);
   } else if (num_cal == 2) {
-    $('#cmepicker1').val('#1298fa');
-    $('#cmepicker2').val('#34ab35');
+    $('#cmepicker1').val(new colorObj([206, 4, 2], 'srgb').legacy_hex_css);
+    $('#cmepicker2').val(new colorObj([141, 74, 45], 'srgb').legacy_hex_css);
   } else if (num_cal == 3) {
     $('#inst-tab').trigger('click');
   }
@@ -90,6 +104,7 @@ $('#toTest').on('click', function(evt) {
   state = new discTestState(new colorObj(test[0], test[1]), test[2], start_cb, finish_cb, confusion_lines[0]);
   page.submit();
 
+  // TODO: enable cyclic rotation
   $("body").keydown(function(e){
     var current = parseFloat($('#customRange').val());
     if ((e.keyCode || e.which) == 37) {
@@ -208,7 +223,8 @@ function start_cb() {
                          'text': [['Base']]};
       Plotly.update(page.dis_plot, data_update, {}, [1]);
     });
-  } else if (testId % 2 == 0) {
+  } else {
+    // always push base 
     // hopefully by the time we get to the second base csv is loaded
     page.dis_plot.data[1].x.push(state.baseColor.xy[0]);
     page.dis_plot.data[1].y.push(state.baseColor.xy[1]);
