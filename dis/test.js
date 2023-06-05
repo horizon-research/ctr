@@ -11,8 +11,24 @@ var testId = 0;
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
+var num_cal = 0;
+
+$('#toCme').on('click', function(evt) {
+  $('#cme-tab').trigger('click');
+});
+
 $('#toInst').on('click', function(evt) {
-  $('#inst-tab').trigger('click');
+  num_cal++;
+
+  if (num_cal == 1) {
+    $('#cmepicker1').val('#34ab35');
+    $('#cmepicker2').val('#1298fa');
+  } else if (num_cal == 2) {
+    $('#cmepicker1').val('#1298fa');
+    $('#cmepicker2').val('#34ab35');
+  } else if (num_cal == 3) {
+    $('#inst-tab').trigger('click');
+  }
 });
 
 function hex_to_srgb(hex) {
