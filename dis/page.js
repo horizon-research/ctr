@@ -179,7 +179,7 @@ function getLimits(base, line){
 }
 
 function genTestColor(mode) {
-  var line_RGB = state.confusion_lines_rgb[page.type];
+  var line_RGB = state.confusion_lines_rgb;
   var testColor;
 
   if (mode == 0) {
@@ -242,7 +242,7 @@ function setupNextColor() {
   let timer = setInterval(function() {
     let timePassed = Date.now() - start;
   
-    if (timePassed >= 1000) {
+    if (timePassed >= 100) {
       clearInterval(timer);
       $('#s12').css('zIndex', '1');
       $('#s13').css('zIndex', '1');
@@ -308,11 +308,11 @@ var getAnswer = function(number) {
                  'marker.line.width': [exp_plot.data[1].marker.line.width]};
   Plotly.update(exp_plot, data_update, {}, [1]);
 
-  if (state.numRevs == 6) {
+  if (state.numRevs == 2) {
     // terminate
     threshold = math.mean(state.scalesAtRevs.slice(-3));
     state.thresholdColor = new colorObj(
-        math.add(state.baseColor.v_rgb, math.multiply(state.confusion_lines_rgb[page.type], state.dir * threshold)), 'v_rgb');
+        math.add(state.baseColor.v_rgb, math.multiply(state.confusion_lines_rgb, state.dir * threshold)), 'v_rgb');
 
     // add threshold line
     data_update = {'x': [[0, 30]], 'y': [[threshold, threshold]]};

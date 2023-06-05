@@ -1,35 +1,18 @@
 var all_tests = [[[0.5, 0.9, 0.25], 'linear_srgb', 0.1],
                  [[0.5, 0.9, 0.25], 'linear_srgb', -0.1],
-                 [[0.9, 0.1, 0.1], 'linear_sgb', 0.1],
-                 [[0.9, 0.1, 0.1], 'linear_sgb', -0.1],
-                 [[0.2, 0.2, 0.85], 'linear_sgb', 0.1],
-                 [[0.2, 0.2, 0.85], 'linear_sgb', -0.1]
+                 [[0.9, 0.1, 0.1], 'linear_srgb', 0.1],
+                 [[0.9, 0.1, 0.1], 'linear_srgb', -0.1],
+                 [[0.2, 0.2, 0.85], 'linear_srgb', 0.1],
+                 [[0.2, 0.2, 0.85], 'linear_srgb', -0.1]
                 ];
 var testId = 0;
+var confusion_lines = [];
 
 // init canvas size here so that it doesn't conflict with canvas in dis
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
 var num_cal = 0;
-
-$('#toCme').on('click', function(evt) {
-  $('#cme-tab').trigger('click');
-});
-
-$('#toInst').on('click', function(evt) {
-  num_cal++;
-
-  if (num_cal == 1) {
-    $('#cmepicker1').val('#34ab35');
-    $('#cmepicker2').val('#1298fa');
-  } else if (num_cal == 2) {
-    $('#cmepicker1').val('#1298fa');
-    $('#cmepicker2').val('#34ab35');
-  } else if (num_cal == 3) {
-    $('#inst-tab').trigger('click');
-  }
-});
 
 function hex_to_srgb(hex) {
   var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
@@ -42,13 +25,41 @@ function hex_to_srgb(hex) {
   return color;
 }
 
+$('#toCme').on('click', function(evt) {
+  $('#cmepicker1').val('#3354ab');
+  $('#cmepicker2').val('#98f12a');
+  $('#cme-tab').trigger('click');
+});
+
+$('#toInst').on('click', function(evt) {
+  num_cal++;
+
+  var color1 = hex_to_srgb($('#cmepicker1').val());
+  var color2 = hex_to_srgb($('#cmepicker2').val());
+  color1 = new colorObj(color1, 'srgb');
+  color2 = new colorObj(color2, 'srgb');
+  // push twice to match all_tests
+  confusion_lines.push(normalize(math.subtract(color1.linear_srgb, color2.linear_srgb)));
+  confusion_lines.push(normalize(math.subtract(color1.linear_srgb, color2.linear_srgb)));
+
+  if (num_cal == 1) {
+    $('#cmepicker1').val('#34ab35');
+    $('#cmepicker2').val('#1298fa');
+  } else if (num_cal == 2) {
+    $('#cmepicker1').val('#1298fa');
+    $('#cmepicker2').val('#34ab35');
+  } else if (num_cal == 3) {
+    $('#inst-tab').trigger('click');
+  }
+});
+
 $('#toTest').on('click', function(evt) {
   //var base_hex = $('#colorpicker').val();
   //var base_srgb = hex_to_srgb(base_hex);
   //state = new discTestState(new colorObj(base_srgb, 'srgb'), '+', start_cb, finish_cb);
 
   var test = all_tests[0];
-  state = new discTestState(new colorObj(test[0], test[1]), test[2], start_cb, finish_cb);
+  state = new discTestState(new colorObj(test[0], test[1]), test[2], start_cb, finish_cb, confusion_lines[0]);
   page.submit();
 
   $("body").keydown(function(e){
@@ -195,7 +206,7 @@ function finish_cb() {
 
   if (testId != all_tests.length) {
     var test = all_tests[testId];
-    state = new discTestState(new colorObj(test[0], test[1]), test[2], start_cb, finish_cb);
+    state = new discTestState(new colorObj(test[0], test[1]), test[2], start_cb, finish_cb, confusion_lines[testId]);
     page.submit();
   } else {
     $('#res-tab').trigger('click');

@@ -323,7 +323,7 @@ class colorObj {
 
 // contains the state one baseColor test (multiple testColors)
 class discTestState {
-  constructor(baseColor, scale, start_cb, finish_cb) {
+  constructor(baseColor, scale, start_cb, finish_cb, line=null) {
     this._baseColor = baseColor ; // one single color
     this._thresholdColor = null;
     this._testColor = null; // one single color
@@ -352,6 +352,8 @@ class discTestState {
     this._confusion_lines_lin_srgb = this.get_confusion_lines_lin_srgb();
     this._confusion_lines_lin_p3 = this.get_confusion_lines_lin_p3();
     this._confusion_lines_xy = this.get_confusion_lines_xy();
+
+    this._custom_confusion_line = line; // this will be in linear_srgb since CMEs are done in srgb
   }
 
   get_confusion_lines_lin_srgb() {
@@ -375,6 +377,7 @@ class discTestState {
     return [p_line, d_line, t_line];
   }
 
+  // TODO: this will be wrong if custom lines are used
   get_confusion_lines_xy() {
     var lines = [];
 
@@ -394,7 +397,7 @@ class discTestState {
   }
 
   get confusion_lines_rgb() {
-    return page.cs ? this._confusion_lines_lin_p3 : this._confusion_lines_lin_srgb;
+    return this._custom_confusion_line ? this._custom_confusion_line : (page.cs ? this._confusion_lines_lin_p3[page.type] : this._confusion_lines_lin_srgb[page.type]);
   }
 
   get confusion_lines_xy() {
@@ -450,7 +453,7 @@ class discTestState {
 	// TODO: the idea is to make sure in each step at least one channel changes
 	// by setting the step size based on the first reversal color, but the
 	// implementation using deltaLUT is a hack and for now works only for sRGB
-    var line_RGB = this.confusion_lines_rgb[page.type];
+    var line_RGB = this.confusion_lines_rgb;
 
     var deltaLUT = (page.bitdepth == 10) ? deltaLUT_10b : deltaLUT_8b;
     var deltaR = deltaLUT[this.testColor.v_quan_rgb[0]];
@@ -473,7 +476,7 @@ class discTestState {
 
   dichromatic_gamut_mapping(colors, mode) {
     var colors_value = colors.map(color => color.v_rgb);
-    var mapped_colors_value = dichromatic_gamut_mapping(colors_value, this.confusion_lines_rgb[page.type], mode);
+    var mapped_colors_value = dichromatic_gamut_mapping(colors_value, this.confusion_lines_rgb, mode);
 
     this.rotColorsMapped = mapped_colors_value.map(c => new colorObj(c, 'v_rgb'));
   }
