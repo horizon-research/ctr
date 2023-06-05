@@ -65,7 +65,7 @@ function registerGetAns() {
 function start_cb() {
   num_tests--;
 
-  d3.csv('../ciexyzjv.csv').then(function(rows){
+  d3.csv('ciexyzjv.csv').then(function(rows){
     state.xy_plot = plotXy('xyDiv', rows);
     updatePlot(0, 1);
   });

@@ -1,9 +1,9 @@
 var all_tests = [[[0.5, 0.9, 0.25], 'linear_srgb', 0.1],
                  [[0.5, 0.9, 0.25], 'linear_srgb', -0.1],
-                 [[0.9, 0.1, 0.1], 'linear_srgb', 0.1],
-                 [[0.9, 0.1, 0.1], 'linear_srgb', -0.1],
-                 [[0.2, 0.2, 0.85], 'linear_srgb', 0.1],
-                 [[0.2, 0.2, 0.85], 'linear_srgb', -0.1]
+                 //[[0.9, 0.1, 0.1], 'linear_srgb', 0.1],
+                 //[[0.9, 0.1, 0.1], 'linear_srgb', -0.1],
+                 //[[0.2, 0.2, 0.85], 'linear_srgb', 0.1],
+                 //[[0.2, 0.2, 0.85], 'linear_srgb', -0.1]
                 ];
 var testId = 0;
 var confusion_lines = [];
@@ -25,28 +25,10 @@ function hex_to_srgb(hex) {
   return color;
 }
 
+var all_test_stats = {};
+
 function post_data() {
-  const data = {
-    test1: {
-      base: [0.5, 0.9, 0.25],
-      cs: 'linear_srgb',
-      scale: 0.1,
-    },
-
-    test2: {
-      base: [0.9, 0.1, 0.1],
-      cs: 'linear_srgb',
-      scale: 0.1,
-    },
-
-    test3: {
-    base: [0.2, 0.2, 0.85],
-    cs: 'linear_srgb',
-    scale: 0.1,
-    },
-  };
-
-  const jsonData = JSON.stringify(data);
+  const jsonData = JSON.stringify(all_test_stats);
 
   fetch('http://localhost:3000/upload-data', {
     method: 'POST',
@@ -68,8 +50,6 @@ function post_data() {
 }
 
 $('#toCme').on('click', function(evt) {
-  post_data();
-
   if (page.sim) {
     $('#inst-tab').trigger('click');
   } else {
@@ -217,7 +197,7 @@ function registerGetAns() {
 // called during page.submit, which is called once per test
 function start_cb() {
   if (testId == 0) {
-    d3.csv('../ciexyzjv.csv').then(function(rows){
+    d3.csv('ciexyzjv.csv').then(function(rows){
       // dis_plot needs to be part of page, because we will get a new state for each test
       page.dis_plot = plotDis('disDiv', rows);
 
@@ -249,14 +229,17 @@ function start_cb() {
 }
 
 // called after each test terminates
-function finish_cb() {
+function finish_cb(stats=null) {
   $('#test-tab-pane').trigger('finishOneTest');
+  all_test_stats['test'+testId.toString()] = stats;
 
   if (testId != all_tests.length) {
     var test = all_tests[testId];
     state = new discTestState(new colorObj(test[0], test[1]), test[2], start_cb, finish_cb, confusion_lines[testId]);
     page.submit();
   } else {
+    post_data(all_test_stats);
+
     $('#res-tab').trigger('click');
     $("body").unbind('keydown');
     $('body').css('background-color', '#FFFFFF');

@@ -9,13 +9,13 @@ const server = http.createServer((req, res) => {
     req.on('data', chunk => {
       data += chunk;
     });
-    
+
     req.on('end', () => {
       try {
         const jsonData = JSON.parse(data);
-        
+
         // Save the JSON data to a file
-        fs.writeFile('test.json', JSON.stringify(jsonData), err => {
+        fs.writeFile('results.json', JSON.stringify(jsonData), err => {
           if (err) {
             res.writeHead(500, { 'Content-Type': 'text/plain' });
             res.end('Internal Server Error');
@@ -33,7 +33,7 @@ const server = http.createServer((req, res) => {
     });
   } else if (req.method === 'GET') {
     const filePath = path.join(__dirname, req.url);
-    
+
     fs.readFile(filePath, 'utf8', (err, content) => {
       if (err) {
         res.writeHead(500, { 'Content-Type': 'text/plain' });
