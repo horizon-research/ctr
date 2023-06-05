@@ -242,7 +242,7 @@ function setupNextColor() {
   let timer = setInterval(function() {
     let timePassed = Date.now() - start;
   
-    if (timePassed >= 100) {
+    if (timePassed >= 1000) {
       clearInterval(timer);
       $('#s12').css('zIndex', '1');
       $('#s13').css('zIndex', '1');
@@ -308,7 +308,7 @@ var getAnswer = function(number) {
                  'marker.line.width': [exp_plot.data[1].marker.line.width]};
   Plotly.update(exp_plot, data_update, {}, [1]);
 
-  if (state.numRevs == 2) {
+  if (state.numRevs == 6) {
     // terminate
     threshold = math.mean(state.scalesAtRevs.slice(-3));
     state.thresholdColor = new colorObj(
