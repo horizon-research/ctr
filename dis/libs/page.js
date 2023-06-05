@@ -123,6 +123,7 @@ function updatePlot(theta, action) {
   //$('#n14').text(rotColors_css[3].srgb_name);
 }
 
+// TODO: should move the following two out of the lib and to the user code
 function registerSlider() {
   $('#customRange').on('input', function() {
     $('.rot-label').html('Rotation Angle (Degree): ' + (this.value/Math.PI*180).toFixed(2) + '&#176;')

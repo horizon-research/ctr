@@ -107,24 +107,27 @@ $('#toTest').on('click', function(evt) {
   state = new discTestState(new colorObj(test[0], test[1]), test[2], start_cb, finish_cb, confusion_lines[0]);
   page.submit();
 
-  // TODO: enable cyclic rotation
+  // cyclic rotation
   $("body").keydown(function(e){
-    var current = parseFloat($('#customRange').val());
+    function set_next(ang) {
+	  // technically no need to do since since sinusoids are periodic. we do
+	  // this here to simplify post-processing if angles are to be recorded.
+      if (ang < -Math.PI) state.ang += Math.PI*2;
+      else if (ang > Math.PI) state.ang -= Math.PI*2;
+      state.ang = ang;
+
+      updatePlot(state.ang, 0)
+    }
+
     if ((e.keyCode || e.which) == 37) {
       // left arrow
-      current = (current - 0.02);
-      $('#customRange').val(current);
-      $('#customRange').trigger('input');
+      set_next(state.ang - 0.02);
     } else if ((e.keyCode || e.which) == 39) {
       // right arrow
-      current = (current + 0.02);
-      $('#customRange').val(current);
-      $('#customRange').trigger('input');
+      set_next(state.ang + 0.02);
     } else if ((e.keyCode || e.which) == 32) {
       // space
-      current = 0;
-      $('#customRange').val(current);
-      $('#customRange').trigger('input');
+      set_next(0);
     }
   });
 

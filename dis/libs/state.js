@@ -16,6 +16,7 @@ class discTestState {
     this._lastAns = true; // just so that if the first respose is incorrect it gets counted as a reversal
     this._numTrials = 1;
     this._step = 0.02; // TODO: need to figure out how to better set this
+    this._ang = 0;
 
     this._start_cb = start_cb; // called every page.submit
     this._finish_cb = finish_cb; // called every time a test terminates
@@ -282,6 +283,13 @@ class discTestState {
   }
   get step() {
     return this._step;
+  }
+
+  set ang(v) {
+    this._ang = v;
+  }
+  get ang() {
+    return this._ang;
   }
 
   get dir() {
