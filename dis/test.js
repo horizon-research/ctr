@@ -25,7 +25,51 @@ function hex_to_srgb(hex) {
   return color;
 }
 
+function post_data() {
+  const data = {
+    test1: {
+      base: [0.5, 0.9, 0.25],
+      cs: 'linear_srgb',
+      scale: 0.1,
+    },
+
+    test2: {
+      base: [0.9, 0.1, 0.1],
+      cs: 'linear_srgb',
+      scale: 0.1,
+    },
+
+    test3: {
+    base: [0.2, 0.2, 0.85],
+    cs: 'linear_srgb',
+    scale: 0.1,
+    },
+  };
+
+  const jsonData = JSON.stringify(data);
+
+  fetch('http://localhost:3000/upload-data', {
+    method: 'POST',
+    mode: "cors", // no-cors, *cors, same-origin
+    cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
+    credentials: "same-origin", // include, *same-origin, omit
+    body: jsonData,
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  })
+  .then(response => console.log(response.ok))
+  //.then(response => response.text())
+  //.then(result => {
+  //  console.log(result);
+  //  // Handle the server response here
+  //})
+  .catch(error => console.error(error));
+}
+
 $('#toCme').on('click', function(evt) {
+  post_data();
+
   if (page.sim) {
     $('#inst-tab').trigger('click');
   } else {
