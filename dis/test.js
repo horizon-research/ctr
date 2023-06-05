@@ -1,24 +1,26 @@
-// for P
-//var all_tests = [[[211, 211, 2], 'srgb', 0.1], // reach gamut limit on the first trial and can't up more
-//                 [[17, 233, 11], 'srgb', -0.1],
-//                 [[58, 62, 233], 'srgb', 0.1],
-//                 [[141, 3, 216], 'srgb', -0.1], // reach gamut limit on the first trial and can't up more
-//                 [[206, 4, 2], 'srgb', 0.1],
-//                 [[141, 74, 45], 'srgb', -0.1]
-//                ];
+var prot_all_tests = [
+                      [[211, 211, 2], 'srgb', 0.1], // reach gamut limit on the first trial
+                      [[17, 233, 11], 'srgb', -0.1],
+                      [[58, 62, 233], 'srgb', 0.1],
+                      [[141, 3, 216], 'srgb', -0.1], // reach gamut limit on the first trial
+                      [[206, 4, 2], 'srgb', 0.1],
+                      [[141, 74, 45], 'srgb', -0.1]
+                     ];
 
-// for D
-var all_tests = [
-                 [[146, 33, 33], 'srgb', 0.1],    // dark red
-                 [[146, 33, 33], 'srgb', -0.1],    // dark red
-                 //[[121, 57, 19], 'srgb', -0.1],   // brown
-                 //[[136, 136, 136], 'srgb', 0.1],  // gray
-                 [[170, 121, 131], 'srgb', 0.1], // pink
-                 [[170, 121, 131], 'srgb', -0.1], // pink
-                 //[[184, 74, 74], 'srgb', 0.1],    // dark red
-                 [[39, 126, 39], 'srgb', 0.1],   // dark green
-                 [[39, 126, 39], 'srgb', -0.1],   // dark green
-                ];
+var deut_all_tests = [
+                      [[146, 33, 33], 'srgb', 0.1],    // dark red
+                      [[146, 33, 33], 'srgb', -0.1],    // dark red
+                      //[[121, 57, 19], 'srgb', 0.1],   // brown
+                      //[[121, 57, 19], 'srgb', -0.1],   // brown
+                      //[[136, 136, 136], 'srgb', 0.1],  // gray
+                      //[[136, 136, 136], 'srgb', -0.1],  // gray
+                      [[170, 121, 131], 'srgb', 0.1], // pink
+                      [[170, 121, 131], 'srgb', -0.1], // pink
+                      //[[184, 74, 74], 'srgb', 0.1],    // dark red
+                      //[[184, 74, 74], 'srgb', -0.1],    // dark red
+                      [[39, 126, 39], 'srgb', 0.1],   // dark green
+                      [[39, 126, 39], 'srgb', -0.1],   // dark green
+                     ];
 var testId = 0;
 var confusion_lines = [];
 
@@ -67,6 +69,7 @@ $('#toCme').on('click', function(evt) {
   if (page.sim) {
     $('#inst-tab').trigger('click');
   } else {
+    // TODO: these are to be updated according to blindness type
     $('#cmepicker1').val(new colorObj([211, 211, 2], 'srgb').legacy_hex_css);
     $('#cmepicker2').val(new colorObj([17, 233, 11], 'srgb').legacy_hex_css);
     $('#cme-tab').trigger('click');
@@ -100,7 +103,7 @@ $('#toTest').on('click', function(evt) {
   //var base_srgb = hex_to_srgb(base_hex);
   //state = new discTestState(new colorObj(base_srgb, 'srgb'), '+', start_cb, finish_cb);
 
-  var test = all_tests[0];
+  var test = deut_all_tests[0];
   state = new discTestState(new colorObj(test[0], test[1]), test[2], start_cb, finish_cb, confusion_lines[0]);
   page.submit();
 
@@ -249,8 +252,8 @@ function finish_cb(stats=null) {
   $('#test-tab-pane').trigger('finishOneTest');
   all_test_stats['test'+testId.toString()] = stats;
 
-  if (testId != all_tests.length) {
-    var test = all_tests[testId];
+  if (testId != deut_all_tests.length) {
+    var test = deut_all_tests[testId];
     state = new discTestState(new colorObj(test[0], test[1]), test[2], start_cb, finish_cb, confusion_lines[testId]);
     page.submit();
   } else {
