@@ -26,9 +26,13 @@ function hex_to_srgb(hex) {
 }
 
 $('#toCme').on('click', function(evt) {
-  $('#cmepicker1').val('#3354ab');
-  $('#cmepicker2').val('#98f12a');
-  $('#cme-tab').trigger('click');
+  if (page.sim) {
+    $('#inst-tab').trigger('click');
+  } else {
+    $('#cmepicker1').val('#3354ab');
+    $('#cmepicker2').val('#98f12a');
+    $('#cme-tab').trigger('click');
+  }
 });
 
 $('#toInst').on('click', function(evt) {
