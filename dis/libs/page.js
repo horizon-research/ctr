@@ -123,7 +123,6 @@ function updatePlot(theta, action) {
   //$('#n14').text(rotColors_css[3].srgb_name);
 }
 
-// TODO: should move the following two out of the lib and to the user code
 function registerSlider() {
   $('#customRange').on('input', function() {
     $('.rot-label').html('Rotation Angle (Degree): ' + (this.value/Math.PI*180).toFixed(2) + '&#176;')
@@ -310,15 +309,16 @@ var getAnswer = function(number) {
 
   if (state.numRevs == 2) {
     // terminate
-    threshold = math.mean(state.scalesAtRevs.slice(-3));
+    state.scales = exp_plot.data[1].y;
+    state.threshold = math.mean(state.scalesAtRevs.slice(-3));
     state.thresholdColor = new colorObj(
-        math.add(state.baseColor.v_rgb, math.multiply(state.confusion_lines_rgb, state.dir * threshold)), 'v_rgb');
+        math.add(state.baseColor.v_rgb, math.multiply(state.confusion_lines_rgb, state.dir * state.threshold)), 'v_rgb');
 
     // add threshold line
-    data_update = {'x': [[0, 30]], 'y': [[threshold, threshold]]};
+    data_update = {'x': [[0, 30]], 'y': [[state.threshold, state.threshold]]};
     var layout_update = {
       'annotations[0].visible': true,
-      'annotations[0].text': 'threshold is:&nbsp;&nbsp;' + threshold.toFixed(4)
+      'annotations[0].text': 'threshold is:&nbsp;&nbsp;' + state.threshold.toFixed(4)
     };
     Plotly.update(exp_plot, data_update, layout_update, [0]);
 
@@ -326,27 +326,7 @@ var getAnswer = function(number) {
     data_update = {'visible': [true, true, true]};
     Plotly.update(exp_plot, data_update, {}, [2, 3, 4]);
 
-    // TODO: record rotation angles and resets
-    var stats = {
-      sim: page.sim,
-      blindness_type: page.type,
-      simMethod: page.simMethod,
-      has_srgb: page.hassRGB,
-      has_p3: page.hasP3,
-      has_rec2020: page.hasRec2020,
-      has_hdr: page.hasHDR,
-      bitdepth: page.bitdepth,
-
-      base_rgb: state.baseColor.v_rgb,
-      base_xy: state.baseColor.xy,
-      cs: page.cs,
-      dir: state.dir,
-      line: state.confusion_lines_rgb,
-      threshold: threshold,
-      threshold_color: state.thresholdColor.v_rgb,
-      scales: exp_plot.data[1].y,
-    };
-    state.finish_cb(stats);
+    state.finish_cb();
   } else {
     setupNextColor();
   }

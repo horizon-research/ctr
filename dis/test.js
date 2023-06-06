@@ -10,16 +10,16 @@ var prot_all_tests = [
 var deut_all_tests = [
                       [[146, 33, 33], 'srgb', 0.1],    // dark red
                       [[146, 33, 33], 'srgb', -0.1],    // dark red
-                      //[[121, 57, 19], 'srgb', 0.1],   // brown
-                      //[[121, 57, 19], 'srgb', -0.1],   // brown
-                      //[[136, 136, 136], 'srgb', 0.1],  // gray
-                      //[[136, 136, 136], 'srgb', -0.1],  // gray
-                      [[170, 121, 131], 'srgb', 0.1], // pink
-                      [[170, 121, 131], 'srgb', -0.1], // pink
-                      //[[184, 74, 74], 'srgb', 0.1],    // dark red
-                      //[[184, 74, 74], 'srgb', -0.1],    // dark red
-                      [[39, 126, 39], 'srgb', 0.1],   // dark green
-                      [[39, 126, 39], 'srgb', -0.1],   // dark green
+                      ////[[121, 57, 19], 'srgb', 0.1],   // brown
+                      ////[[121, 57, 19], 'srgb', -0.1],   // brown
+                      ////[[136, 136, 136], 'srgb', 0.1],  // gray
+                      ////[[136, 136, 136], 'srgb', -0.1],  // gray
+                      //[[170, 121, 131], 'srgb', 0.1], // pink
+                      //[[170, 121, 131], 'srgb', -0.1], // pink
+                      ////[[184, 74, 74], 'srgb', 0.1],    // dark red
+                      ////[[184, 74, 74], 'srgb', -0.1],    // dark red
+                      //[[39, 126, 39], 'srgb', 0.1],   // dark green
+                      //[[39, 126, 39], 'srgb', -0.1],   // dark green
                      ];
 var testId = 0;
 var confusion_lines = [];
@@ -107,24 +107,28 @@ $('#toTest').on('click', function(evt) {
   state = new discTestState(new colorObj(test[0], test[1]), test[2], start_cb, finish_cb, confusion_lines[0]);
   page.submit();
 
-  // cyclic rotation
   $("body").keydown(function(e){
-    function set_next(ang) {
-	  // technically no need to do since since sinusoids are periodic. we do
-	  // this here to simplify post-processing if angles are to be recorded.
-      if (ang < -Math.PI) state.ang += Math.PI*2;
-      else if (ang > Math.PI) state.ang -= Math.PI*2;
-      state.ang = ang;
+    var current = parseFloat($('#customRange').val());
 
-      updatePlot(state.ang, 0)
+    function set_next(ang) {
+      // cyclic rotation
+	  // technically no need to do since since sinusoids are periodic. we do
+	  // this here because we use the slider, which has to have a range.
+      if (ang < -3.14) ang += 3.14*2;
+      else if (ang > 3.14) ang -= 3.14*2;
+
+      $('#customRange').val(ang);
+      $('#customRange').trigger('input');
+
+      state.incs++;
     }
 
     if ((e.keyCode || e.which) == 37) {
       // left arrow
-      set_next(state.ang - 0.02);
+      set_next(current- 0.02);
     } else if ((e.keyCode || e.which) == 39) {
       // right arrow
-      set_next(state.ang + 0.02);
+      set_next(current + 0.02);
     } else if ((e.keyCode || e.which) == 32) {
       // space
       set_next(0);
@@ -204,12 +208,20 @@ function registerPickSimMethod() {
 function registerGetAns() {
   $("body").keydown(function(e){
     if ((e.keyCode || e.which) == 81) {
+      state.num_incrs.push(state.incs);
+      state.incs = 0;
       getAnswer(1);
     } else if ((e.keyCode || e.which) == 87) {
+      state.num_incrs.push(state.incs);
+      state.incs = 0;
       getAnswer(2);
     } else if ((e.keyCode || e.which) == 65) {
+      state.num_incrs.push(state.incs);
+      state.incs = 0;
       getAnswer(3);
     } else if ((e.keyCode || e.which) == 83) {
+      state.num_incrs.push(state.incs);
+      state.incs = 0;
       getAnswer(4);
     }
   });
@@ -251,9 +263,30 @@ function start_cb() {
 }
 
 // called after each test terminates
-function finish_cb(stats=null) {
-  $('#test-tab-pane').trigger('finishOneTest');
+function finish_cb() {
+  var stats = {
+    sim: page.sim,
+    blindness_type: page.type,
+    simMethod: page.simMethod,
+    has_srgb: page.hassRGB,
+    has_p3: page.hasP3,
+    has_rec2020: page.hasRec2020,
+    has_hdr: page.hasHDR,
+    bitdepth: page.bitdepth,
+
+    base_rgb: state.baseColor.v_rgb,
+    base_xy: state.baseColor.xy,
+    cs: page.cs,
+    dir: state.dir,
+    line: state.confusion_lines_rgb,
+    threshold: state.threshold,
+    threshold_color: state.thresholdColor.v_rgb,
+    scales: state.scales,
+    num_incrs: state.num_incrs,
+  };
   all_test_stats['test'+testId.toString()] = stats;
+
+  $('#test-tab-pane').trigger('finishOneTest');
 
   if (testId != deut_all_tests.length) {
     var test = deut_all_tests[testId];
