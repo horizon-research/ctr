@@ -25,6 +25,7 @@ function normalize(vec) {
   return math.divide(vec, math.norm(vec));
 }
 
+// TODO: colors must be OOG after projection. do anything?
 function project(colors_LMS) {
   // in input each column is a color
 
