@@ -1,33 +1,34 @@
 // contains the state one baseColor test (multiple testColors)
 class discTestState {
   constructor(baseColor, scale, start_cb, finish_cb, line=null) {
-    this._baseColor = baseColor ; // one single color
-    this._thresholdColor = null;
-    this._testColor = null; // one single color
-    this._colors = []; // four initial colors (three test + one base) without rotation; one color per row
-    this._rotColors = []; // rotated colors; one color per row
-    this._rotColorsMapped = []; // rotated colors after gamut mapping; one color per row
-    this._simColors = []; // simulated dichromatic colors; one color per row
-    this._scalesAtRevs = [];
-    this._dir = (scale > 0) ? 1 : -1;
-    this._scale = Math.abs(scale); // always positive to simplify adjusting steps; TODO: need to figure out how to better set this
-    this._numRight = 0;
-    this._numRevs = 0;
-    this._lastAns = true; // just so that if the first respose is incorrect it gets counted as a reversal
-    this._numTrials = 1;
-    this._step = 0.02; // TODO: need to figure out how to better set this
-    this._incs = 0;
-    this._threshold = 0;
-    this._scales = [];
-    this._num_incrs = [];
+    this.baseColor = baseColor ; // one single color
+    this.thresholdColor = null;
+    this.testColor = null; // one single color
+    this.colors = []; // four initial colors (three test + one base) without rotation; one color per row
+    this.rotColors = []; // rotated colors; one color per row
+    this.rotColorsMapped = []; // rotated colors after gamut mapping; one color per row
+    this.simColors = []; // simulated dichromatic colors; one color per row
+    this.scalesAtRevs = [];
+    this.dir = (scale > 0) ? 1 : -1;
+    this.scale = Math.abs(scale); // always positive to simplify adjusting steps; TODO: need to figure out how to better set this
 
-    this._start_cb = start_cb; // called every page.submit
-    this._finish_cb = finish_cb; // called every time a test terminates
+    this.numRight = 0;
+    this.numRevs = 0;
+    this.lastAns = true; // just so that if the first respose is incorrect it gets counted as a reversal
+    this.numTrials = 1;
+    this.step = 0.02; // TODO: need to figure out how to better set this
+    this.incs = 0; // number of increments in the current trial
+    this.threshold = 0; // final threshold
+    this.scales = []; // a sequence of scales used in the current test
+    this.num_incrs = []; // a sequence of # of incrs in the current test
 
-    this._xy_plot = null;
-    this._rgb_plot = null;
-    this._lab_plot = null;
-    this._exp_plot = null;
+    this.start_cb = start_cb; // called every page.submit
+    this.finish_cb = finish_cb; // called every time a test terminates
+
+    this.xy_plot = null;
+    this.rgb_plot = null;
+    this.lab_plot = null;
+    this.exp_plot = null;
 
     // compute once and cache for later
     this._confusion_lines_lin_srgb = this.get_confusion_lines_lin_srgb();
@@ -187,182 +188,6 @@ class discTestState {
     var sim_colors_lms = math.transpose(project(math.transpose(colors_lms)));
 
     this.simColors = sim_colors_lms.map(c => new colorObj(c, 'lms'));
-  }
-
-  get scalesAtRevs() {
-    return this._scalesAtRevs;
-  }
-
-  get colors() {
-    return this._colors;
-  }
-
-  set baseColor(v) {
-    this._baseColor = v;
-  }
-  get baseColor() {
-    return this._baseColor;
-  }
-
-  get thresholdColor() {
-    return this._thresholdColor;
-  }
-  set thresholdColor(v) {
-    this._thresholdColor = v;
-  }
-
-  set rotColors(v) {
-    this._rotColors = v;
-  }
-  get rotColors() {
-    return this._rotColors;
-  }
-
-  set rotColorsMapped(v) {
-    this._rotColorsMapped = v;
-  }
-  get rotColorsMapped() {
-    return this._rotColorsMapped;
-  }
-
-  set simColors(v) {
-    this._simColors = v;
-  }
-  get simColors() {
-    return this._simColors;
-  }
-
-  set testColor(v) {
-    this._testColor = v;
-  }
-  get testColor() {
-    return this._testColor;
-  }
-
-  set scale(v) {
-    this._scale = v;
-  }
-  get scale() {
-    return this._scale;
-  }
-
-  set testId(v) {
-    this._testId = v;
-  }
-  get testId() {
-    return this._testId;
-  }
-
-  set numRight(v) {
-    this._numRight = v;
-  }
-  get numRight() {
-    return this._numRight;
-  }
-
-  set numRevs(v) {
-    this._numRevs = v;
-  }
-  get numRevs() {
-    return this._numRevs;
-  }
-
-  set lastAns(v) {
-    this._lastAns = v;
-  }
-  get lastAns() {
-    return this._lastAns;
-  }
-
-  set numTrials(v) {
-    this._numTrials = v;
-  }
-  get numTrials() {
-    return this._numTrials;
-  }
-
-  set step(v) {
-    this._step = v;
-  }
-  get step() {
-    return this._step;
-  }
-
-  set incs(v) {
-    this._incs = v;
-  }
-  get incs() {
-    return this._incs;
-  }
-
-  set threshold(v) {
-    this._threshold = v;
-  }
-  get threshold() {
-    return this._threshold;
-  }
-
-  set scales(v) {
-    this._scales = v;
-  }
-  get scales() {
-    return this._scales;
-  }
-
-  set num_incrs(v) {
-    this._num_incrs = v;
-  }
-  get num_incrs() {
-    return this._num_incrs;
-  }
-
-  get dir() {
-    return this._dir;
-  }
-  set dir(v) {
-    this._dir = v;
-  }
-
-  get start_cb() {
-    return this._start_cb;
-  }
-  set start_cb(v) {
-    this._start_cb = v;
-  }
-
-  get finish_cb() {
-    return this._finish_cb;
-  }
-  set finish_cb(v) {
-    this._finish_cb = v;
-  }
-
-  get xy_plot() {
-    return this._xy_plot;
-  }
-  set xy_plot(v) {
-    this._xy_plot = v;
-  }
-
-  get rgb_plot() {
-    return this._rgb_plot;
-  }
-  set rgb_plot(v) {
-    this._rgb_plot = v;
-  }
-
-  get lab_plot() {
-    return this._lab_plot;
-  }
-  set lab_plot(v) {
-    this._lab_plot = v;
-  }
-
-  get exp_plot() {
-    return this._exp_plot;
-  }
-  set exp_plot(v) {
-    this._exp_plot = v;
   }
 }
 

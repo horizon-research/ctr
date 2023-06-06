@@ -8,8 +8,8 @@ var prot_all_tests = [
                      ];
 
 var deut_all_tests = [
-                      [[146, 33, 33], 'srgb', 0.1],    // dark red
-                      [[146, 33, 33], 'srgb', -0.1],    // dark red
+                      //[[146, 33, 33], 'srgb', 0.1],    // dark red
+                      //[[146, 33, 33], 'srgb', -0.1],    // dark red
                       ////[[121, 57, 19], 'srgb', 0.1],   // brown
                       ////[[121, 57, 19], 'srgb', -0.1],   // brown
                       ////[[136, 136, 136], 'srgb', 0.1],  // gray
@@ -18,8 +18,8 @@ var deut_all_tests = [
                       //[[170, 121, 131], 'srgb', -0.1], // pink
                       ////[[184, 74, 74], 'srgb', 0.1],    // dark red
                       ////[[184, 74, 74], 'srgb', -0.1],    // dark red
-                      //[[39, 126, 39], 'srgb', 0.1],   // dark green
-                      //[[39, 126, 39], 'srgb', -0.1],   // dark green
+                      [[39, 126, 39], 'srgb', 0.1],   // dark green
+                      [[39, 126, 39], 'srgb', -0.1],   // dark green
                      ];
 var testId = 0;
 var confusion_lines = [];

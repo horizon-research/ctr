@@ -153,114 +153,66 @@ function dichromatic_gamut_mapping(colors, line, mode) {
 
 class colorObj {
   constructor(value, space) {
-    this._value = value; // an array
+    this.value = value; // an array
     // an interface for either linear_srgb or linear_p3 based on page.cs
     if (space == 'v_rgb') {
-      this._space = page.cs ? 'linear_p3' : 'linear_srgb';
+      this.space = page.cs ? 'linear_p3' : 'linear_srgb';
     } else {
-      this._space = space;
+      this.space = space;
     }
-    this._srgb = null;
-    this._norm_srgb = null;
-    this._linear_srgb = null;
-    this._xyz = null;
-    this._xy = null;
-    this._lms = null;
-    this._lab = null;
-    this._p3 = null;
-    this._norm_p3 = null;
-    this._linear_p3 = null;
-    this._bitdepth = page.bitdepth;
+    this.srgb = null;
+    this.norm_srgb = null;
+    this.linear_srgb = null;
+    this.xyz = null;
+    this.xy = null;
+    this.lms = null;
+    this.lab = null;
+    this.p3 = null;
+    this.norm_p3 = null;
+    this.linear_p3 = null;
+    this.bitdepth = page.bitdepth;
 
-    // _space:
+    // space:
     // norm_srgb: [0, 1] with gamma; this is 'srgb' in CSS Color L4/L5
     // linear_srgb: [0, 1] without gamma
     // srgb: [0, 255] with gamma
     if (this.space == 'srgb') {
-      this._linear_srgb = this.value.map(c => removeGamma(c/255));
+      this.linear_srgb = this.value.map(c => removeGamma(c/255));
     } else if (this.space == 'linear_srgb') {
-      this._linear_srgb = this.value;
+      this.linear_srgb = this.value;
     } else if (this.space == 'norm_srgb') {
-      this._linear_srgb = this.value.map(c => removeGamma(c));
+      this.linear_srgb = this.value.map(c => removeGamma(c));
     } else if (this.space == 'lms') {
-      this._linear_srgb = math.multiply(color_consts.LMS_to_lin_sRGB, this.value);
+      this.linear_srgb = math.multiply(color_consts.LMS_to_lin_sRGB, this.value);
     } else if (this.space == 'xyz') {
-      this._linear_srgb = math.multiply(color_consts.XYZ_to_lin_sRGB, this.value);
+      this.linear_srgb = math.multiply(color_consts.XYZ_to_lin_sRGB, this.value);
     } else if (this.space == 'linear_p3') {
-      this._linear_srgb = math.multiply(color_consts.lin_P3_to_lin_sRGB, this.value);
+      this.linear_srgb = math.multiply(color_consts.lin_P3_to_lin_sRGB, this.value);
     } else if (this.space == 'norm_p3') {
-      this._linear_srgb = this.value.map(c => math.multiply(color_consts.lin_P3_to_lin_sRGB, removeGamma(c)));
+      this.linear_srgb = this.value.map(c => math.multiply(color_consts.lin_P3_to_lin_sRGB, removeGamma(c)));
     } else if (this.space == 'p3') {
-      this._linear_srgb = this.value.map(c => math.multiply(color_consts.lin_P3_to_lin_sRGB, removeGamma(c/255)));
+      this.linear_srgb = this.value.map(c => math.multiply(color_consts.lin_P3_to_lin_sRGB, removeGamma(c/255)));
     }
-    this._norm_srgb = this._linear_srgb.map(c => applyGamma(c));
-    this._srgb = this._norm_srgb.map(c => quantize(c, this._bitdepth)); 
-    this._lms = math.multiply(color_consts.lin_sRGB_to_LMS, this._linear_srgb);
-    this._xyz = math.multiply(color_consts.lin_sRGB_to_XYZ, this._linear_srgb);
-    this._xy = math.divide(this._xyz, math.sum(this._xyz)).slice(0, 2);
-    this._linear_p3 = math.multiply(color_consts.lin_sRGB_to_lin_P3, this._linear_srgb);
-    this._norm_p3 = this._linear_p3.map(c => applyGamma(c));
-    this._p3 = this._linear_p3.map(c => quantize(applyGamma(c), this._bitdepth));
+    this.norm_srgb = this.linear_srgb.map(c => applyGamma(c));
+    this.srgb = this.norm_srgb.map(c => quantize(c, this.bitdepth)); 
+    this.lms = math.multiply(color_consts.lin_sRGB_to_LMS, this.linear_srgb);
+    this.xyz = math.multiply(color_consts.lin_sRGB_to_XYZ, this.linear_srgb);
+    this.xy = math.divide(this.xyz, math.sum(this.xyz)).slice(0, 2);
+    this.linear_p3 = math.multiply(color_consts.lin_sRGB_to_lin_P3, this.linear_srgb);
+    this.norm_p3 = this.linear_p3.map(c => applyGamma(c));
+    this.p3 = this.linear_p3.map(c => quantize(applyGamma(c), this.bitdepth));
     // TODO: this is problematic since Lab is defined over CIE 1931 XYZ but we might use JV XYZ
     // also we don't allow create colorObj in Lab
-    var c = new Color("srgb-linear", this._linear_srgb);
-    this._lab = c.lab_d65;
-  }
-
-  get space() {
-    return this._space;
-  }
-
-  get value() {
-    return this._value;
+    var c = new Color("srgb-linear", this.linear_srgb);
+    this.lab = c.lab_d65;
   }
 
   get v_rgb() {
     return page.cs ? this.linear_p3 : this.linear_srgb;
   }
 
-  get norm_srgb() {
-    return this._norm_srgb;
-  }
-
-  get linear_srgb() {
-    return this._linear_srgb;
-  }
-
   get v_quan_rgb() {
     return page.cs ? this.p3 : this.srgb;
-  }
-
-  get srgb() {
-    return this._srgb;
-  }
-
-  get xyz() {
-    return this._xyz;
-  }
-
-  get xy() {
-    return this._xy;
-  }
-
-  get lms() {
-    return this._lms;
-  }
-
-  get lab() {
-    return this._lab;
-  }
-
-  get p3() {
-    return this._p3;
-  }
-
-  get norm_p3() {
-    return this._norm_p3;
-  }
-
-  get linear_p3() {
-    return this._linear_p3;
   }
 
   get v_rgb_css() {

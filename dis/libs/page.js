@@ -334,21 +334,21 @@ var getAnswer = function(number) {
 
 class pageObj {
   constructor(color_space) {
-    this._init = false;
-    this._simMethod = null; // 0 for Brettel 1997 (two planes) and 1 for Viénot 1999 (one plane)
-    this._type = null; // 0 for P, 1 for D, 2 for T
-    this._sim = null;
-    this._hassRGB = false;
-    this._hasP3 = false;
-    this._hasRec2020 = false;
-    this._hasHDR = false;
-    this._color_supports = null;
+    this.init = false;
+    this.simMethod = null; // 0 for Brettel 1997 (two planes) and 1 for Viénot 1999 (one plane)
+    this.type = null; // 0 for P, 1 for D, 2 for T
+    this.sim = null;
+    this.hassRGB = false;
+    this.hasP3 = false;
+    this.hasRec2020 = false;
+    this.hasHDR = false;
+    this.color_supports = null;
     if (color_space == 'srgb')
-      this._cs = 0;
+      this.cs = 0;
     else if (color_space == 'p3')
-      this._cs = 1;
+      this.cs = 1;
     else if (color_space == 'rec2020') // no support for this yet
-      this._cs = 2;
+      this.cs = 2;
 
     this.test_color_support();
   }
@@ -392,7 +392,7 @@ class pageObj {
     var p3_display = window.matchMedia('(color-gamut: p3)').matches;
     var rec2020_display = window.matchMedia('(color-gamut: rec2020)').matches;
 
-    this._color_supports = {srgb_b: srgb_browser,
+    this.color_supports = {srgb_b: srgb_browser,
                             p3_b: p3_browser,
                             rec2020_b: rec2020_browser,
                             srgb_d: srgb_display,
@@ -422,73 +422,6 @@ class pageObj {
   // TODO: can we query the exact depth?
   get bitdepth() {
     return (this.hasHDR && this.cs) ? 10 : 8;
-  }
-
-  get color_supports() {
-    return this._color_supports;
-  }
-
-  get init() {
-    return this._init;
-  }
-  set init(v) {
-    this._init = v;
-  }
-
-  get simMethod() {
-    return this._simMethod;
-  }
-  set simMethod(v) {
-    this._simMethod = v;
-  }
-
-  get type() {
-    return this._type;
-  }
-  set type(v) {
-    this._type = v;
-  }
-
-  get sim() {
-    return this._sim;
-  }
-  set sim(v) {
-    this._sim = v;
-  }
-
-  get hassRGB() {
-    return this._hassRGB;
-  }
-  set hassRGB(v) {
-    this._hassRGB = v;
-  }
-
-  get hasP3() {
-    return this._hasP3;
-  }
-  set hasP3(v) {
-    this._hasP3 = v;
-  }
-
-  get hasRec2020() {
-    return this._hasRec2020;
-  }
-  set hasRec2020(v) {
-    this._hasRec2020 = v;
-  }
-
-  get hasHDR() {
-    return this._hasHDR;
-  }
-  set hasHDR(v) {
-    this._hasHDR = v;
-  }
-
-  get cs() {
-    return this._cs;
-  }
-  set cs(v) {
-    this._cs = v;
   }
 }
 
