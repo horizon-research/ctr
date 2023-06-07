@@ -23,6 +23,7 @@ var deut_all_tests = [
                      ];
 var testId = 0;
 var confusion_lines = [];
+var start, time_elapsed = [];
 
 // init canvas size here so that it doesn't conflict with canvas in dis
 canvas.width = window.innerWidth;
@@ -123,13 +124,13 @@ $('#toTest').on('click', function(evt) {
       state.incs++;
     }
 
-    if ((e.keyCode || e.which) == 37) {
+    if (e.which == 37) {
       // left arrow
       set_next(current- 0.02);
-    } else if ((e.keyCode || e.which) == 39) {
+    } else if (e.which == 39) {
       // right arrow
       set_next(current + 0.02);
-    } else if ((e.keyCode || e.which) == 32) {
+    } else if (e.which == 32) {
       // space
       set_next(0);
     }
@@ -137,6 +138,7 @@ $('#toTest').on('click', function(evt) {
 
   $('body').css('background-color', 'rgb(120, 120, 120)');
   $('#test-tab').trigger('click');
+  start = Date.now();
 });
 
 $('#test-tab-pane').on('finishOneTest', function(evt) {
@@ -206,23 +208,19 @@ function registerPickSimMethod() {
 }
 
 function registerGetAns() {
+  var map = {81: 1,
+             87: 2,
+             65: 3,
+             83: 4,};
+
   $("body").keydown(function(e){
-    if ((e.keyCode || e.which) == 81) {
+    // https://stackoverflow.com/questions/4471582/keycode-vs-which
+    if (e.which == 81 || e.which == 87 || e.which == 65 || e.which == 83) {
       state.num_incrs.push(state.incs);
       state.incs = 0;
-      getAnswer(1);
-    } else if ((e.keyCode || e.which) == 87) {
-      state.num_incrs.push(state.incs);
-      state.incs = 0;
-      getAnswer(2);
-    } else if ((e.keyCode || e.which) == 65) {
-      state.num_incrs.push(state.incs);
-      state.incs = 0;
-      getAnswer(3);
-    } else if ((e.keyCode || e.which) == 83) {
-      state.num_incrs.push(state.incs);
-      state.incs = 0;
-      getAnswer(4);
+      time_elapsed.push(Date.now() - start);
+      getAnswer(map[e.which]);
+      start = Date.now();
     }
   });
 }
@@ -258,7 +256,6 @@ function start_cb() {
   }
 
   testId++;
-
   state.exp_plot = plotExp('expDiv'+testId.toString());
 }
 
@@ -283,6 +280,7 @@ function finish_cb() {
     threshold_color: state.thresholdColor.v_rgb,
     scales: state.scales,
     num_incrs: state.num_incrs,
+    time_elapsed: time_elapsed,
   };
   all_test_stats['test'+testId.toString()] = stats;
 
@@ -292,6 +290,7 @@ function finish_cb() {
     var test = deut_all_tests[testId];
     state = new discTestState(new colorObj(test[0], test[1]), test[2], start_cb, finish_cb, confusion_lines[testId]);
     page.submit();
+    start = Date.now();
   } else {
     post_data(all_test_stats);
 
