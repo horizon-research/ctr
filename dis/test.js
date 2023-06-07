@@ -12,14 +12,18 @@ var deut_all_tests = [
                       //[[146, 33, 33], 'srgb', -0.1],    // dark red
                       ////[[121, 57, 19], 'srgb', 0.1],   // brown
                       ////[[121, 57, 19], 'srgb', -0.1],   // brown
-                      ////[[136, 136, 136], 'srgb', 0.1],  // gray
-                      ////[[136, 136, 136], 'srgb', -0.1],  // gray
+                      [[136, 136, 136], 'srgb', 0.1],  // gray
+                      [[136, 136, 136], 'srgb', -0.1],  // gray
+                      [[136, 136, 136], 'srgb', 0.1],  // gray
+                      [[136, 136, 136], 'srgb', -0.1],  // gray
+                      [[136, 136, 136], 'srgb', 0.1],  // gray
+                      [[136, 136, 136], 'srgb', -0.1],  // gray
                       //[[170, 121, 131], 'srgb', 0.1], // pink
                       //[[170, 121, 131], 'srgb', -0.1], // pink
                       ////[[184, 74, 74], 'srgb', 0.1],    // dark red
                       ////[[184, 74, 74], 'srgb', -0.1],    // dark red
-                      [[39, 126, 39], 'srgb', 0.1],   // dark green
-                      [[39, 126, 39], 'srgb', -0.1],   // dark green
+                      //[[39, 126, 39], 'srgb', 0.1],   // dark green
+                      //[[39, 126, 39], 'srgb', -0.1],   // dark green
                      ];
 var testId = 0;
 var confusion_lines = [];
@@ -34,7 +38,6 @@ class Profiler {
     this.num_incrs = [];
   }
 }
-
 var prof = new Profiler();
 
 // init canvas size here so that it doesn't conflict with canvas in dis
@@ -205,6 +208,7 @@ function registerSimMode() {
 function registerPickSimMethod() {
   $('input[type=radio][name=method]').change(function() {
     if (this.id == 'm1') {
+    // TODO: could disable keyboard events
       // one plane
       page.simMethod = 1;
     } else {
@@ -299,11 +303,31 @@ function finish_cb() {
   $('#test-tab-pane').trigger('finishOneTest');
 
   if (testId != deut_all_tests.length) {
-    var test = deut_all_tests[testId];
-    state = new discTestState(new colorObj(test[0], test[1]), test[2], start_cb, finish_cb, confusion_lines[testId]);
-    page.submit();
-    prof.start = Date.now();
+    // display "Next Trial" in-between tests
+    var bg_color = $('#patches').css('background-color');
+    $('#s11').css('background-color', bg_color);
+    $('#s12').css('background-color', bg_color);
+    $('#s13').css('background-color', bg_color);
+    $('#s14').css('background-color', bg_color);
+
+    context.font = "bold 60px Arial";
+    context.textAlign = "center";
+    context.fillStyle = "#eeeeee";
+    context.fillText("Next Trial", canvas.width/2, canvas.height/2);
+
+    // TODO: could unbind keyboard events
+    setTimeout(function() {
+      // show next test
+      context.clearRect(0, 0, canvas.width, canvas.height);
+
+      var test = deut_all_tests[testId];
+      state = new discTestState(new colorObj(test[0], test[1]), test[2], start_cb, finish_cb, confusion_lines[testId]);
+      page.submit();
+      prof.start = Date.now();
+    }, 300);
+
   } else {
+    // done with all tests
     post_data(all_test_stats);
 
     $('#res-tab').trigger('click');
@@ -312,7 +336,7 @@ function finish_cb() {
   }
 }
 
-page = new pageObj('srgb');
+page = new pageObj('p3');
 
 var showConfig = true;
 page.configPage(registerPickType, registerSimMode, registerPickSimMethod, registerGetAns, showConfig);

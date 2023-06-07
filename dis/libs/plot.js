@@ -101,6 +101,8 @@ function plotExp(plotId) {
       title: 'Trial Number',
       showgrid: true,
       zeroline: true,
+	  // TODO: shouldn't be fixed, but in the future when we have a proper
+	  // dashboard we will know the exact range, so won't fix it here
       range: [0, 30],
     },
     yaxis: {
