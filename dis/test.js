@@ -23,7 +23,19 @@ var deut_all_tests = [
                      ];
 var testId = 0;
 var confusion_lines = [];
-var start, time_elapsed = [];
+
+class Profiler {
+  constructor() {
+    // time used in each trial
+    this.start = 0;
+    this.time_elapsed = [];
+    // number of rotations in each trial
+    this.incs = 0;
+    this.num_incrs = [];
+  }
+}
+
+var prof = new Profiler();
 
 // init canvas size here so that it doesn't conflict with canvas in dis
 canvas.width = window.innerWidth;
@@ -121,7 +133,7 @@ $('#toTest').on('click', function(evt) {
       $('#customRange').val(ang);
       $('#customRange').trigger('input');
 
-      state.incs++;
+      prof.incs++;
     }
 
     if (e.which == 37) {
@@ -138,7 +150,7 @@ $('#toTest').on('click', function(evt) {
 
   $('body').css('background-color', 'rgb(120, 120, 120)');
   $('#test-tab').trigger('click');
-  start = Date.now();
+  prof.start = Date.now();
 });
 
 $('#test-tab-pane').on('finishOneTest', function(evt) {
@@ -216,11 +228,11 @@ function registerGetAns() {
   $("body").keydown(function(e){
     // https://stackoverflow.com/questions/4471582/keycode-vs-which
     if (e.which == 81 || e.which == 87 || e.which == 65 || e.which == 83) {
-      state.num_incrs.push(state.incs);
-      state.incs = 0;
-      time_elapsed.push(Date.now() - start);
+      prof.num_incrs.push(prof.incs);
+      prof.incs = 0;
+      prof.time_elapsed.push(Date.now() - prof.start);
       getAnswer(map[e.which]);
-      start = Date.now();
+      prof.start = Date.now();
     }
   });
 }
@@ -279,8 +291,8 @@ function finish_cb() {
     threshold: state.threshold,
     threshold_color: state.thresholdColor.v_rgb,
     scales: state.scales,
-    num_incrs: state.num_incrs,
-    time_elapsed: time_elapsed,
+    num_incrs: prof.num_incrs,
+    time_elapsed: prof.time_elapsed,
   };
   all_test_stats['test'+testId.toString()] = stats;
 
@@ -290,7 +302,7 @@ function finish_cb() {
     var test = deut_all_tests[testId];
     state = new discTestState(new colorObj(test[0], test[1]), test[2], start_cb, finish_cb, confusion_lines[testId]);
     page.submit();
-    start = Date.now();
+    prof.start = Date.now();
   } else {
     post_data(all_test_stats);
 
@@ -300,7 +312,7 @@ function finish_cb() {
   }
 }
 
-page = new pageObj('p3');
+page = new pageObj('srgb');
 
 var showConfig = true;
 page.configPage(registerPickType, registerSimMode, registerPickSimMethod, registerGetAns, showConfig);
