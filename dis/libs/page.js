@@ -225,19 +225,14 @@ function setupNextColor() {
   $('#customRange').prop('disabled', true);
   $('#s11, #s12, #s13, #s14').unbind("click");
 
-
-  $('#s12').css('zIndex', '-1');
-  $('#s13').css('zIndex', '-1');
-  $('#s14').css('zIndex', '-1');
+  $('#c11').css('zIndex', '10');
   let start = Date.now();
   let timer = setInterval(function() {
     let timePassed = Date.now() - start;
   
     if (timePassed >= 100) {
       clearInterval(timer);
-      $('#s12').css('zIndex', '1');
-      $('#s13').css('zIndex', '1');
-      $('#s14').css('zIndex', '1');
+      $('#c11').css('zIndex', '-10');
       context.clearRect(0, 0, canvas.width, canvas.height);
 
       testOneColor(true);
@@ -246,7 +241,7 @@ function setupNextColor() {
       return;
     }
   
-    createBlueDots();
+    createDots();
   }, 20);
 }
 
