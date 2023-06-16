@@ -1,8 +1,6 @@
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
-var num_tests = 2;
-
 function registerPickType() {
   $('input[type=radio][name=pick]').change(function() {
     if (this.id == 'pickp') {
@@ -66,8 +64,6 @@ function registerGetAns() {
 }
 
 function start_cb() {
-  num_tests--;
-
   d3.csv('ciexyzjv.csv').then(function(rows){
     state.xy_plot = plotXy('xyDiv', rows);
     updatePlot(0, 1);
@@ -77,11 +73,6 @@ function start_cb() {
 
 function finish_cb() {
   $('#expDiv').trigger('finish');
-
-  if (num_tests != 0) {
-    state = new discTestState(new colorObj([0.5, 0.9, 0.25], 'v_rgb'), -0.1, start_cb, finish_cb);
-    page.submit();
-  }
 }
 
 page = new pageObj('srgb');
