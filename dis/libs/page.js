@@ -399,9 +399,7 @@ class pageObj {
     $('#customRange').val(0);
     $('.rot-label').html('Rotation Angle (Degree): 0&#176;');
 
-    state.start_cb();
-  
-    testOneColor(true);
+    state.start_cb().then(() => testOneColor(true));
   }
 
   // TODO: true to assume that sRGB is always 8 bits?

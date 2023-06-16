@@ -246,36 +246,62 @@ function registerGetAns() {
 
 // called during page.submit, which is called once per test
 function start_cb() {
-  if (testId == 0) {
-    d3.csv('ciexyzjv.csv').then(function(rows){
-      // dis_plot needs to be part of page, because we will get a new state for each test
-      page.dis_plot = plotDis('disDiv', rows);
+  function updatePlots() {
+    if (testId == 0) {
+      d3.csv('ciexyzjv.csv').then(function(rows){
+        // dis_plot needs to be part of page, because we will get a new state for each test
+        page.dis_plot = plotDis('disDiv', rows);
 
-      var data_update = {'x': [[state.baseColor.xy[0]]],
-                         'y': [[state.baseColor.xy[1]]],
-                         'marker.size': [[10]],
-                         'marker.color': [[state.baseColor.legacy_rgb_css]],
-                         'text': [['Base']]};
+        var data_update = {'x': [[state.baseColor.xy[0]]],
+                           'y': [[state.baseColor.xy[1]]],
+                           'marker.size': [[10]],
+                           'marker.color': [[state.baseColor.legacy_rgb_css]],
+                           'text': [['Base']]};
+        Plotly.update(page.dis_plot, data_update, {}, [1]);
+      });
+    } else {
+      // always push base 
+      // hopefully by the time we get to the second base csv is loaded
+      page.dis_plot.data[1].x.push(state.baseColor.xy[0]);
+      page.dis_plot.data[1].y.push(state.baseColor.xy[1]);
+      page.dis_plot.data[1].marker.size.push(10);
+      page.dis_plot.data[1].marker.color.push(state.baseColor.legacy_rgb_css);
+      page.dis_plot.data[1].text.push('base');
+      var data_update = {'x': [page.dis_plot.data[1].x],
+                         'y': [page.dis_plot.data[1].y],
+                         'marker.size': [page.dis_plot.data[1].marker.size],
+                         'marker.color': [page.dis_plot.data[1].marker.color],
+                         'text': [page.dis_plot.data[1].text]};
       Plotly.update(page.dis_plot, data_update, {}, [1]);
-    });
-  } else {
-    // always push base 
-    // hopefully by the time we get to the second base csv is loaded
-    page.dis_plot.data[1].x.push(state.baseColor.xy[0]);
-    page.dis_plot.data[1].y.push(state.baseColor.xy[1]);
-    page.dis_plot.data[1].marker.size.push(10);
-    page.dis_plot.data[1].marker.color.push(state.baseColor.legacy_rgb_css);
-    page.dis_plot.data[1].text.push('base');
-    var data_update = {'x': [page.dis_plot.data[1].x],
-                       'y': [page.dis_plot.data[1].y],
-                       'marker.size': [page.dis_plot.data[1].marker.size],
-                       'marker.color': [page.dis_plot.data[1].marker.color],
-                       'text': [page.dis_plot.data[1].text]};
-    Plotly.update(page.dis_plot, data_update, {}, [1]);
+    }
+
+    testId++;
+    state.exp_plot = plotExp('expDiv'+testId.toString());
   }
 
-  testId++;
-  state.exp_plot = plotExp('expDiv'+testId.toString());
+  updatePlots();
+
+  // display "Next Trial" in-between tests
+  var bg_color = $('#patches').css('background-color');
+  $('#s11').css('background-color', bg_color);
+  $('#s12').css('background-color', bg_color);
+  $('#s13').css('background-color', bg_color);
+  $('#s14').css('background-color', bg_color);
+
+  context.font = "bold 60px Arial";
+  context.textAlign = "center";
+  context.fillStyle = "#eeeeee";
+  context.fillText("Trial " +testId.toString()+"/"+deut_all_tests.length.toString(),
+      canvas.width/2, canvas.height/2);
+
+  // https://javascript.info/promise-basics
+  return promise = new Promise(function(resolve, reject) {
+    // TODO: could unbind keyboard events
+    setTimeout(() => {
+      context.clearRect(0, 0, canvas.width, canvas.height);
+      resolve("done");
+    }, 300);
+  });
 }
 
 // called after each test terminates
@@ -306,29 +332,10 @@ function finish_cb() {
   $('#test-tab-pane').trigger('finishOneTest');
 
   if (testId != deut_all_tests.length) {
-    // display "Next Trial" in-between tests
-    var bg_color = $('#patches').css('background-color');
-    $('#s11').css('background-color', bg_color);
-    $('#s12').css('background-color', bg_color);
-    $('#s13').css('background-color', bg_color);
-    $('#s14').css('background-color', bg_color);
-
-    context.font = "bold 60px Arial";
-    context.textAlign = "center";
-    context.fillStyle = "#eeeeee";
-    context.fillText("Next Trial", canvas.width/2, canvas.height/2);
-
-    // TODO: could unbind keyboard events
-    setTimeout(function() {
-      // show next test
-      context.clearRect(0, 0, canvas.width, canvas.height);
-
-      var test = deut_all_tests[testId];
-      state = new discTestState(new colorObj(test[0], test[1]), test[2], start_cb, finish_cb, confusion_lines[testId]);
-      page.submit();
-      prof.start = Date.now();
-    }, 300);
-
+    var test = deut_all_tests[testId];
+    state = new discTestState(new colorObj(test[0], test[1]), test[2], start_cb, finish_cb, confusion_lines[testId]);
+    page.submit();
+    prof.start = Date.now();
   } else {
     // done with all tests
     post_data(all_test_stats);

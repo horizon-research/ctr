@@ -70,6 +70,11 @@ function start_cb() {
   });
   state.exp_plot = plotExp('expDiv');
   state.lab_plot = plotLab('labDiv');
+
+  return promise = new Promise(function(resolve, reject) {
+    // start_cb must return a promise
+    resolve("done");
+  });
 }
 
 function finish_cb() {
