@@ -166,7 +166,7 @@ function registerPickType() {
   // init color blindness type
   $('#pickd').prop("checked", true).trigger('change');
 
-  $('input[type=radio][name=pick]').prop('disabled', false);
+  $('input[type=radio][name=pick]').prop('disabled', true);
 }
 
 function registerSimMode() {
@@ -174,9 +174,11 @@ function registerSimMode() {
     if (this.id == 'yes') {
       page.sim = true;
       $('input[type=radio][name=method]').prop('disabled', false);
+      $('input[type=radio][name=pick]').prop('disabled', false);
     } else {
       page.sim = false;
       $('input[type=radio][name=method]').prop('disabled', true);
+      $('input[type=radio][name=pick]').prop('disabled', true);
     }
   });
 
