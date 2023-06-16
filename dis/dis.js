@@ -1,3 +1,6 @@
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
 function registerPickType() {
   $('input[type=radio][name=pick]').change(function() {
     if (this.id == 'pickp') {
