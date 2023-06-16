@@ -108,7 +108,7 @@ function plotExp(plotId) {
     yaxis: {
       title: 'Scale',
       showline: true,
-      range: [-0.02, 0.12],
+      range: [-0.02, 0.16],
     },
     legend: {
       x: 1,

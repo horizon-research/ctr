@@ -1,6 +1,3 @@
-canvas.width = window.screen.width;
-canvas.height = window.screen.height;
-
 var p_line = normalize(math.multiply(color_consts.LMS_to_lin_sRGB, [1, 0, 0]));
 var d_line = normalize(math.multiply(color_consts.LMS_to_lin_sRGB, [0, 1, 0]));
 var t_line = normalize(math.multiply(color_consts.LMS_to_lin_sRGB, [0, 0, 1]));
@@ -89,6 +86,9 @@ function post_data() {
 }
 
 $('#toInst').on('click', function(evt) {
+  canvas.width = window.screen.width;
+  canvas.height = window.screen.height;
+
   $('#inst-tab').trigger('click');
 });
 
@@ -323,6 +323,10 @@ function finish_cb() {
     document.exitFullscreen();
 
     $('#res-tab').trigger('click');
+
+    canvas.width = 0;
+    canvas.height = 0;
+
     $("body").unbind('keydown');
     $('body').css('background-color', '#FFFFFF');
   }
