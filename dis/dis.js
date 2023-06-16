@@ -69,6 +69,7 @@ function start_cb() {
     updatePlot(0, 1);
   });
   state.exp_plot = plotExp('expDiv');
+  state.lab_plot = plotLab('labDiv');
 }
 
 function finish_cb() {
