@@ -1,32 +1,42 @@
-var prot_all_tests = [
-                      [[211, 211, 2], 'srgb', 0.1], // reach gamut limit on the first trial
-                      [[17, 233, 11], 'srgb', -0.1],
-                      [[58, 62, 233], 'srgb', 0.1],
-                      [[141, 3, 216], 'srgb', -0.1], // reach gamut limit on the first trial
-                      [[206, 4, 2], 'srgb', 0.1],
-                      [[141, 74, 45], 'srgb', -0.1]
-                     ];
+var p_line = normalize(math.multiply(color_consts.LMS_to_lin_sRGB, [1, 0, 0]));
+var d_line = normalize(math.multiply(color_consts.LMS_to_lin_sRGB, [0, 1, 0]));
+var t_line = normalize(math.multiply(color_consts.LMS_to_lin_sRGB, [0, 0, 1]));
 
-var deut_all_tests = [
-                      //[[146, 33, 33], 'srgb', 0.1],    // dark red
-                      //[[146, 33, 33], 'srgb', -0.1],    // dark red
-                      ////[[121, 57, 19], 'srgb', 0.1],   // brown
-                      ////[[121, 57, 19], 'srgb', -0.1],   // brown
-                      [[136, 136, 136], 'srgb', 0.1],  // gray
-                      [[136, 136, 136], 'srgb', -0.1],  // gray
-                      [[136, 136, 136], 'srgb', 0.1],  // gray
-                      [[136, 136, 136], 'srgb', -0.1],  // gray
-                      [[136, 136, 136], 'srgb', 0.1],  // gray
-                      [[136, 136, 136], 'srgb', -0.1],  // gray
-                      //[[170, 121, 131], 'srgb', 0.1], // pink
-                      //[[170, 121, 131], 'srgb', -0.1], // pink
-                      ////[[184, 74, 74], 'srgb', 0.1],    // dark red
-                      ////[[184, 74, 74], 'srgb', -0.1],    // dark red
-                      //[[39, 126, 39], 'srgb', 0.1],   // dark green
-                      //[[39, 126, 39], 'srgb', -0.1],   // dark green
-                     ];
+var all_tests = [
+                 // gray
+                 [[136, 136, 136], 'srgb',  0.16, p_line],
+                 [[136, 136, 136], 'srgb', -0.16, p_line],
+                 [[136, 136, 136], 'srgb',  0.16, d_line],
+                 [[136, 136, 136], 'srgb', -0.16, d_line],
+                 [[136, 136, 136], 'srgb',  0.16, t_line],
+                 [[136, 136, 136], 'srgb', -0.16, t_line],
+
+                 // navy blue
+                 [[86, 95, 214], 'srgb',  0.16, p_line],
+                 [[86, 95, 214], 'srgb', -0.16, p_line],
+                 [[86, 95, 214], 'srgb',  0.16, d_line],
+                 [[86, 95, 214], 'srgb', -0.16, d_line],
+                 [[86, 95, 214], 'srgb',  0.16, t_line],
+                 [[86, 95, 214], 'srgb', -0.16, t_line],
+
+                 // dark red
+                 [[184, 74, 74], 'srgb',  0.16, p_line],
+                 [[184, 74, 74], 'srgb', -0.16, p_line],
+                 [[184, 74, 74], 'srgb',  0.16, d_line],
+                 [[184, 74, 74], 'srgb', -0.16, d_line],
+                 [[184, 74, 74], 'srgb',  0.16, t_line],
+                 [[184, 74, 74], 'srgb', -0.16, t_line],
+
+                 // pale green
+                 [[100, 204, 102], 'srgb',  0.16, p_line],
+                 [[100, 204, 102], 'srgb', -0.16, p_line],
+                 [[100, 204, 102], 'srgb',  0.16, d_line],
+                 [[100, 204, 102], 'srgb', -0.16, d_line],
+                 [[100, 204, 102], 'srgb',  0.16, t_line],
+                 [[100, 204, 102], 'srgb', -0.16, t_line],
+                ];
+
 var testId = 0;
-var confusion_lines = [];
 
 class Profiler {
   constructor() {
@@ -43,8 +53,6 @@ var prof = new Profiler();
 // init canvas size here so that it doesn't conflict with canvas in dis
 canvas.width = window.screen.width;
 canvas.height = window.screen.height;
-
-var num_cal = 0;
 
 function hex_to_srgb(hex) {
   var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
@@ -81,37 +89,8 @@ function post_data() {
   .catch(error => console.error(error));
 }
 
-$('#toCme').on('click', function(evt) {
-  if (page.sim) {
-    $('#inst-tab').trigger('click');
-  } else {
-    // TODO: these are to be updated according to blindness type
-    $('#cmepicker1').val(new colorObj([211, 211, 2], 'srgb').legacy_hex_css);
-    $('#cmepicker2').val(new colorObj([17, 233, 11], 'srgb').legacy_hex_css);
-    $('#cme-tab').trigger('click');
-  }
-});
-
 $('#toInst').on('click', function(evt) {
-  num_cal++;
-
-  var color1 = hex_to_srgb($('#cmepicker1').val());
-  var color2 = hex_to_srgb($('#cmepicker2').val());
-  color1 = new colorObj(color1, 'srgb');
-  color2 = new colorObj(color2, 'srgb');
-  // push twice to match all_tests
-  confusion_lines.push(normalize(math.subtract(color1.linear_srgb, color2.linear_srgb)));
-  confusion_lines.push(normalize(math.subtract(color1.linear_srgb, color2.linear_srgb)));
-
-  if (num_cal == 1) {
-    $('#cmepicker1').val(new colorObj([58, 62, 233], 'srgb').legacy_hex_css);
-    $('#cmepicker2').val(new colorObj([141, 3, 216], 'srgb').legacy_hex_css);
-  } else if (num_cal == 2) {
-    $('#cmepicker1').val(new colorObj([206, 4, 2], 'srgb').legacy_hex_css);
-    $('#cmepicker2').val(new colorObj([141, 74, 45], 'srgb').legacy_hex_css);
-  } else if (num_cal == 3) {
-    $('#inst-tab').trigger('click');
-  }
+  $('#inst-tab').trigger('click');
 });
 
 $('#toTest').on('click', function(evt) {
@@ -122,8 +101,8 @@ $('#toTest').on('click', function(evt) {
   //var base_srgb = hex_to_srgb(base_hex);
   //state = new discTestState(new colorObj(base_srgb, 'srgb'), '+', start_cb, finish_cb);
 
-  var test = deut_all_tests[0];
-  state = new discTestState(new colorObj(test[0], test[1]), test[2], start_cb, finish_cb, confusion_lines[0]);
+  var test = all_tests[0];
+  state = new discTestState(new colorObj(test[0], test[1]), test[2], start_cb, finish_cb, test[3]);
   page.submit();
 
   $("body").keydown(function(e){
@@ -291,7 +270,7 @@ function start_cb() {
   context.font = "bold 60px Arial";
   context.textAlign = "center";
   context.fillStyle = "#eeeeee";
-  context.fillText("Trial " +testId.toString()+"/"+deut_all_tests.length.toString(),
+  context.fillText("Trial " +testId.toString()+"/"+all_tests.length.toString(),
       canvas.width/2, canvas.height/2);
 
   // https://javascript.info/promise-basics
@@ -331,9 +310,9 @@ function finish_cb() {
 
   $('#test-tab-pane').trigger('finishOneTest');
 
-  if (testId != deut_all_tests.length) {
-    var test = deut_all_tests[testId];
-    state = new discTestState(new colorObj(test[0], test[1]), test[2], start_cb, finish_cb, confusion_lines[testId]);
+  if (testId != all_tests.length) {
+    var test = all_tests[testId];
+    state = new discTestState(new colorObj(test[0], test[1]), test[2], start_cb, finish_cb, test[3]);
     page.submit();
     prof.start = Date.now();
   } else {

@@ -117,10 +117,6 @@ function updatePlot(theta, action) {
   //$('#s12').text(rotColors_css[1]);
   //$('#s13').text(rotColors_css[2]);
   //$('#s14').text(rotColors_css[3]);
-  //$('#n11').text(rotColors_css[0].srgb_name);
-  //$('#n12').text(rotColors_css[1].srgb_name);
-  //$('#n13').text(rotColors_css[2].srgb_name);
-  //$('#n14').text(rotColors_css[3].srgb_name);
 }
 
 function registerSlider() {
@@ -230,7 +226,7 @@ function setupNextColor() {
   let timer = setInterval(function() {
     let timePassed = Date.now() - start;
   
-    if (timePassed >= 100) {
+    if (timePassed >= 300) {
       clearInterval(timer);
       $('#c11').css('zIndex', '-10');
       context.clearRect(0, 0, canvas.width, canvas.height);
@@ -269,8 +265,12 @@ var getAnswer = function(number) {
   }
   state.lastAns = correct;
 
-  // reduce step size upon the first reversal or when we will hit the baseColor if using the original step size
-  if ((state.numRevs == 1) || ((state.numRevs == 0) && ((state.scale - state.step) <= 0)))
+  // enter phase 2 upon first reversal or when we will hit the baseColor using the original step size
+  if ((state.numRevs == 1) ||
+      ((state.numRevs == 0) && ((state.scale - state.step) <= 0)))
+    state.phase = 2;
+  // in phase 2 we continuously adjust step size
+  if (state.phase == 2)
     state.adjustStep();
 
   if (!correct) { // 1-up
@@ -293,7 +293,7 @@ var getAnswer = function(number) {
                  'marker.line.width': [exp_plot.data[1].marker.line.width]};
   Plotly.update(exp_plot, data_update, {}, [1]);
 
-  if (state.numRevs == 2) {
+  if (state.numRevs == 6) {
     // terminate
     state.scales = exp_plot.data[1].y;
     state.threshold = math.mean(state.scalesAtRevs.slice(-3));

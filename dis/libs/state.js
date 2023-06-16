@@ -34,6 +34,8 @@ class discTestState {
     this._confusion_lines_xy = this.get_confusion_lines_xy();
 
     this._custom_confusion_line = line; // this will be in linear_srgb since CMEs are done in srgb
+
+    this.phase = 1; // step adjustment phase
   }
 
   get_confusion_lines_lin_srgb() {
