@@ -41,8 +41,8 @@ class Profiler {
 var prof = new Profiler();
 
 // init canvas size here so that it doesn't conflict with canvas in dis
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
+canvas.width = window.screen.width;
+canvas.height = window.screen.height;
 
 var num_cal = 0;
 
@@ -115,6 +115,9 @@ $('#toInst').on('click', function(evt) {
 });
 
 $('#toTest').on('click', function(evt) {
+  // https://developer.mozilla.org/en-US/docs/Web/API/Fullscreen_API
+  document.documentElement.requestFullscreen();
+
   //var base_hex = $('#colorpicker').val();
   //var base_srgb = hex_to_srgb(base_hex);
   //state = new discTestState(new colorObj(base_srgb, 'srgb'), '+', start_cb, finish_cb);
@@ -329,6 +332,8 @@ function finish_cb() {
   } else {
     // done with all tests
     post_data(all_test_stats);
+
+    document.exitFullscreen();
 
     $('#res-tab').trigger('click');
     $("body").unbind('keydown');
