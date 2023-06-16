@@ -3,14 +3,6 @@ var d_line = normalize(math.multiply(color_consts.LMS_to_lin_sRGB, [0, 1, 0]));
 var t_line = normalize(math.multiply(color_consts.LMS_to_lin_sRGB, [0, 0, 1]));
 
 var all_tests = [
-                 // gray
-                 [[136, 136, 136], 'srgb',  0.16, p_line],
-                 [[136, 136, 136], 'srgb', -0.16, p_line],
-                 [[136, 136, 136], 'srgb',  0.16, d_line],
-                 [[136, 136, 136], 'srgb', -0.16, d_line],
-                 [[136, 136, 136], 'srgb',  0.16, t_line],
-                 [[136, 136, 136], 'srgb', -0.16, t_line],
-
                  // navy blue
                  [[86, 95, 214], 'srgb',  0.16, p_line],
                  [[86, 95, 214], 'srgb', -0.16, p_line],
@@ -34,6 +26,14 @@ var all_tests = [
                  [[100, 204, 102], 'srgb', -0.16, d_line],
                  [[100, 204, 102], 'srgb',  0.16, t_line],
                  [[100, 204, 102], 'srgb', -0.16, t_line],
+
+                 // gray
+                 [[136, 136, 136], 'srgb',  0.16, p_line],
+                 [[136, 136, 136], 'srgb', -0.16, p_line],
+                 [[136, 136, 136], 'srgb',  0.16, d_line],
+                 [[136, 136, 136], 'srgb', -0.16, d_line],
+                 [[136, 136, 136], 'srgb',  0.16, t_line],
+                 [[136, 136, 136], 'srgb', -0.16, t_line],
                 ];
 
 var testId = 0;
@@ -86,13 +86,13 @@ function post_data() {
 }
 
 $('#toInst').on('click', function(evt) {
-  canvas.width = window.screen.width;
-  canvas.height = window.screen.height;
-
   $('#inst-tab').trigger('click');
 });
 
 $('#toTest').on('click', function(evt) {
+  canvas.width = window.screen.width;
+  canvas.height = window.screen.height;
+
   // https://developer.mozilla.org/en-US/docs/Web/API/Fullscreen_API
   document.documentElement.requestFullscreen();
 
@@ -280,7 +280,7 @@ function start_cb() {
     setTimeout(() => {
       context.clearRect(0, 0, canvas.width, canvas.height);
       resolve("done");
-    }, 300);
+    }, 700);
   });
 }
 
