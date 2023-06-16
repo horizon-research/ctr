@@ -50,10 +50,6 @@ class Profiler {
 }
 var prof = new Profiler();
 
-// init canvas size here so that it doesn't conflict with canvas in dis
-canvas.width = window.screen.width;
-canvas.height = window.screen.height;
-
 function hex_to_srgb(hex) {
   var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
   var color = [

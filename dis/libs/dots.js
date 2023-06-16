@@ -1,6 +1,9 @@
 var canvas = document.querySelector('canvas#c11');
 const context = canvas.getContext("2d");
 
+canvas.width = window.screen.width;
+canvas.height = window.screen.height;
+
 // dot count
 const dots = 2000;
 // center point
