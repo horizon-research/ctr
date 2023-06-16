@@ -301,7 +301,7 @@ var getAnswer = function(number) {
         math.add(state.baseColor.v_rgb, math.multiply(state.confusion_lines_rgb, state.dir * state.threshold)), 'v_rgb');
 
     // add threshold line
-    data_update = {'x': [[0, 30], 'y': [[state.threshold, state.threshold]]};
+    data_update = {'x': [[0, 30]], 'y': [[state.threshold, state.threshold]]};
     var layout_update = {
       'annotations[0].visible': true,
       'annotations[0].text': 'threshold is:&nbsp;&nbsp;' + state.threshold.toFixed(4)
