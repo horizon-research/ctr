@@ -195,7 +195,7 @@ class colorObj {
       this.linear_srgb = this.value.map(c => math.multiply(color_consts.lin_P3_to_lin_sRGB, removeGamma(c/255)));
     }
     this.norm_srgb = this.linear_srgb.map(c => applyGamma(c));
-    this.srgb = this.norm_srgb.map(c => quantize(c, this.bitdepth)); 
+    this.srgb = this.norm_srgb.map(c => quantize(c, 8)); 
     this.lms = math.multiply(color_consts.lin_sRGB_to_LMS, this.linear_srgb);
     this.xyz = math.multiply(color_consts.lin_sRGB_to_XYZ, this.linear_srgb);
     this.xy = math.divide(this.xyz, math.sum(this.xyz)).slice(0, 2);

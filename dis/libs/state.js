@@ -17,10 +17,8 @@ class discTestState {
     this.lastAns = true; // just so that if the first respose is incorrect it gets counted as a reversal
     this.numTrials = 1;
     this.step = 0.02; // TODO: need to figure out how to better set this
-    this.incs = 0; // number of increments in the current trial
     this.threshold = 0; // final threshold
     this.scales = []; // a sequence of scales used in the current test
-    this.num_incrs = []; // a sequence of # of incrs in the current test
 
     this.start_cb = start_cb; // called every page.submit
     this.finish_cb = finish_cb; // called every time a test terminates

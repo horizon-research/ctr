@@ -1,3 +1,6 @@
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
 var num_tests = 2;
 
 function registerPickType() {

@@ -12,7 +12,7 @@ const centripetal = 0.5;
 
 $('#c11').css('zIndex', '-10');
 
-var createBlueDots = function () {
+var createDots = function () {
   context.clearRect(0, 0, canvas.width, canvas.height);
   for (var i = 0; i <= dots; i++) {
     context.beginPath();

@@ -12,17 +12,33 @@ var deut_all_tests = [
                       //[[146, 33, 33], 'srgb', -0.1],    // dark red
                       ////[[121, 57, 19], 'srgb', 0.1],   // brown
                       ////[[121, 57, 19], 'srgb', -0.1],   // brown
-                      ////[[136, 136, 136], 'srgb', 0.1],  // gray
-                      ////[[136, 136, 136], 'srgb', -0.1],  // gray
+                      [[136, 136, 136], 'srgb', 0.1],  // gray
+                      [[136, 136, 136], 'srgb', -0.1],  // gray
+                      [[136, 136, 136], 'srgb', 0.1],  // gray
+                      [[136, 136, 136], 'srgb', -0.1],  // gray
+                      [[136, 136, 136], 'srgb', 0.1],  // gray
+                      [[136, 136, 136], 'srgb', -0.1],  // gray
                       //[[170, 121, 131], 'srgb', 0.1], // pink
                       //[[170, 121, 131], 'srgb', -0.1], // pink
                       ////[[184, 74, 74], 'srgb', 0.1],    // dark red
                       ////[[184, 74, 74], 'srgb', -0.1],    // dark red
-                      [[39, 126, 39], 'srgb', 0.1],   // dark green
-                      [[39, 126, 39], 'srgb', -0.1],   // dark green
+                      //[[39, 126, 39], 'srgb', 0.1],   // dark green
+                      //[[39, 126, 39], 'srgb', -0.1],   // dark green
                      ];
 var testId = 0;
 var confusion_lines = [];
+
+class Profiler {
+  constructor() {
+    // time used in each trial
+    this.start = 0;
+    this.time_elapsed = [];
+    // number of rotations in each trial
+    this.incs = 0;
+    this.num_incrs = [];
+  }
+}
+var prof = new Profiler();
 
 // init canvas size here so that it doesn't conflict with canvas in dis
 canvas.width = window.innerWidth;
@@ -120,16 +136,16 @@ $('#toTest').on('click', function(evt) {
       $('#customRange').val(ang);
       $('#customRange').trigger('input');
 
-      state.incs++;
+      prof.incs++;
     }
 
-    if ((e.keyCode || e.which) == 37) {
+    if (e.which == 37) {
       // left arrow
       set_next(current- 0.02);
-    } else if ((e.keyCode || e.which) == 39) {
+    } else if (e.which == 39) {
       // right arrow
       set_next(current + 0.02);
-    } else if ((e.keyCode || e.which) == 32) {
+    } else if (e.which == 32) {
       // space
       set_next(0);
     }
@@ -137,6 +153,7 @@ $('#toTest').on('click', function(evt) {
 
   $('body').css('background-color', 'rgb(120, 120, 120)');
   $('#test-tab').trigger('click');
+  prof.start = Date.now();
 });
 
 $('#test-tab-pane').on('finishOneTest', function(evt) {
@@ -191,6 +208,7 @@ function registerSimMode() {
 function registerPickSimMethod() {
   $('input[type=radio][name=method]').change(function() {
     if (this.id == 'm1') {
+    // TODO: could disable keyboard events
       // one plane
       page.simMethod = 1;
     } else {
@@ -206,23 +224,19 @@ function registerPickSimMethod() {
 }
 
 function registerGetAns() {
+  var map = {81: 1,
+             87: 2,
+             65: 3,
+             83: 4,};
+
   $("body").keydown(function(e){
-    if ((e.keyCode || e.which) == 81) {
-      state.num_incrs.push(state.incs);
-      state.incs = 0;
-      getAnswer(1);
-    } else if ((e.keyCode || e.which) == 87) {
-      state.num_incrs.push(state.incs);
-      state.incs = 0;
-      getAnswer(2);
-    } else if ((e.keyCode || e.which) == 65) {
-      state.num_incrs.push(state.incs);
-      state.incs = 0;
-      getAnswer(3);
-    } else if ((e.keyCode || e.which) == 83) {
-      state.num_incrs.push(state.incs);
-      state.incs = 0;
-      getAnswer(4);
+    // https://stackoverflow.com/questions/4471582/keycode-vs-which
+    if (e.which == 81 || e.which == 87 || e.which == 65 || e.which == 83) {
+      prof.num_incrs.push(prof.incs);
+      prof.incs = 0;
+      prof.time_elapsed.push(Date.now() - prof.start);
+      getAnswer(map[e.which]);
+      prof.start = Date.now();
     }
   });
 }
@@ -258,7 +272,6 @@ function start_cb() {
   }
 
   testId++;
-
   state.exp_plot = plotExp('expDiv'+testId.toString());
 }
 
@@ -282,17 +295,39 @@ function finish_cb() {
     threshold: state.threshold,
     threshold_color: state.thresholdColor.v_rgb,
     scales: state.scales,
-    num_incrs: state.num_incrs,
+    num_incrs: prof.num_incrs,
+    time_elapsed: prof.time_elapsed,
   };
   all_test_stats['test'+testId.toString()] = stats;
 
   $('#test-tab-pane').trigger('finishOneTest');
 
   if (testId != deut_all_tests.length) {
-    var test = deut_all_tests[testId];
-    state = new discTestState(new colorObj(test[0], test[1]), test[2], start_cb, finish_cb, confusion_lines[testId]);
-    page.submit();
+    // display "Next Trial" in-between tests
+    var bg_color = $('#patches').css('background-color');
+    $('#s11').css('background-color', bg_color);
+    $('#s12').css('background-color', bg_color);
+    $('#s13').css('background-color', bg_color);
+    $('#s14').css('background-color', bg_color);
+
+    context.font = "bold 60px Arial";
+    context.textAlign = "center";
+    context.fillStyle = "#eeeeee";
+    context.fillText("Next Trial", canvas.width/2, canvas.height/2);
+
+    // TODO: could unbind keyboard events
+    setTimeout(function() {
+      // show next test
+      context.clearRect(0, 0, canvas.width, canvas.height);
+
+      var test = deut_all_tests[testId];
+      state = new discTestState(new colorObj(test[0], test[1]), test[2], start_cb, finish_cb, confusion_lines[testId]);
+      page.submit();
+      prof.start = Date.now();
+    }, 300);
+
   } else {
+    // done with all tests
     post_data(all_test_stats);
 
     $('#res-tab').trigger('click');

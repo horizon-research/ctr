@@ -182,27 +182,18 @@ function genTestColor(mode) {
   var line_RGB = state.confusion_lines_rgb;
   var testColor;
 
+  var hits = getLimits(state.baseColor.v_rgb, line_RGB);
+  state.scale = (state.dir == 1) ? Math.min(state.scale, hits[1]) : Math.min(state.scale, Math.abs(hits[0]));
+
+  var target = math.add(state.baseColor.v_rgb, math.multiply(line_RGB, state.dir * state.scale));
+  testColor = new colorObj(target, 'v_rgb');
+
   if (mode == 0) {
-    // TODO: fix this at some point...
     // sample in xy space using equi-luminance (for trichromats)
-    var p0_RGB = math.add(state.baseColor.v_rgb, math.multiply(line_RGB, 0.2));
-    var p0_xy = XYZ2xy(math.multiply(RGB2xyz, p0_RGB));
-    var p1_xy = XYZ2xy(math.multiply(RGB2xyz, state.baseColor.v_rgb));
-    var dir = normalize(math.subtract(p1_xy, p0_xy));
-
-    var baseColor_xy = XYZ2xy(math.multiply(RGB2xyz, state.baseColor.v_rgb));
-    var testColor_xy = math.add(baseColor_xy, math.multiply(dir, state.scale));
-    var baseLum = math.multiply(RGB2xyz[1], state.baseColor.v_rgb);
-    var mag = baseLum / testColor_xy[1];
-
-    testColor = new colorObj(math.multiply(XYZ2RGB, math.multiply(testColor_xy.concat([1-math.sum(testColor_xy)]), mag)),
-        'v_rgb');
-  } else if (mode == 1) {
-    // TODO: only have to do this once
-    var hits = getLimits(state.baseColor.v_rgb, line_RGB);
-    state.scale = (state.dir == 1) ? Math.min(state.scale, hits[1]) : Math.min(state.scale, Math.abs(hits[0]));
-    testColor = new colorObj(math.add(state.baseColor.v_rgb, math.multiply(line_RGB, state.dir * state.scale)),
-        'v_rgb');
+    var baseLum = state.baseColor.xyz[1]; // the Y channel
+    var targetLum = testColor.xyz[1];
+    var mag = baseLum / targetLum;
+    testColor = new colorObj(math.multiply(testColor.xyz, mag), 'xyz');
   }
 
   return testColor;
@@ -234,19 +225,14 @@ function setupNextColor() {
   $('#customRange').prop('disabled', true);
   $('#s11, #s12, #s13, #s14').unbind("click");
 
-
-  $('#s12').css('zIndex', '-1');
-  $('#s13').css('zIndex', '-1');
-  $('#s14').css('zIndex', '-1');
+  $('#c11').css('zIndex', '10');
   let start = Date.now();
   let timer = setInterval(function() {
     let timePassed = Date.now() - start;
   
     if (timePassed >= 100) {
       clearInterval(timer);
-      $('#s12').css('zIndex', '1');
-      $('#s13').css('zIndex', '1');
-      $('#s14').css('zIndex', '1');
+      $('#c11').css('zIndex', '-10');
       context.clearRect(0, 0, canvas.width, canvas.height);
 
       testOneColor(true);
@@ -255,7 +241,7 @@ function setupNextColor() {
       return;
     }
   
-    createBlueDots();
+    createDots();
   }, 20);
 }
 
@@ -315,7 +301,7 @@ var getAnswer = function(number) {
         math.add(state.baseColor.v_rgb, math.multiply(state.confusion_lines_rgb, state.dir * state.threshold)), 'v_rgb');
 
     // add threshold line
-    data_update = {'x': [[0, 30]], 'y': [[state.threshold, state.threshold]]};
+    data_update = {'x': [[0, 30], 'y': [[state.threshold, state.threshold]]};
     var layout_update = {
       'annotations[0].visible': true,
       'annotations[0].text': 'threshold is:&nbsp;&nbsp;' + state.threshold.toFixed(4)
