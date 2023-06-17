@@ -4,36 +4,36 @@ var t_line = normalize(math.multiply(color_consts.LMS_to_lin_sRGB, [0, 0, 1]));
 
 var all_tests = [
                  // navy blue
-                 [[86, 95, 214], 'srgb',  0.16, p_line],
-                 [[86, 95, 214], 'srgb', -0.16, p_line],
-                 [[86, 95, 214], 'srgb',  0.16, d_line],
-                 [[86, 95, 214], 'srgb', -0.16, d_line],
-                 [[86, 95, 214], 'srgb',  0.16, t_line],
-                 [[86, 95, 214], 'srgb', -0.16, t_line],
+                 [[86, 95, 214], 'srgb',  0.1, p_line],
+                 [[86, 95, 214], 'srgb', -0.1, p_line],
+                 [[86, 95, 214], 'srgb',  0.1, d_line],
+                 [[86, 95, 214], 'srgb', -0.1, d_line],
+                 [[86, 95, 214], 'srgb',  0.2, t_line],
+                 [[86, 95, 214], 'srgb', -0.2, t_line],
 
                  // dark red
-                 [[184, 74, 74], 'srgb',  0.16, p_line],
-                 [[184, 74, 74], 'srgb', -0.16, p_line],
-                 [[184, 74, 74], 'srgb',  0.16, d_line],
-                 [[184, 74, 74], 'srgb', -0.16, d_line],
-                 [[184, 74, 74], 'srgb',  0.16, t_line],
-                 [[184, 74, 74], 'srgb', -0.16, t_line],
+                 [[184, 74, 74], 'srgb',  0.1, p_line],
+                 [[184, 74, 74], 'srgb', -0.1, p_line],
+                 [[184, 74, 74], 'srgb',  0.1, d_line],
+                 [[184, 74, 74], 'srgb', -0.1, d_line],
+                 [[184, 74, 74], 'srgb',  0.2, t_line],
+                 [[184, 74, 74], 'srgb', -0.2, t_line],
 
                  // pale green
-                 [[100, 204, 102], 'srgb',  0.16, p_line],
-                 [[100, 204, 102], 'srgb', -0.16, p_line],
-                 [[100, 204, 102], 'srgb',  0.16, d_line],
-                 [[100, 204, 102], 'srgb', -0.16, d_line],
-                 [[100, 204, 102], 'srgb',  0.16, t_line],
-                 [[100, 204, 102], 'srgb', -0.16, t_line],
+                 [[100, 204, 102], 'srgb',  0.1, p_line],
+                 [[100, 204, 102], 'srgb', -0.1, p_line],
+                 [[100, 204, 102], 'srgb',  0.1, d_line],
+                 [[100, 204, 102], 'srgb', -0.1, d_line],
+                 [[100, 204, 102], 'srgb',  0.2, t_line],
+                 [[100, 204, 102], 'srgb', -0.2, t_line],
 
                  // gray
-                 [[136, 136, 136], 'srgb',  0.16, p_line],
-                 [[136, 136, 136], 'srgb', -0.16, p_line],
-                 [[136, 136, 136], 'srgb',  0.16, d_line],
-                 [[136, 136, 136], 'srgb', -0.16, d_line],
-                 [[136, 136, 136], 'srgb',  0.16, t_line],
-                 [[136, 136, 136], 'srgb', -0.16, t_line],
+                 [[136, 136, 136], 'srgb',  0.1, p_line],
+                 [[136, 136, 136], 'srgb', -0.1, p_line],
+                 [[136, 136, 136], 'srgb',  0.1, d_line],
+                 [[136, 136, 136], 'srgb', -0.1, d_line],
+                 [[136, 136, 136], 'srgb',  0.2, t_line],
+                 [[136, 136, 136], 'srgb', -0.2, t_line],
                 ];
 
 var testId = 0;
@@ -273,6 +273,12 @@ function start_cb() {
     }
 
     testId++;
+
+    if (testId >= 2) {
+      $("#resTab").append('<li class="nav-item" role="presentation"><button class="nav-link" id="e'+testId.toString()+'-tab" data-bs-toggle="tab" data-bs-target="#e'+testId.toString()+'-tab-pane" type="button" role="tab">Test '+testId.toString()+'</button></li>');
+      $("#resTabContent").append('<div class="tab-pane" id="e'+testId.toString()+'-tab-pane"><div id="expDiv'+testId.toString()+'"></div></div>');
+    }
+
     state.exp_plot = plotExp('expDiv'+testId.toString());
   }
 
