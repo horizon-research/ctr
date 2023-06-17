@@ -139,8 +139,13 @@
                     <input type="color" id="colorpicker" value="#acf57a"/>
                   </div>
 -->
-                  <div class="row col-md-5 mx-auto">
+                  <div class="row mx-auto mt-4">
+<!--
                     <button type="button" class="btn btn-secondary my-4" id="toInst">Next</button>
+-->
+                    <div class="alert alert-success text-center" role="alert">
+                      When ready, press the <b>Space</b> key to proceed.
+                    </div>
                   </div>
                 </div>
               </div>
@@ -152,7 +157,6 @@
                   <div class="row">
                     <h5>Instructions</h5>
                     <p>On the next page, you will see four color patches laid out as below, one of which appears to have a different color than the other three. Press the corresponding letter on your keyboard (<b>Q/W/A/S</b>) to indicate your choice. You are encouraged to use the <b>Left Arrow</b> and <b>Right Arrow</b> keys, which will shift all the colors in the same pattern and should help you identify the unique patch. Press the <b>Space</b> key to reset the color shift. You must pick a color (forced choice).</p>
-                    <p>After each trial, you will see random gray dots on the screen to reset your visual field, followed by the next trial. The patch with a different color is randomized across trials. Each trial is made to be more challenging if you keep identifying the correct patch, and vice versa. The experiment terminates when a threshold is found.</p>
                   </div>
                   <div class="row justify-content-center mb-2">
                     <div class="col col-lg-2 me-1 square content_center" style="background-color: #DE3412">
@@ -162,7 +166,7 @@
                       <font size="4">W</font>
                     </div>
                   </div>
-                  <div class="row justify-content-center">
+                  <div class="row justify-content-center mb-2">
                     <div class="col col-lg-2 me-1 square content_center" style="background-color: #DE3412">
                       <font size="4">A</font>
                     </div>
@@ -170,8 +174,16 @@
                       <font size="4">S</font>
                     </div>
                   </div>
-                  <div class="row col-md-5 mx-auto">
+                  <div class="row">
+                    <p>After each trial, you will see random gray dots on the screen to reset your visual field, followed by the next trial. The patch with a different color is randomized across trials. Each trial is made to be more challenging if you keep identifying the correct patch, and vice versa. The experiment terminates when a threshold is found.</p>
+                  </div>
+                  <div class="row mx-auto mt-2">
+<!--
                     <button type="button" class="btn btn-secondary my-4" id="toTest">Next</button>
+-->
+                    <div class="alert alert-success text-center" role="alert">
+                      When ready, press the <b>Space</b> key to proceed.
+                    </div>
                   </div>
                 </div>
               </div>
@@ -193,12 +205,12 @@
                 </div>
               </div>
     
-              <div style="display: none">
-                <div class="col-sm-10">
-                  <label for="customRange" class="rot-label" style="font-size:20px;">Rotation Angle (Degree): 0&#176;</label>
+              <div class="row mt-4 opacity-25">
+                <div class="col-sm-12">
+                  <label for="customRange" class="rot-label" style="font-size:20px; display: none">Rotation Angle (Degree): 0&#176;</label>
                   <input type="range" class="form-range" min="-3.14" max="3.14" step="0.02" id="customRange">
                 </div>
-                <div class="col-sm-2">
+                <div class="col-sm-2" style="display: none">
                   <button id="reset" class="btn btn-secondary">Reset</button>
                 </div>
               </div>

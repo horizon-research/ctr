@@ -85,11 +85,27 @@ function post_data() {
   .catch(error => console.error(error));
 }
 
-$('#toInst').on('click', function(evt) {
-  $('#inst-tab').trigger('click');
+var pageId = 0; // 0: config; 1: inst; 2: test; 3: res
+
+$("body").keydown(function(e){
+  if (e.which == 32) { // Space key
+    if (pageId == 0) {
+      $('#inst-tab').trigger('click');
+      pageId = 1;
+    } else if (pageId == 1) {
+      prepare_test();
+      pageId = 2;
+    }
+  }
 });
 
-$('#toTest').on('click', function(evt) {
+//$('#toInst').on('click', function(evt) {
+//  $('#inst-tab').trigger('click');
+//});
+
+//$('#toTest').on('click', prepare_test(evt));
+
+function prepare_test(evt) {
   canvas.width = window.screen.width;
   canvas.height = window.screen.height;
 
@@ -108,7 +124,8 @@ $('#toTest').on('click', function(evt) {
     var current = parseFloat($('#customRange').val());
 
     function set_next(ang) {
-      // cyclic rotation
+      // TODO: change the unit to degree (in html as well) so that it's more precise.
+      // this is a cyclic rotation.
 	  // technically no need to do since since sinusoids are periodic. we do
 	  // this here because we use the slider, which has to have a range.
       if (ang < -3.14) ang += 3.14*2;
@@ -122,10 +139,10 @@ $('#toTest').on('click', function(evt) {
 
     if (e.which == 37) {
       // left arrow
-      set_next(current- 0.02);
+      set_next(current - 0.06);
     } else if (e.which == 39) {
       // right arrow
-      set_next(current + 0.02);
+      set_next(current + 0.06);
     } else if (e.which == 32) {
       // space
       set_next(0);
@@ -135,7 +152,7 @@ $('#toTest').on('click', function(evt) {
   $('body').css('background-color', 'rgb(120, 120, 120)');
   $('#test-tab').trigger('click');
   prof.start = Date.now();
-});
+};
 
 $('#test-tab-pane').on('finishOneTest', function(evt) {
   // update disDiv plot
@@ -280,6 +297,7 @@ function start_cb() {
     setTimeout(() => {
       context.clearRect(0, 0, canvas.width, canvas.height);
       resolve("done");
+      $('#customRange').css('visibility', 'visible');
     }, 700);
   });
 }
@@ -336,4 +354,5 @@ page = new pageObj('p3');
 
 var showConfig = true;
 page.configPage(registerPickType, registerSimMode, registerPickSimMethod, registerGetAns, showConfig);
-
+$('#customRange').prop('disabled', true);
+$('#customRange').css('visibility', 'hidden');
