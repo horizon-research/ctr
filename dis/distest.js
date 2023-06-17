@@ -11,29 +11,29 @@ var all_tests = [
                  [[86, 95, 214], 'srgb',  0.2, t_line],
                  [[86, 95, 214], 'srgb', -0.2, t_line],
 
-                 // dark red
-                 [[184, 74, 74], 'srgb',  0.1, p_line],
-                 [[184, 74, 74], 'srgb', -0.1, p_line],
-                 [[184, 74, 74], 'srgb',  0.1, d_line],
-                 [[184, 74, 74], 'srgb', -0.1, d_line],
-                 [[184, 74, 74], 'srgb',  0.2, t_line],
-                 [[184, 74, 74], 'srgb', -0.2, t_line],
+                 //// dark red
+                 //[[184, 74, 74], 'srgb',  0.1, p_line],
+                 //[[184, 74, 74], 'srgb', -0.1, p_line],
+                 //[[184, 74, 74], 'srgb',  0.1, d_line],
+                 //[[184, 74, 74], 'srgb', -0.1, d_line],
+                 //[[184, 74, 74], 'srgb',  0.2, t_line],
+                 //[[184, 74, 74], 'srgb', -0.2, t_line],
 
-                 // pale green
-                 [[100, 204, 102], 'srgb',  0.1, p_line],
-                 [[100, 204, 102], 'srgb', -0.1, p_line],
-                 [[100, 204, 102], 'srgb',  0.1, d_line],
-                 [[100, 204, 102], 'srgb', -0.1, d_line],
-                 [[100, 204, 102], 'srgb',  0.2, t_line],
-                 [[100, 204, 102], 'srgb', -0.2, t_line],
+                 //// pale green
+                 //[[100, 204, 102], 'srgb',  0.1, p_line],
+                 //[[100, 204, 102], 'srgb', -0.1, p_line],
+                 //[[100, 204, 102], 'srgb',  0.1, d_line],
+                 //[[100, 204, 102], 'srgb', -0.1, d_line],
+                 //[[100, 204, 102], 'srgb',  0.2, t_line],
+                 //[[100, 204, 102], 'srgb', -0.2, t_line],
 
-                 // gray
-                 [[136, 136, 136], 'srgb',  0.1, p_line],
-                 [[136, 136, 136], 'srgb', -0.1, p_line],
-                 [[136, 136, 136], 'srgb',  0.1, d_line],
-                 [[136, 136, 136], 'srgb', -0.1, d_line],
-                 [[136, 136, 136], 'srgb',  0.2, t_line],
-                 [[136, 136, 136], 'srgb', -0.2, t_line],
+                 //// gray
+                 //[[136, 136, 136], 'srgb',  0.1, p_line],
+                 //[[136, 136, 136], 'srgb', -0.1, p_line],
+                 //[[136, 136, 136], 'srgb',  0.1, d_line],
+                 //[[136, 136, 136], 'srgb', -0.1, d_line],
+                 //[[136, 136, 136], 'srgb',  0.2, t_line],
+                 //[[136, 136, 136], 'srgb', -0.2, t_line],
                 ];
 
 var testId = 0;
@@ -298,6 +298,7 @@ function start_cb() {
       canvas.width/2, canvas.height/2);
 
   // https://javascript.info/promise-basics
+  $('#customRange').css('visibility', 'hidden');
   return promise = new Promise(function(resolve, reject) {
     // TODO: could unbind keyboard events
     setTimeout(() => {
@@ -341,6 +342,8 @@ function finish_cb() {
     page.submit();
     prof.start = Date.now();
   } else {
+    plot_ellipses();
+
     // done with all tests
     post_data(all_test_stats);
 
@@ -354,6 +357,25 @@ function finish_cb() {
     $("body").unbind('keydown');
     $('body').css('background-color', '#FFFFFF');
   }
+}
+
+function plot_ellipses() {
+  var xs = page.dis_plot.data[1].x;
+  var ys = page.dis_plot.data[1].y;
+
+  var e1_x_center = xs[0];
+  var e1_y_center = ys[0];
+
+  var e1_xx = math.dotMultiply(xs.slice(1, 7), xs.slice(1, 7));
+  var e1_xy = math.dotMultiply(xs.slice(1, 7), ys.slice(1, 7));
+  var e1_yy = math.dotMultiply(ys.slice(1, 7), ys.slice(1, 7));
+
+  var e1_X = math.transpose([e1_xx, e1_xy, e1_yy]);
+  var e1_Y = math.transpose([1, 1, 1, 1, 1, 1]);
+
+  var e1_XTX = math.multiply(math.transpose(e1_X), e1_X);
+  var e1_XTX_inv = math.inv(e1_XTX);
+  var e1_T = math.multiply(math.multiply(e1_XTX_inv, math.transpose(e1_X)), e1_Y);
 }
 
 page = new pageObj('p3');
