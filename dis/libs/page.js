@@ -301,7 +301,7 @@ var getAnswer = function(number) {
                  'marker.line.width': [exp_plot.data[1].marker.line.width]};
   Plotly.update(exp_plot, data_update, {}, [1]);
 
-  if (state.numRevs == 2) {
+  if (state.numRevs == 6) {
     // terminate
     state.scales = exp_plot.data[1].y;
     state.threshold = math.mean(state.scalesAtRevs.slice(-3));
