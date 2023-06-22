@@ -12,12 +12,12 @@ var all_tests = [
                  [[86, 95, 214], 'srgb', -0.2, t_line],
 
                  //// dark red
-                 //[[184, 74, 74], 'srgb',  0.1, p_line],
-                 //[[184, 74, 74], 'srgb', -0.1, p_line],
-                 //[[184, 74, 74], 'srgb',  0.1, d_line],
-                 //[[184, 74, 74], 'srgb', -0.1, d_line],
-                 //[[184, 74, 74], 'srgb',  0.2, t_line],
-                 //[[184, 74, 74], 'srgb', -0.2, t_line],
+                 [[184, 74, 74], 'srgb',  0.1, p_line],
+                 [[184, 74, 74], 'srgb', -0.1, p_line],
+                 [[184, 74, 74], 'srgb',  0.1, d_line],
+                 [[184, 74, 74], 'srgb', -0.1, d_line],
+                 [[184, 74, 74], 'srgb',  0.2, t_line],
+                 [[184, 74, 74], 'srgb', -0.2, t_line],
 
                  //// pale green
                  //[[100, 204, 102], 'srgb',  0.1, p_line],
@@ -154,19 +154,21 @@ function prepare_test(evt) {
   prof.start = Date.now();
 };
 
+// TODO: this is also called after each test, so maybe lump that into finish_cb()?
 $('#test-tab-pane').on('finishOneTest', function(evt) {
   // update disDiv plot
-  page.dis_plot.data[1].x.push(state.thresholdColor.xy[0]);
-  page.dis_plot.data[1].y.push(state.thresholdColor.xy[1]);
-  page.dis_plot.data[1].marker.size.push(7);
-  page.dis_plot.data[1].marker.color.push(state.thresholdColor.legacy_rgb_css);
-  page.dis_plot.data[1].text.push('Test'+testId.toString()+' threshold');
-  var data_update = {'x': [page.dis_plot.data[1].x],
-                     'y': [page.dis_plot.data[1].y],
-                     'marker.size': [page.dis_plot.data[1].marker.size],
-                     'marker.color': [page.dis_plot.data[1].marker.color],
-                     'text': [page.dis_plot.data[1].text]};
-  Plotly.update(page.dis_plot, data_update, {}, [1]);
+  var trace_id = page.dis_plot.data.length - 1;
+  page.dis_plot.data[trace_id].x.push(state.thresholdColor.xy[0]);
+  page.dis_plot.data[trace_id].y.push(state.thresholdColor.xy[1]);
+  page.dis_plot.data[trace_id].marker.size.push(7);
+  page.dis_plot.data[trace_id].marker.color.push(state.thresholdColor.legacy_rgb_css);
+  page.dis_plot.data[trace_id].text.push('Test'+testId.toString()+' threshold');
+  var data_update = {'x': [page.dis_plot.data[trace_id].x],
+                     'y': [page.dis_plot.data[trace_id].y],
+                     'marker.size': [page.dis_plot.data[trace_id].marker.size],
+                     'marker.color': [page.dis_plot.data[trace_id].marker.color],
+                     'text': [page.dis_plot.data[trace_id].text]};
+  Plotly.update(page.dis_plot, data_update, {}, [trace_id]);
 });
 
 function registerPickType() {
@@ -241,6 +243,29 @@ function registerGetAns() {
   });
 }
 
+function add_new_base_trace(plot) {
+  var new_trace = {
+    x: [state.baseColor.xy[0]],
+    y: [state.baseColor.xy[1]],
+    text: ['Base'],
+    mode: 'markers',
+    marker: {
+      size: [10],
+      opacity: 1,
+      color: [state.baseColor.legacy_rgb_css],
+    },
+    //line: {
+    //  width: 1,
+    //  color: '#000000',
+    //},
+    name: 'Thresholds',
+    hovertemplate: 'x: %{x}' +
+      '<br>y: %{y}<extra></extra>',
+  };
+  
+  Plotly.addTraces(plot, new_trace);
+}
+
 // called during page.submit, which is called once per test
 function start_cb() {
   function updatePlots() {
@@ -249,27 +274,14 @@ function start_cb() {
         // dis_plot needs to be part of page, because we will get a new state for each test
         page.dis_plot = plotDis('disDiv', rows);
 
-        var data_update = {'x': [[state.baseColor.xy[0]]],
-                           'y': [[state.baseColor.xy[1]]],
-                           'marker.size': [[10]],
-                           'marker.color': [[state.baseColor.legacy_rgb_css]],
-                           'text': [['Base']]};
-        Plotly.update(page.dis_plot, data_update, {}, [1]);
+        add_new_base_trace(page.dis_plot);
       });
     } else {
-      // always push base 
-      // hopefully by the time we get to the second base csv is loaded
-      page.dis_plot.data[1].x.push(state.baseColor.xy[0]);
-      page.dis_plot.data[1].y.push(state.baseColor.xy[1]);
-      page.dis_plot.data[1].marker.size.push(10);
-      page.dis_plot.data[1].marker.color.push(state.baseColor.legacy_rgb_css);
-      page.dis_plot.data[1].text.push('base');
-      var data_update = {'x': [page.dis_plot.data[1].x],
-                         'y': [page.dis_plot.data[1].y],
-                         'marker.size': [page.dis_plot.data[1].marker.size],
-                         'marker.color': [page.dis_plot.data[1].marker.color],
-                         'text': [page.dis_plot.data[1].text]};
-      Plotly.update(page.dis_plot, data_update, {}, [1]);
+      if (testId % 6 == 0) { // TODO: this assumes that we always do 6 in a group
+        // push a new base 
+        // hopefully by the time we get to the second base csv is loaded
+        add_new_base_trace(page.dis_plot);
+      }
     }
 
     testId++;
@@ -335,6 +347,8 @@ function finish_cb() {
   all_test_stats['test'+testId.toString()] = stats;
 
   $('#test-tab-pane').trigger('finishOneTest');
+  //if (testId % 6 == 0) // testId won't be 0
+  //  plot_ellipse((testId/6-1)*7);
 
   if (testId != all_tests.length) {
     var test = all_tests[testId];
@@ -342,8 +356,6 @@ function finish_cb() {
     page.submit();
     prof.start = Date.now();
   } else {
-    plot_ellipses();
-
     // done with all tests
     post_data(all_test_stats);
 
@@ -359,23 +371,55 @@ function finish_cb() {
   }
 }
 
-function plot_ellipses() {
+function plot_ellipse(center) {
   var xs = page.dis_plot.data[1].x;
   var ys = page.dis_plot.data[1].y;
 
-  var e1_x_center = xs[0];
-  var e1_y_center = ys[0];
+  var e_x_center = xs[center];
+  var e_y_center = ys[center];
+  var end = xs.length;
 
-  var e1_xx = math.dotMultiply(xs.slice(1, 7), xs.slice(1, 7));
-  var e1_xy = math.dotMultiply(xs.slice(1, 7), ys.slice(1, 7));
-  var e1_yy = math.dotMultiply(ys.slice(1, 7), ys.slice(1, 7));
+  var e_x_offset = math.subtract(xs.slice(center+1, end), e_x_center);
+  var e_y_offset = math.subtract(ys.slice(center+1, end), e_y_center);
 
-  var e1_X = math.transpose([e1_xx, e1_xy, e1_yy]);
-  var e1_Y = math.transpose([1, 1, 1, 1, 1, 1]);
+  var e_xx = math.dotMultiply(e_x_offset, e_x_offset);
+  var e_xy = math.dotMultiply(e_x_offset, e_y_offset);
+  var e_yy = math.dotMultiply(e_y_offset, e_y_offset);
 
-  var e1_XTX = math.multiply(math.transpose(e1_X), e1_X);
-  var e1_XTX_inv = math.inv(e1_XTX);
-  var e1_T = math.multiply(math.multiply(e1_XTX_inv, math.transpose(e1_X)), e1_Y);
+  var e_X = math.transpose([e1_xx, e1_xy, e1_yy]);
+  var e_Y = math.transpose([1, 1, 1, 1, 1, 1]);
+
+  // XT=Y
+  var e_XTX = math.multiply(math.transpose(e1_X), e1_X);
+  var e_XTX_inv = math.inv(e1_XTX);
+  var e_T = math.multiply(math.multiply(e1_XTX_inv, math.transpose(e1_X)), e1_Y);
+
+  var x_max = e_xy**2 / (4 * e_xx**2 * e_yy - e_xx * e_xy ** 2);
+  var x_min = -x_max;
+  var y_max = -2 * e_xx * x_max / e_xy;
+  var y_min = -y_max;
+
+  var new_trace = {
+    x: [x_min, x_max],
+    y: [y_min, y_max],
+    text: [''],
+    mode: 'markers',
+    marker: {
+      size: [10],
+      opacity: 1,
+      color: [0,0,0],
+      symbol: 'x',
+    },
+    line: {
+      width: 1,
+      color: '#000000',
+    },
+    name: 'Threshold ellipses',
+    hovertemplate: 'x: %{x}' +
+      '<br>y: %{y}<extra></extra>',
+  };
+
+  Plotly.addTraces(page.dis_plot, new_trace);
 }
 
 page = new pageObj('p3');

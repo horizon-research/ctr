@@ -226,7 +226,8 @@ function plotDis(plotId, rows) {
       '<br>%{text}<extra></extra>',
   };
 
-  var data = [xyTrace, line,
+  var data = [xyTrace,
+              //line,
               rgb_gamut_lines,
              ];
 
