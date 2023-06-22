@@ -15,7 +15,9 @@ const server = http.createServer((req, res) => {
         const jsonData = JSON.parse(data);
 
         // Save the JSON data to a file
-        fs.writeFile('results.json', JSON.stringify(jsonData), err => {
+        var today = new Date();
+        var filename = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate()+'-'+today.getHours()+'-'+today.getMinutes()+'-'+today.getSeconds()+'.json';
+        fs.writeFile(filename, JSON.stringify(jsonData), err => {
           if (err) {
             res.writeHead(500, { 'Content-Type': 'text/plain' });
             res.end('Internal Server Error');
