@@ -79,6 +79,27 @@ var all_tests = [
                  [[136, 136, 136], 'srgb', -0.3, get_ortho_line_rgb(t_line, new colorObj([136, 136, 136], 'srgb'))],
                 ];
 
+var indices = Array.from(Array(all_tests.length).keys());
+// https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array
+function shuffle(array) {
+  let currentIndex = array.length,  randomIndex;
+
+  // While there remain elements to shuffle.
+  while (currentIndex != 0) {
+
+    // Pick a remaining element.
+    randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex--;
+
+    // And swap it with the current element.
+    [array[currentIndex], array[randomIndex]] = [
+      array[randomIndex], array[currentIndex]];
+  }
+
+  return array;
+}
+shuffle(indices);
+
 var testId = 0;
 
 class Profiler {
@@ -153,7 +174,7 @@ function prepare_test(evt) {
   //var base_srgb = hex_to_srgb(base_hex);
   //state = new discTestState(new colorObj(base_srgb, 'srgb'), '+', start_cb, finish_cb);
 
-  var test = all_tests[0];
+  var test = all_tests[indices[0]];
   // TODO: we should differentiate between test line and actual confusion line
   state = new discTestState(new colorObj(test[0], test[1]), test[2], start_cb, finish_cb, test[3]);
   page.submit();
@@ -390,7 +411,7 @@ function finish_cb() {
   //  plot_ellipse();
 
   if (testId != all_tests.length) {
-    var test = all_tests[testId];
+    var test = all_tests[indices[testId]];
     state = new discTestState(new colorObj(test[0], test[1]), test[2], start_cb, finish_cb, test[3]);
     page.submit();
     prof.start = Date.now();
