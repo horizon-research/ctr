@@ -273,9 +273,15 @@ var getAnswer = function(number) {
   }
   state.lastAns = correct;
 
-  // enter phase 2 upon first reversal or when we will hit the baseColor using the original step size
-  if ((state.numRevs == 1) ||
-      ((state.numRevs == 0) && ((state.scale - state.step) <= 0)))
+  // enter phase 2 upon third reversal or when we will hit the baseColor using
+  // the original step size.  use third reversal so that if we have an
+  // incidental incorrect response very early the exp won't be dragged on
+  // forever. we average the last three reversals to get the threshold so the
+  // first three reversals get ignored anyways.  why third not the second?
+  // first rev is incorrect, so second rev is correct. we want to enter phase 2
+  // upon an incorrect response.
+  if ((state.numRevs == 3) ||
+      ((state.numRevs < 3) && ((state.scale - state.step) <= 0)))
     state.phase = 2;
   // in phase 2 we continuously adjust step size
   if (state.phase == 2)
@@ -284,7 +290,7 @@ var getAnswer = function(number) {
   if (!correct) { // 1-up
     state.scale += state.step;
     state.numRight = 0; // reset numRight upon an incorrect answer
-  } else if (state.numRevs == 0) { // 1-down before first reversal
+  } else if (state.numRevs < 3) { // 1-down before third reversal
     state.scale = Math.max(0, state.scale - state.step);
   } else { // 2-down
     state.numRight++;
