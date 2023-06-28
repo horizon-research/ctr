@@ -134,7 +134,11 @@ class discTestState {
   adjustStep() {
 	// TODO: the idea is to make sure in each step at least one channel changes
 	// by setting the step size based on the first reversal color, but the
-	// implementation using deltaLUT is a hack and for now works only for sRGB
+	// implementation using deltaLUT is a hack and for now works only for sRGB.
+	// note that the step size is used both for up and down. the LUT is
+	// constructed for up, but since going up requires a larger step size than
+	// going down, we can always guarantee that each step down will lead to an
+	// actual change too.
     var line_RGB = this.confusion_lines_rgb;
 
     var deltaLUT = (page.bitdepth == 10) ? deltaLUT_10b : deltaLUT_8b;
