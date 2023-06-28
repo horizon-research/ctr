@@ -1,6 +1,25 @@
-var p_line = normalize(math.multiply(color_consts.LMS_to_lin_sRGB, [1, 0, 0]));
-var d_line = normalize(math.multiply(color_consts.LMS_to_lin_sRGB, [0, 1, 0]));
-var t_line = normalize(math.multiply(color_consts.LMS_to_lin_sRGB, [0, 0, 1]));
+page = new pageObj('srgb');
+
+// these lines must change depending on whether we use srgb or P3
+var p_line = normalize((new colorObj([1, 0, 0], 'lms')).v_rgb);
+var d_line = normalize((new colorObj([0, 1, 0], 'lms')).v_rgb);
+var t_line = normalize((new colorObj([0, 0, 1], 'lms')).v_rgb);
+
+// must use the base color for t1, because we want to get the orthogonal lines wrt to base color
+// also t2_new can be arbitrary
+function get_ortho_line_rgb(line_rgb, baseColor) {
+  // take |line| in xy and return an rgb line that when projected in xy is orthogonal to |line|
+  var t1 = baseColor;
+  var t2 = new colorObj(math.add(t1.linear_p3, math.multiply(line_rgb, 0.2)), 'linear_p3');
+  var line_xy = normalize(math.subtract(t1.xy, t2.xy)); 
+  var line_ortho_xy = normalize([line_xy[1], -line_xy[0]]);
+  //var t1_new = new colorObj([86, 95, 214], 'srgb');
+  var t2_new_xy = math.add(t1.xy, math.multiply(line_ortho_xy, 1)); 
+  var t2_new = new colorObj([t2_new_xy[0], t2_new_xy[1], 1-t2_new_xy[0]-t2_new_xy[1]], 'xyz'); // up to scaling
+  var line_ortho_rgb = normalize(math.subtract(t1.linear_p3, t2_new.linear_p3));
+
+  return line_ortho_rgb;
+}
 
 var all_tests = [
                  // navy blue
@@ -8,32 +27,56 @@ var all_tests = [
                  [[86, 95, 214], 'srgb', -0.1, p_line],
                  [[86, 95, 214], 'srgb',  0.1, d_line],
                  [[86, 95, 214], 'srgb', -0.1, d_line],
-                 [[86, 95, 214], 'srgb',  0.2, t_line],
-                 [[86, 95, 214], 'srgb', -0.2, t_line],
+                 [[86, 95, 214], 'srgb',  0.3, t_line],
+                 [[86, 95, 214], 'srgb', -0.3, t_line],
+                 [[86, 95, 214], 'srgb',  0.1, get_ortho_line_rgb(p_line, new colorObj([86, 95, 214], 'srgb'))],
+                 [[86, 95, 214], 'srgb', -0.1, get_ortho_line_rgb(p_line, new colorObj([86, 95, 214], 'srgb'))],
+                 [[86, 95, 214], 'srgb',  0.1, get_ortho_line_rgb(d_line, new colorObj([86, 95, 214], 'srgb'))],
+                 [[86, 95, 214], 'srgb', -0.1, get_ortho_line_rgb(d_line, new colorObj([86, 95, 214], 'srgb'))],
+                 [[86, 95, 214], 'srgb',  0.3, get_ortho_line_rgb(t_line, new colorObj([86, 95, 214], 'srgb'))],
+                 [[86, 95, 214], 'srgb', -0.3, get_ortho_line_rgb(t_line, new colorObj([86, 95, 214], 'srgb'))],
 
-                 //// dark red
+                 // dark red
                  [[184, 74, 74], 'srgb',  0.1, p_line],
                  [[184, 74, 74], 'srgb', -0.1, p_line],
                  [[184, 74, 74], 'srgb',  0.1, d_line],
                  [[184, 74, 74], 'srgb', -0.1, d_line],
-                 [[184, 74, 74], 'srgb',  0.2, t_line],
-                 [[184, 74, 74], 'srgb', -0.2, t_line],
+                 [[184, 74, 74], 'srgb',  0.3, t_line],
+                 [[184, 74, 74], 'srgb', -0.3, t_line],
+                 [[184, 74, 74], 'srgb',  0.1, get_ortho_line_rgb(p_line, new colorObj([184, 74, 74], 'srgb'))],
+                 [[184, 74, 74], 'srgb', -0.1, get_ortho_line_rgb(p_line, new colorObj([184, 74, 74], 'srgb'))],
+                 [[184, 74, 74], 'srgb',  0.1, get_ortho_line_rgb(d_line, new colorObj([184, 74, 74], 'srgb'))],
+                 [[184, 74, 74], 'srgb', -0.1, get_ortho_line_rgb(d_line, new colorObj([184, 74, 74], 'srgb'))],
+                 [[184, 74, 74], 'srgb',  0.3, get_ortho_line_rgb(t_line, new colorObj([184, 74, 74], 'srgb'))],
+                 [[184, 74, 74], 'srgb', -0.3, get_ortho_line_rgb(t_line, new colorObj([184, 74, 74], 'srgb'))],
 
-                 //// pale green
-                 //[[100, 204, 102], 'srgb',  0.1, p_line],
-                 //[[100, 204, 102], 'srgb', -0.1, p_line],
-                 //[[100, 204, 102], 'srgb',  0.1, d_line],
-                 //[[100, 204, 102], 'srgb', -0.1, d_line],
-                 //[[100, 204, 102], 'srgb',  0.2, t_line],
-                 //[[100, 204, 102], 'srgb', -0.2, t_line],
+                 // pale green
+                 [[100, 204, 102], 'srgb',  0.3, p_line],
+                 [[100, 204, 102], 'srgb', -0.3, p_line],
+                 [[100, 204, 102], 'srgb',  0.3, d_line],
+                 [[100, 204, 102], 'srgb', -0.3, d_line],
+                 [[100, 204, 102], 'srgb',  0.3, t_line],
+                 [[100, 204, 102], 'srgb', -0.3, t_line],
+                 [[100, 204, 102], 'srgb',  0.3, get_ortho_line_rgb(p_line, new colorObj([100, 204, 102], 'srgb'))],
+                 [[100, 204, 102], 'srgb', -0.3, get_ortho_line_rgb(p_line, new colorObj([100, 204, 102], 'srgb'))],
+                 [[100, 204, 102], 'srgb',  0.3, get_ortho_line_rgb(d_line, new colorObj([100, 204, 102], 'srgb'))],
+                 [[100, 204, 102], 'srgb', -0.3, get_ortho_line_rgb(d_line, new colorObj([100, 204, 102], 'srgb'))],
+                 [[100, 204, 102], 'srgb',  0.3, get_ortho_line_rgb(t_line, new colorObj([100, 204, 102], 'srgb'))],
+                 [[100, 204, 102], 'srgb', -0.3, get_ortho_line_rgb(t_line, new colorObj([100, 204, 102], 'srgb'))],
 
-                 //// gray
-                 //[[136, 136, 136], 'srgb',  0.1, p_line],
-                 //[[136, 136, 136], 'srgb', -0.1, p_line],
-                 //[[136, 136, 136], 'srgb',  0.1, d_line],
-                 //[[136, 136, 136], 'srgb', -0.1, d_line],
-                 //[[136, 136, 136], 'srgb',  0.2, t_line],
-                 //[[136, 136, 136], 'srgb', -0.2, t_line],
+                 // gray
+                 [[136, 136, 136], 'srgb',  0.1, p_line],
+                 [[136, 136, 136], 'srgb', -0.1, p_line],
+                 [[136, 136, 136], 'srgb',  0.1, d_line],
+                 [[136, 136, 136], 'srgb', -0.1, d_line],
+                 [[136, 136, 136], 'srgb',  0.3, t_line],
+                 [[136, 136, 136], 'srgb', -0.3, t_line],
+                 [[136, 136, 136], 'srgb',  0.1, get_ortho_line_rgb(p_line, new colorObj([136, 136, 136], 'srgb'))],
+                 [[136, 136, 136], 'srgb', -0.1, get_ortho_line_rgb(p_line, new colorObj([136, 136, 136], 'srgb'))],
+                 [[136, 136, 136], 'srgb',  0.1, get_ortho_line_rgb(d_line, new colorObj([136, 136, 136], 'srgb'))],
+                 [[136, 136, 136], 'srgb', -0.1, get_ortho_line_rgb(d_line, new colorObj([136, 136, 136], 'srgb'))],
+                 [[136, 136, 136], 'srgb',  0.3, get_ortho_line_rgb(t_line, new colorObj([136, 136, 136], 'srgb'))],
+                 [[136, 136, 136], 'srgb', -0.3, get_ortho_line_rgb(t_line, new colorObj([136, 136, 136], 'srgb'))],
                 ];
 
 var testId = 0;
@@ -99,12 +142,6 @@ $("body").keydown(function(e){
   }
 });
 
-//$('#toInst').on('click', function(evt) {
-//  $('#inst-tab').trigger('click');
-//});
-
-//$('#toTest').on('click', prepare_test(evt));
-
 function prepare_test(evt) {
   canvas.width = window.screen.width;
   canvas.height = window.screen.height;
@@ -117,6 +154,7 @@ function prepare_test(evt) {
   //state = new discTestState(new colorObj(base_srgb, 'srgb'), '+', start_cb, finish_cb);
 
   var test = all_tests[0];
+  // TODO: we should differentiate between test line and actual confusion line
   state = new discTestState(new colorObj(test[0], test[1]), test[2], start_cb, finish_cb, test[3]);
   page.submit();
 
@@ -277,7 +315,7 @@ function start_cb() {
         add_new_base_trace(page.dis_plot);
       });
     } else {
-      if (testId % 6 == 0) { // TODO: this assumes that we always do 6 in a group
+      if (testId % 12 == 0) { // TODO: this assumes that we always do 6 in a group
         // push a new base 
         // hopefully by the time we get to the second base csv is loaded
         add_new_base_trace(page.dis_plot);
@@ -347,8 +385,9 @@ function finish_cb() {
   all_test_stats['test'+testId.toString()] = stats;
 
   $('#test-tab-pane').trigger('finishOneTest');
-  if (testId % 6 == 0) // testId won't be 0
-    plot_ellipse();
+
+  //if (testId % 6 == 0) // testId won't be 0
+  //  plot_ellipse();
 
   if (testId != all_tests.length) {
     var test = all_tests[testId];
@@ -451,8 +490,6 @@ function plot_ellipse() {
   Plotly.addTraces(page.dis_plot, ellip_h);
   Plotly.addTraces(page.dis_plot, ellip_v);
 }
-
-page = new pageObj('p3');
 
 var showConfig = true;
 page.configPage(registerPickType, registerSimMode, registerPickSimMethod, registerGetAns, showConfig);
