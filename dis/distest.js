@@ -130,7 +130,7 @@ var all_test_stats = {};
 function post_data() {
   const jsonData = JSON.stringify(all_test_stats);
 
-  fetch('http://localhost:3000/upload-data', {
+  fetch('http://localhost:3000/upload-disc-data', {
     method: 'POST',
     mode: "cors", // no-cors, *cors, same-origin
     cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached

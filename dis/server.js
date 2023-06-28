@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 
 const server = http.createServer((req, res) => {
-  if (req.method === 'POST' && req.url === '/upload-data') {
+  if (req.method === 'POST' && req.url === '/upload-disc-data') {
     let data = '';
     
     req.on('data', chunk => {
