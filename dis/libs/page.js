@@ -301,13 +301,15 @@ var getAnswer = function(number) {
   }
 
   // restyle markers to better visualize results
+  state.corrects.push(correct);
+  state.revs.push(rev);
   exp_plot.data[1].marker.color.push(correct ? '#63bf7d' : '#d61e49');
   exp_plot.data[1].marker.line.width.push(rev ? 2 : 0);
   data_update = {'marker.color': [exp_plot.data[1].marker.color],
                  'marker.line.width': [exp_plot.data[1].marker.line.width]};
   Plotly.update(exp_plot, data_update, {}, [1]);
 
-  if (state.numRevs == 2) {
+  if (state.numRevs == 6) {
     // terminate
     state.scales = exp_plot.data[1].y;
     state.threshold = math.mean(state.scalesAtRevs.slice(-3));

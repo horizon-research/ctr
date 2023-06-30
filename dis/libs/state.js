@@ -19,6 +19,8 @@ class discTestState {
     this.step = 0.02; // TODO: need to figure out how to better set this
     this.threshold = 0; // final threshold
     this.scales = []; // a sequence of scales used in the current test
+    this.corrects = [];
+    this.revs = [];
 
     this.start_cb = start_cb; // called every page.submit
     this.finish_cb = finish_cb; // called every time a test terminates

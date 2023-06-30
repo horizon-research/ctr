@@ -400,6 +400,8 @@ function finish_cb() {
     threshold: state.threshold,
     threshold_color: state.thresholdColor.v_rgb,
     scales: state.scales,
+    corrects: state.corrects,
+    revs: state.revs,
     num_incrs: prof.num_incrs,
     time_elapsed: prof.time_elapsed,
   };

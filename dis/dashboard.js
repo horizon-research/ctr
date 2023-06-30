@@ -56,32 +56,38 @@ function update_exp_plot(res, testId) {
   exp_plot = plotExp('expDiv'+testId.toString());
 
   // plot the response markers without style
-  var xs = Array.from(Array(res.scales.length).keys());
+  var xs = Array.from({length: res.scales.length}, (_, i) => i + 1)
   exp_plot.data[1].x.push(...xs);
   exp_plot.data[1].y.push(...res.scales);
   var data_update = {'x': [exp_plot.data[1].x], 'y': [exp_plot.data[1].y]};
   Plotly.update(exp_plot, data_update, {}, [1]);
 
-  // TODO: should check whether res.corrects and res.revs exist
   // restyle markers to better visualize results
-  var cur_correct, prev_correct = true;
-  for (var i = 0; i < res.scales.length - 1; i++) {
-    var rev = false;
+  if (res.corrects && res.revs) {
+    res.scales.forEach((element, index) => {
+      exp_plot.data[1].marker.color.push(res.corrects[index] ? '#63bf7d' : '#d61e49');
+      exp_plot.data[1].marker.line.width.push(res.revs[index]? 2 : 0);
+    });
+  } else {
+    var cur_correct, prev_correct = true;
+    for (var i = 0; i < res.scales.length - 1; i++) {
+      var rev = false;
 
-    if (res.scales[i+1] > res.scales[i]) cur_correct = false;
-    else cur_correct = true;
+      if (res.scales[i+1] > res.scales[i]) cur_correct = false;
+      else cur_correct = true;
 
-    if (cur_correct != prev_correct) rev = true;
-    prev_correct = cur_correct;
+      if (cur_correct != prev_correct) rev = true;
+      prev_correct = cur_correct;
 
+      exp_plot.data[1].marker.color.push(cur_correct ? '#63bf7d' : '#d61e49');
+      exp_plot.data[1].marker.line.width.push(rev ? 2 : 0);
+    }
+    // deal with the last response, which is necessarily a reversal so we check if the previous response was correct
+    if (prev_correct == false) cur_correct = true;
+    else cur_correct = false;
     exp_plot.data[1].marker.color.push(cur_correct ? '#63bf7d' : '#d61e49');
-    exp_plot.data[1].marker.line.width.push(rev ? 2 : 0);
+    exp_plot.data[1].marker.line.width.push(2);
   }
-  // deal with the last response, which is necessarily a reversal so we check if the previous response was correct
-  if (prev_correct == false) cur_correct = true;
-  else cur_correct = false;
-  exp_plot.data[1].marker.color.push(cur_correct ? '#63bf7d' : '#d61e49');
-  exp_plot.data[1].marker.line.width.push(2);
 
   data_update = {'marker.color': [exp_plot.data[1].marker.color],
                  'marker.line.width': [exp_plot.data[1].marker.line.width]};
@@ -93,7 +99,7 @@ function update_exp_plot(res, testId) {
     'annotations[0].visible': true,
     'annotations[0].text': 'threshold is:&nbsp;&nbsp;' + res.threshold.toFixed(4),
     'annotations[0].x': res.scales.length/2,
-    'xaxis.range': [0, res.scales.length],
+    'xaxis.range': [0, res.scales.length + 1],
   };
   Plotly.update(exp_plot, data_update, layout_update, [0]);
 
