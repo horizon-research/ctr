@@ -140,12 +140,12 @@ function post_data() {
       'Content-Type': 'application/json'
     }
   })
-  .then(response => console.log(response.ok))
-  //.then(response => response.text())
-  //.then(result => {
-  //  console.log(result);
-  //  // Handle the server response here
-  //})
+  //.then(response => console.log(response.ok))
+  .then(response => response.text())
+  .then(result => {
+    // open the dashboard page
+    window.open(result);
+  })
   .catch(error => console.error(error));
 }
 
@@ -398,7 +398,7 @@ function finish_cb() {
     dir: state.dir,
     line: state.confusion_lines_rgb,
     threshold: state.threshold,
-    threshold_color: state.thresholdColor,
+    threshold_color: state.thresholdColor.v_rgb,
     scales: state.scales,
     num_incrs: prof.num_incrs,
     time_elapsed: prof.time_elapsed,

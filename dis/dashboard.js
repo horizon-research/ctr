@@ -23,7 +23,7 @@ function add_new_base_trace(plot, baseColor) {
 }
 
 function update_dis_plot(res, testId) {
-  if (testId % 12 == 1) { // TODO: this assumes that we always do 12 in a group
+  if (testId % 12 == 1) { // TODO: this assumes that we always do 12 in a group (should be based on base_rgb changes)
     // push a new base 
     // hopefully by the time we get to the second base csv is loaded
     var baseColor = new colorObj(res.base_rgb, 'v_rgb');
@@ -55,18 +55,37 @@ function update_exp_plot(res, testId) {
 
   exp_plot = plotExp('expDiv'+testId.toString());
 
+  // plot the response markers without style
   var xs = Array.from(Array(res.scales.length).keys());
   exp_plot.data[1].x.push(...xs);
   exp_plot.data[1].y.push(...res.scales);
   var data_update = {'x': [exp_plot.data[1].x], 'y': [exp_plot.data[1].y]};
   Plotly.update(exp_plot, data_update, {}, [1]);
 
+  // TODO: should check whether res.corrects and res.revs exist
   // restyle markers to better visualize results
-  //exp_plot.data[1].marker.color.push(correct ? '#63bf7d' : '#d61e49');
-  //exp_plot.data[1].marker.line.width.push(rev ? 2 : 0);
-  //data_update = {'marker.color': [exp_plot.data[1].marker.color],
-  //               'marker.line.width': [exp_plot.data[1].marker.line.width]};
-  //Plotly.update(exp_plot, data_update, {}, [1]);
+  var cur_correct, prev_correct = true;
+  for (var i = 0; i < res.scales.length - 1; i++) {
+    var rev = false;
+
+    if (res.scales[i+1] > res.scales[i]) cur_correct = false;
+    else cur_correct = true;
+
+    if (cur_correct != prev_correct) rev = true;
+    prev_correct = cur_correct;
+
+    exp_plot.data[1].marker.color.push(cur_correct ? '#63bf7d' : '#d61e49');
+    exp_plot.data[1].marker.line.width.push(rev ? 2 : 0);
+  }
+  // deal with the last response, which is necessarily a reversal so we check if the previous response was correct
+  if (prev_correct == false) cur_correct = true;
+  else cur_correct = false;
+  exp_plot.data[1].marker.color.push(cur_correct ? '#63bf7d' : '#d61e49');
+  exp_plot.data[1].marker.line.width.push(2);
+
+  data_update = {'marker.color': [exp_plot.data[1].marker.color],
+                 'marker.line.width': [exp_plot.data[1].marker.line.width]};
+  Plotly.update(exp_plot, data_update, {}, [1]);
 
   // add threshold line
   data_update = {'x': [[0, res.scales.length]], 'y': [[res.threshold, res.threshold]]};
@@ -98,7 +117,10 @@ function gen_plot(data) {
 
 var page, dis_plot, exp_plot;
 
-fetch('./2023-6-27-21-1-11.json')
+var fileName = location.href.split("/").at(-1);
+var jsonFileName = fileName.split(".")[0];
+
+fetch(jsonFileName+'.json')
   .then(function (response) {
     return response.json();
   })
@@ -106,6 +128,6 @@ fetch('./2023-6-27-21-1-11.json')
     var cs = data.test1.cs;
     page = new pageObj((cs == 0) ? 'srgb' : 'p3');
     gen_plot(data);
-    page.displayConfig();
+    page.displayConfig(); // TODO: should read json file rather than using this, which would query the device that shows the dashboard
   })
 

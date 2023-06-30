@@ -1,7 +1,6 @@
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
-const dashboard = require('./dashboard');
 
 const server = http.createServer((req, res) => {
   if (req.method === 'POST' && req.url === '/upload-disc-data') {
@@ -17,19 +16,17 @@ const server = http.createServer((req, res) => {
 
         // Save the JSON data to a file
         var today = new Date();
-        var filename = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate()+'-'+today.getHours()+'-'+today.getMinutes()+'-'+today.getSeconds()+'.json';
-        fs.writeFile(filename, JSON.stringify(jsonData), err => {
+        var filename = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate()+'-'+today.getHours()+'-'+today.getMinutes()+'-'+today.getSeconds();
+        fs.writeFile(filename+'.json', JSON.stringify(jsonData), err => {
           if (err) {
             res.writeHead(500, { 'Content-Type': 'text/plain' });
             res.end('Internal Server Error');
             console.error(err);
           } else {
-            res.writeHead(200, { 'Content-Type': 'text/plain' });
-            res.end('File saved successfully');
-
-            fs.readFile(filename, function (error, content) {
-              var data = JSON.parse(content);
-              dashboard.gen_plot(data);
+            fs.copyFile('dashboard.html', filename+'.html', (err) => {
+              res.writeHead(200, { 'Content-Type': 'text/plain' });
+              //res.end('File saved successfully');
+              res.end(filename+'.html');
             });
           }
         });
