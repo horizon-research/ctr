@@ -1,6 +1,6 @@
 // contains the state one baseColor test (multiple testColors)
 class discTestState {
-  constructor(baseColor, scale, start_cb, finish_cb, line=null) {
+  constructor(baseColor, scale, test_start_cb, test_finish_cb, ans_start_cb, ans_finish_cb, line=null) {
     this.baseColor = baseColor ; // one single color
     this.thresholdColor = null;
     this.testColor = null; // one single color
@@ -22,8 +22,10 @@ class discTestState {
     this.corrects = [];
     this.revs = [];
 
-    this.start_cb = start_cb; // called every page.submit
-    this.finish_cb = finish_cb; // called every time a test terminates
+    this.test_start_cb = test_start_cb; // called every page.submit
+    this.test_finish_cb = test_finish_cb; // called every time a test terminates
+    this.ans_start_cb = ans_start_cb; // called before processing a response
+    this.ans_finish_cb = ans_finish_cb; // called after a response is processed
 
     this.xy_plot = null;
     this.rgb_plot = null;

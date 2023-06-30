@@ -126,12 +126,13 @@ function hex_to_srgb(hex) {
 }
 
 var all_test_stats = {};
+var dashboardName;
 
 function post_data() {
   const jsonData = JSON.stringify(all_test_stats);
 
   //fetch('https://colorvision.cs.rochester.edu/upload-disc-data', {
-  fetch('http://localhost:3000/upload-disc-data', {
+  fetch('http://localhost:9812/upload-disc-data', {
     method: 'POST',
     mode: "cors", // no-cors, *cors, same-origin
     cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
@@ -144,8 +145,7 @@ function post_data() {
   //.then(response => console.log(response.ok))
   .then(response => response.text())
   .then(result => {
-    // open the dashboard page
-    window.open(result);
+    dashboardName = result;
   })
   .catch(error => console.error(error));
 }
@@ -173,11 +173,14 @@ function prepare_test(evt) {
 
   //var base_hex = $('#colorpicker').val();
   //var base_srgb = hex_to_srgb(base_hex);
-  //state = new discTestState(new colorObj(base_srgb, 'srgb'), '+', start_cb, finish_cb);
+  //state = new discTestState(new colorObj(base_srgb, 'srgb'), '+', test_start_cb, test_finish_cb);
 
   var test = all_tests[indices[0]];
   // TODO: we should differentiate between test line and actual confusion line
-  state = new discTestState(new colorObj(test[0], test[1]), test[2], start_cb, finish_cb, test[3]);
+  state = new discTestState(new colorObj(test[0], test[1]), test[2],
+      test_start_cb, test_finish_cb,
+      ans_start_cb, ans_finish_cb,
+      test[3]);
   page.submit();
 
   $("body").keydown(function(e){
@@ -213,23 +216,6 @@ function prepare_test(evt) {
   $('#test-tab').trigger('click');
   prof.start = Date.now();
 };
-
-// TODO: this is also called after each test, so maybe lump that into finish_cb()?
-$('#test-tab-pane').on('finishOneTest', function(evt) {
-  // update disDiv plot
-  var trace_id = page.dis_plot.data.length - 1;
-  page.dis_plot.data[trace_id].x.push(state.thresholdColor.xy[0]);
-  page.dis_plot.data[trace_id].y.push(state.thresholdColor.xy[1]);
-  page.dis_plot.data[trace_id].marker.size.push(7);
-  page.dis_plot.data[trace_id].marker.color.push(state.thresholdColor.legacy_rgb_css);
-  page.dis_plot.data[trace_id].text.push('Test'+testId.toString()+' threshold');
-  var data_update = {'x': [page.dis_plot.data[trace_id].x],
-                     'y': [page.dis_plot.data[trace_id].y],
-                     'marker.size': [page.dis_plot.data[trace_id].marker.size],
-                     'marker.color': [page.dis_plot.data[trace_id].marker.color],
-                     'text': [page.dis_plot.data[trace_id].text]};
-  Plotly.update(page.dis_plot, data_update, {}, [trace_id]);
-});
 
 function registerPickType() {
   $('input[type=radio][name=pick]').change(function() {
@@ -327,34 +313,8 @@ function add_new_base_trace(plot) {
 }
 
 // called during page.submit, which is called once per test
-function start_cb() {
-  function updatePlots() {
-    if (testId == 0) {
-      d3.csv('ciexyzjv.csv').then(function(rows){
-        // dis_plot needs to be part of page, because we will get a new state for each test
-        page.dis_plot = plotDis('disDiv', rows);
-
-        add_new_base_trace(page.dis_plot);
-      });
-    } else {
-      if (testId % 12 == 0) { // TODO: this assumes that we always do 6 in a group
-        // push a new base 
-        // hopefully by the time we get to the second base csv is loaded
-        add_new_base_trace(page.dis_plot);
-      }
-    }
-
-    testId++;
-
-    if (testId >= 2) {
-      $("#resTab").append('<li class="nav-item" role="presentation"><button class="nav-link" id="e'+testId.toString()+'-tab" data-bs-toggle="tab" data-bs-target="#e'+testId.toString()+'-tab-pane" type="button" role="tab">Test '+testId.toString()+'</button></li>');
-      $("#resTabContent").append('<div class="tab-pane" id="e'+testId.toString()+'-tab-pane"><div id="expDiv'+testId.toString()+'"></div></div>');
-    }
-
-    state.exp_plot = plotExp('expDiv'+testId.toString());
-  }
-
-  updatePlots();
+function test_start_cb() {
+  testId++;
 
   // display "Next Trial" in-between tests
   var bg_color = $('#patches').css('background-color');
@@ -381,22 +341,32 @@ function start_cb() {
   });
 }
 
+function ans_start_cb() {
+  state.scales.push(state.scale);
+}
+
+function ans_finish_cb(correct, rev) {
+  state.corrects.push(correct);
+  state.revs.push(rev);
+}
+
 // called after each test terminates
-function finish_cb() {
+function test_finish_cb() {
+  state.threshold = math.mean(state.scalesAtRevs.slice(-3));
+  state.thresholdColor = new colorObj(
+      math.add(state.baseColor.v_rgb, math.multiply(state.confusion_lines_rgb, state.dir * state.threshold)), 'v_rgb');
+
   var stats = {
     sim: page.sim,
     blindness_type: page.type,
     simMethod: page.simMethod,
-    //has_srgb: page.hassRGB,
-    //has_p3: page.hasP3,
-    //has_rec2020: page.hasRec2020,
     color_supports: page.color_supports,
     has_hdr: page.hasHDR,
     bitdepth: page.bitdepth,
+    cs: page.cs,
 
     base_rgb: state.baseColor.v_rgb,
     base_xy: state.baseColor.xy,
-    cs: page.cs,
     dir: state.dir,
     line: state.confusion_lines_rgb,
     threshold: state.threshold,
@@ -409,14 +379,15 @@ function finish_cb() {
   };
   all_test_stats['test'+testId.toString()] = stats;
 
-  $('#test-tab-pane').trigger('finishOneTest');
-
   //if (testId % 6 == 0) // testId won't be 0
   //  plot_ellipse();
 
   if (testId != all_tests.length) {
     var test = all_tests[indices[testId]];
-    state = new discTestState(new colorObj(test[0], test[1]), test[2], start_cb, finish_cb, test[3]);
+    state = new discTestState(new colorObj(test[0], test[1]), test[2],
+        test_start_cb, test_finish_cb,
+        ans_start_cb, ans_finish_cb,
+        test[3]);
     page.submit();
     prof.start = Date.now();
   } else {
@@ -515,6 +486,11 @@ function plot_ellipse() {
   Plotly.addTraces(page.dis_plot, ellip_h);
   Plotly.addTraces(page.dis_plot, ellip_v);
 }
+
+$('#seeres').on('click', function(evt) {
+  // open the dashboard page
+  window.open(dashboardName);
+});
 
 var showConfig = true;
 page.configPage(registerPickType, registerSimMode, registerPickSimMethod, registerGetAns, showConfig);

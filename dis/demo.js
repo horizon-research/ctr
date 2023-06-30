@@ -63,7 +63,7 @@ function registerGetAns() {
   $('#s11, #s12, #s13, #s14').bind("click", getAnswer);
 }
 
-function start_cb() {
+function test_start_cb() {
   d3.csv('ciexyzjv.csv').then(function(rows){
     state.xy_plot = plotXy('xyDiv', rows);
     updatePlot(0, 1);
@@ -77,12 +77,45 @@ function start_cb() {
   });
 }
 
-function finish_cb() {
+function test_finish_cb() {
+  state.threshold = math.mean(state.scalesAtRevs.slice(-3));
+
+  // add threshold line
+  data_update = {'x': [[0, 30]], 'y': [[state.threshold, state.threshold]]};
+  var layout_update = {
+    'annotations[0].visible': true,
+    'annotations[0].text': 'threshold is:&nbsp;&nbsp;' + state.threshold.toFixed(4)
+  };
+  Plotly.update(state.exp_plot, data_update, layout_update, [0]);
+
+  // show marker legends
+  data_update = {'visible': [true, true, true]};
+  Plotly.update(state.exp_plot, data_update, {}, [2, 3, 4]);
+
   $('#expDiv').trigger('finish');
 }
 
+function ans_start_cb() {
+  // add a new result to the threshold plot
+  state.exp_plot.data[1].x.push(state.numTrials);
+  state.exp_plot.data[1].y.push(state.scale);
+  var data_update = {'x': [state.exp_plot.data[1].x], 'y': [state.exp_plot.data[1].y]};
+  Plotly.update(state.exp_plot, data_update, {}, [1]);
+}
+
+function ans_finish_cb(correct, rev) {
+  // restyle markers to better visualize results
+  state.exp_plot.data[1].marker.color.push(correct ? '#63bf7d' : '#d61e49');
+  state.exp_plot.data[1].marker.line.width.push(rev ? 2 : 0);
+  data_update = {'marker.color': [state.exp_plot.data[1].marker.color],
+                 'marker.line.width': [state.exp_plot.data[1].marker.line.width]};
+  Plotly.update(state.exp_plot, data_update, {}, [1]);
+}
+
 page = new pageObj('srgb');
-state = new discTestState(new colorObj([0.2, 0.15, 0.65], 'xyz'), 0.1, start_cb, finish_cb);
+state = new discTestState(new colorObj([0.2, 0.15, 0.65], 'xyz'), 0.1,
+    test_start_cb, test_finish_cb,
+    ans_start_cb, ans_finish_cb);
 
 var showConfig = true;
 page.configPage(registerPickType, registerSimMode, registerPickSimMethod, registerGetAns, showConfig);

@@ -253,12 +253,7 @@ var getAnswer = function(number) {
   var correct = true;
   var rev = false;
 
-  // add a new result to the threshold plot
-  var exp_plot = state.exp_plot;
-  exp_plot.data[1].x.push(state.numTrials);
-  exp_plot.data[1].y.push(state.scale);
-  var data_update = {'x': [exp_plot.data[1].x], 'y': [exp_plot.data[1].y]};
-  Plotly.update(exp_plot, data_update, {}, [1]);
+  state.ans_start_cb();
 
   state.numTrials++;
   var answer = Number.isInteger(number) ? number : Number(this.id[2]);
@@ -300,35 +295,11 @@ var getAnswer = function(number) {
     }
   }
 
-  // restyle markers to better visualize results
-  state.corrects.push(correct);
-  state.revs.push(rev);
-  exp_plot.data[1].marker.color.push(correct ? '#63bf7d' : '#d61e49');
-  exp_plot.data[1].marker.line.width.push(rev ? 2 : 0);
-  data_update = {'marker.color': [exp_plot.data[1].marker.color],
-                 'marker.line.width': [exp_plot.data[1].marker.line.width]};
-  Plotly.update(exp_plot, data_update, {}, [1]);
+  state.ans_finish_cb(correct, rev);
 
   if (state.numRevs == 2) {
     // terminate
-    state.scales = exp_plot.data[1].y;
-    state.threshold = math.mean(state.scalesAtRevs.slice(-3));
-    state.thresholdColor = new colorObj(
-        math.add(state.baseColor.v_rgb, math.multiply(state.confusion_lines_rgb, state.dir * state.threshold)), 'v_rgb');
-
-    // add threshold line
-    data_update = {'x': [[0, 30]], 'y': [[state.threshold, state.threshold]]};
-    var layout_update = {
-      'annotations[0].visible': true,
-      'annotations[0].text': 'threshold is:&nbsp;&nbsp;' + state.threshold.toFixed(4)
-    };
-    Plotly.update(exp_plot, data_update, layout_update, [0]);
-
-    // show marker legends
-    data_update = {'visible': [true, true, true]};
-    Plotly.update(exp_plot, data_update, {}, [2, 3, 4]);
-
-    state.finish_cb();
+    state.test_finish_cb();
   } else {
     setupNextColor();
   }
@@ -415,7 +386,7 @@ class pageObj {
     $('#customRange').val(0);
     $('.rot-label').html('Rotation Angle (Degree): 0&#176;');
 
-    state.start_cb().then(() => testOneColor(true));
+    state.test_start_cb().then(() => testOneColor(true));
   }
 
   // TODO: true to assume that sRGB is always 8 bits?
