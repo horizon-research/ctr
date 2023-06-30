@@ -352,9 +352,9 @@ function ans_finish_cb(correct, rev) {
 
 // called after each test terminates
 function test_finish_cb() {
-  state.threshold = math.mean(state.scalesAtRevs.slice(-3));
-  state.thresholdColor = new colorObj(
-      math.add(state.baseColor.v_rgb, math.multiply(state.confusion_lines_rgb, state.dir * state.threshold)), 'v_rgb');
+  var threshold = math.mean(state.scalesAtRevs.slice(-3));
+  var thresholdColor = new colorObj(
+      math.add(state.baseColor.v_rgb, math.multiply(state.confusion_lines_rgb, state.dir * threshold)), 'v_rgb');
 
   var stats = {
     sim: page.sim,
@@ -369,8 +369,8 @@ function test_finish_cb() {
     base_xy: state.baseColor.xy,
     dir: state.dir,
     line: state.confusion_lines_rgb,
-    threshold: state.threshold,
-    threshold_color: state.thresholdColor.v_rgb,
+    threshold: threshold,
+    threshold_color: thresholdColor.v_rgb,
     scales: state.scales,
     corrects: state.corrects,
     revs: state.revs,

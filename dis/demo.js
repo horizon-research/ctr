@@ -78,13 +78,13 @@ function test_start_cb() {
 }
 
 function test_finish_cb() {
-  state.threshold = math.mean(state.scalesAtRevs.slice(-3));
+  var threshold = math.mean(state.scalesAtRevs.slice(-3));
 
   // add threshold line
-  data_update = {'x': [[0, 30]], 'y': [[state.threshold, state.threshold]]};
+  data_update = {'x': [[0, 30]], 'y': [[threshold, threshold]]};
   var layout_update = {
     'annotations[0].visible': true,
-    'annotations[0].text': 'threshold is:&nbsp;&nbsp;' + state.threshold.toFixed(4)
+    'annotations[0].text': 'threshold is:&nbsp;&nbsp;' + threshold.toFixed(4)
   };
   Plotly.update(state.exp_plot, data_update, layout_update, [0]);
 

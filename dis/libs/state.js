@@ -2,7 +2,6 @@
 class discTestState {
   constructor(baseColor, scale, test_start_cb, test_finish_cb, ans_start_cb, ans_finish_cb, line=null) {
     this.baseColor = baseColor ; // one single color
-    this.thresholdColor = null;
     this.testColor = null; // one single color
     this.colors = []; // four initial colors (three test + one base) without rotation; one color per row
     this.rotColors = []; // rotated colors; one color per row
@@ -17,7 +16,6 @@ class discTestState {
     this.lastAns = true; // just so that if the first respose is incorrect it gets counted as a reversal
     this.numTrials = 1;
     this.step = 0.02; // TODO: need to figure out how to better set this
-    this.threshold = 0; // final threshold
     this.scales = []; // a sequence of scales used in the current test
     this.corrects = [];
     this.revs = [];
