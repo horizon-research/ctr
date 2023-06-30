@@ -142,6 +142,19 @@ function gen_plot(data) {
   });
 }
 
+function displayConfig(test) {
+  $('#usedcs').html(test.cs ? 'Display P3' : 'sRGB');
+  $('#usedbd').html(test.bitdepth);
+  $('#usedxyz').html('CIE 1931 XYZ');
+  $('#usedlms').html('Hunt-Pointer-Estevez D65-adapted');
+  $('#bsrgb').html(test.color_supports.srgb_b ? '&#10003;' : '');
+  $('#bp3').html(test.color_supports.p3_b ? '&#10003;' : '');
+  $('#b2020').html(test.color_supports.rec2020_b ? '&#10003;' : '');
+  $('#dsrgb').html(test.color_supports.srgb_d ? '&#10003;' : '');
+  $('#dp3').html(test.color_supports.p3_d ? '&#10003;' : '');
+  $('#d2020').html(test.color_supports.rec2020_d ? '&#10003;' : '');
+}
+
 var page, dis_plot, exp_plot;
 
 var fileName = location.href.split("/").at(-1);
@@ -155,6 +168,6 @@ fetch(jsonFileName+'.json')
     var cs = data.test1.cs;
     page = new pageObj((cs == 0) ? 'srgb' : 'p3');
     gen_plot(data);
-    page.displayConfig(); // TODO: should read json file rather than using this, which would query the device that shows the dashboard
+    displayConfig(data.test1); // TODO: should read json file rather than using this, which would query the device that shows the dashboard
   })
 

@@ -387,9 +387,10 @@ function finish_cb() {
     sim: page.sim,
     blindness_type: page.type,
     simMethod: page.simMethod,
-    has_srgb: page.hassRGB,
-    has_p3: page.hasP3,
-    has_rec2020: page.hasRec2020,
+    //has_srgb: page.hassRGB,
+    //has_p3: page.hasP3,
+    //has_rec2020: page.hasRec2020,
+    color_supports: page.color_supports,
     has_hdr: page.hasHDR,
     bitdepth: page.bitdepth,
 
