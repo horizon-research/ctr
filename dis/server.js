@@ -14,19 +14,21 @@ const server = http.createServer((req, res) => {
       try {
         const jsonData = JSON.parse(data);
 
+        if (!fs.existsSync('dashboard'))
+          fs.mkdirSync('dashboard');
+
         // Save the JSON data to a file
         var today = new Date();
         var filename = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate()+'-'+today.getHours()+'-'+today.getMinutes()+'-'+today.getSeconds();
-        fs.writeFile(filename+'.json', JSON.stringify(jsonData), err => {
+        fs.writeFile('dashboard/' + filename+'.json', JSON.stringify(jsonData), err => {
           if (err) {
             res.writeHead(500, { 'Content-Type': 'text/plain' });
             res.end('Internal Server Error');
             console.error(err);
           } else {
-            fs.copyFile('dashboard.html', filename+'.html', (err) => {
+            fs.copyFile('dashboard.html', 'dashboard/'+filename+'.html', (err) => {
               res.writeHead(200, { 'Content-Type': 'text/plain' });
-              //res.end('File saved successfully');
-              res.end(filename+'.html');
+              res.end('dashboard/'+filename+'.html');
             });
           }
         });

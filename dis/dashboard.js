@@ -94,12 +94,13 @@ function update_exp_plot(res, testId) {
   Plotly.update(exp_plot, data_update, {}, [1]);
 
   // add threshold line
-  data_update = {'x': [[0, res.scales.length]], 'y': [[res.threshold, res.threshold]]};
+  var xrange_max = Math.max(30, res.scales.length + 1);
+  data_update = {'x': [[0, xrange_max]], 'y': [[res.threshold, res.threshold]]};
   var layout_update = {
     'annotations[0].visible': true,
     'annotations[0].text': 'threshold is:&nbsp;&nbsp;' + res.threshold.toFixed(4),
-    'annotations[0].x': res.scales.length/2,
-    'xaxis.range': [0, res.scales.length + 1],
+    'annotations[0].x': xrange_max/2,
+    'xaxis.range': [0, xrange_max],
   };
   Plotly.update(exp_plot, data_update, layout_update, [0]);
 
@@ -110,7 +111,7 @@ function update_exp_plot(res, testId) {
 
 function gen_plot(data) {
   var i = 0;
-  d3.csv('ciexyzjv.csv').then(function(rows){
+  d3.csv('../ciexyzjv.csv').then(function(rows){
     dis_plot = plotDis('disDiv', rows);
 
     Object.keys(data).forEach(key => {
