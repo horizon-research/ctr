@@ -22,16 +22,34 @@ function add_new_base_trace(plot, baseColor) {
   Plotly.addTraces(plot, new_trace);
 }
 
+var baseColorSets = {baseColor: [],
+                     traceId: [],
+                    };
+
+const compareArrays = (a, b) => {
+  return a.toString() === b.toString();
+};
+
 function update_dis_plot(res, testId) {
-  if (testId % 12 == 1) { // TODO: this assumes that we always do 12 in a group (should be based on base_rgb changes)
-    // push a new base 
-    // hopefully by the time we get to the second base csv is loaded
-    var baseColor = new colorObj(res.base_rgb, 'v_rgb');
-    add_new_base_trace(dis_plot, baseColor);
+  // add a new trace (because we have a new base color)
+  var found = false;
+  var traceId;
+  for (var i = 0; i < baseColorSets.baseColor.length; i++) {
+    if (compareArrays(baseColorSets.baseColor[i], res.base_rgb)) {
+      found = true;
+      traceId = baseColorSets.traceId[i];
+      break;
+    }
+  }
+  if (!found) {
+    baseColorSets.baseColor.push(res.base_rgb);
+    var base = new colorObj(res.base_rgb, 'v_rgb');
+    add_new_base_trace(dis_plot, base);
+    trace_id = dis_plot.data.length - 1;
+    baseColorSets.traceId.push(trace_id);
   }
 
   // add result for this test
-  var trace_id = dis_plot.data.length - 1;
   var thresholdColor = new colorObj(res.threshold_color, 'v_rgb');
 
   dis_plot.data[trace_id].x.push(thresholdColor.xy[0]);
