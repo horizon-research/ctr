@@ -5,14 +5,15 @@ function add_new_base_trace(plot, baseColor) {
     text: ['Base'],
     mode: 'markers',
     marker: {
-      size: [10],
+      size: [15],
+      symbol: ['triangle-up'],
       opacity: 1,
       color: [baseColor.legacy_rgb_css],
     },
-    //line: {
-    //  width: 1,
-    //  color: '#000000',
-    //},
+    line: {
+      width: 0.5,
+      color: '#000000',
+    },
     name: 'Thresholds',
     hovertemplate: 'x: %{x}' +
       '<br>y: %{y}' +
