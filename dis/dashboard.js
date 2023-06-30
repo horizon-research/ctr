@@ -34,11 +34,11 @@ const compareArrays = (a, b) => {
 function update_dis_plot(res, testId) {
   // add a new trace (because we have a new base color)
   var found = false;
-  var traceId;
+  var trade_id;
   for (var i = 0; i < baseColorSets.baseColor.length; i++) {
     if (compareArrays(baseColorSets.baseColor[i], res.base_rgb)) {
       found = true;
-      traceId = baseColorSets.traceId[i];
+      trace_id = baseColorSets.traceId[i];
       break;
     }
   }
