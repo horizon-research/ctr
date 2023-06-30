@@ -69,6 +69,7 @@ function update_exp_plot(res, testId) {
       exp_plot.data[1].marker.line.width.push(res.revs[index]? 2 : 0);
     });
   } else {
+    // TODO: remove this at some point (if not, need to consider the fact that scale has an upper bound)
     var cur_correct, prev_correct = true;
     for (var i = 0; i < res.scales.length - 1; i++) {
       var rev = false;
@@ -101,6 +102,7 @@ function update_exp_plot(res, testId) {
     'annotations[0].text': 'threshold is:&nbsp;&nbsp;' + res.threshold.toFixed(4),
     'annotations[0].x': xrange_max/2,
     'xaxis.range': [0, xrange_max],
+    'yaxis.range': [-0.02, Math.max(...res.scales)+0.02],
   };
   Plotly.update(exp_plot, data_update, layout_update, [0]);
 
