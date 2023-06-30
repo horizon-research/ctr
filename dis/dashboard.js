@@ -47,11 +47,12 @@ function update_dis_plot(res, testId) {
   Plotly.update(dis_plot, data_update, {}, [trace_id]);
 }
 
-function genSelectBox(values, id) {
+function genSelectBox(data, id) {
   exp_plot = plotExp('expDiv');
 
   var select = document.getElementById(id);
 
+  var values = Object.keys(data);
   for (const val of values)
   {
     var option = document.createElement("option");
@@ -135,8 +136,9 @@ function gen_plot(data) {
       update_dis_plot(test_res, ++i);
     });
 
-    genSelectBox(Object.keys(data), 'expId');
+    genSelectBox(data, 'expId');
     register_update_exp_plot(data);
+    $('#expId').val('test1').trigger('change');
   });
 }
 

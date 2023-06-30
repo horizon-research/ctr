@@ -94,9 +94,12 @@ function plotExp(plotId) {
   var layout = {
     height: 600,
     width: 600,
+    margin: {
+      t: 50,
+    },
     paper_bgcolor: 'rgba(0, 0, 0, 0)',
     plot_bgcolor: 'rgba(0, 0, 0, 0)',
-    title: 'Results',
+    //title: 'Results',
     xaxis: {
       title: 'Trial Number',
       showgrid: true,
@@ -237,7 +240,7 @@ function plotDis(plotId, rows) {
     margin: {
       l: 0,
       r: 0,
-      b: 80,
+      b: 0,
       t: 50
     },
     showlegend: true,
