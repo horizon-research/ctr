@@ -117,7 +117,7 @@ function plotExp(plotId) {
     },
     annotations: [
       {
-        x: 25,
+        x: 20,
         y: 0.06,
         xref: 'x',
         yref: 'y',

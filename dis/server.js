@@ -1,6 +1,7 @@
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
+const dashboard = require('./dashboard');
 
 const server = http.createServer((req, res) => {
   if (req.method === 'POST' && req.url === '/upload-disc-data') {
@@ -25,6 +26,11 @@ const server = http.createServer((req, res) => {
           } else {
             res.writeHead(200, { 'Content-Type': 'text/plain' });
             res.end('File saved successfully');
+
+            fs.readFile(filename, function (error, content) {
+              var data = JSON.parse(content);
+              dashboard.gen_plot(data);
+            });
           }
         });
       } catch (error) {
