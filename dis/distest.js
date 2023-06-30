@@ -130,6 +130,7 @@ var all_test_stats = {};
 function post_data() {
   const jsonData = JSON.stringify(all_test_stats);
 
+  //fetch('https://colorvision.cs.rochester.edu/upload-disc-data', {
   fetch('http://localhost:3000/upload-disc-data', {
     method: 'POST',
     mode: "cors", // no-cors, *cors, same-origin
