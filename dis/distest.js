@@ -1,9 +1,144 @@
-page = new pageObj('srgb');
+var p_line, d_line, t_line;
+var indices, testId;
+var prof, all_test_stats, dashboardName;
+var pageId; // 0: config; 1: inst; 2: test; 3: res
+var all_tests;
 
-// these lines must change depending on whether we use srgb or P3
-var p_line = normalize((new colorObj([1, 0, 0], 'lms')).v_rgb);
-var d_line = normalize((new colorObj([0, 1, 0], 'lms')).v_rgb);
-var t_line = normalize((new colorObj([0, 0, 1], 'lms')).v_rgb);
+class Profiler {
+  constructor() {
+    // time used in each trial
+    this.start = 0;
+    this.time_elapsed = [];
+    // number of rotations in each trial
+    this.incs = 0;
+    this.num_incrs = [];
+  }
+}
+
+if (window.localStorage.getItem('results')) {
+  $('#reset-tab').trigger('click');
+
+  // start a new test
+  $('#newtest').on('click', function(evt) {
+    window.localStorage.removeItem('results');
+    location.reload();
+  });
+
+  // restore a previous session
+  $('#resume').on('click', function(evt) {
+    restore_test();
+    prepare_test();
+    pageId = 2; // so that pressing space won't trigger an event
+  });
+} else {
+  set_new_test();
+}
+
+function gen_all_tests() {
+  return [
+          // navy blue
+          [[86, 95, 214], 'srgb',  0.1, p_line],
+          [[86, 95, 214], 'srgb', -0.1, p_line],
+          [[86, 95, 214], 'srgb',  0.1, d_line],
+          [[86, 95, 214], 'srgb', -0.1, d_line],
+          [[86, 95, 214], 'srgb',  0.3, t_line],
+          [[86, 95, 214], 'srgb', -0.3, t_line],
+          [[86, 95, 214], 'srgb',  0.1, get_ortho_line_rgb(p_line, new colorObj([86, 95, 214], 'srgb'))],
+          [[86, 95, 214], 'srgb', -0.1, get_ortho_line_rgb(p_line, new colorObj([86, 95, 214], 'srgb'))],
+          //[[86, 95, 214], 'srgb',  0.1, get_ortho_line_rgb(d_line, new colorObj([86, 95, 214], 'srgb'))],
+          //[[86, 95, 214], 'srgb', -0.1, get_ortho_line_rgb(d_line, new colorObj([86, 95, 214], 'srgb'))],
+          //[[86, 95, 214], 'srgb',  0.3, get_ortho_line_rgb(t_line, new colorObj([86, 95, 214], 'srgb'))],
+          //[[86, 95, 214], 'srgb', -0.3, get_ortho_line_rgb(t_line, new colorObj([86, 95, 214], 'srgb'))],
+
+          //// dark red
+          [[184, 74, 74], 'srgb',  0.1, p_line],
+          [[184, 74, 74], 'srgb', -0.1, p_line],
+          [[184, 74, 74], 'srgb',  0.1, d_line],
+          [[184, 74, 74], 'srgb', -0.1, d_line],
+          [[184, 74, 74], 'srgb',  0.3, t_line],
+          [[184, 74, 74], 'srgb', -0.3, t_line],
+          [[184, 74, 74], 'srgb',  0.1, get_ortho_line_rgb(p_line, new colorObj([184, 74, 74], 'srgb'))],
+          [[184, 74, 74], 'srgb', -0.1, get_ortho_line_rgb(p_line, new colorObj([184, 74, 74], 'srgb'))],
+          //[[184, 74, 74], 'srgb',  0.1, get_ortho_line_rgb(d_line, new colorObj([184, 74, 74], 'srgb'))],
+          //[[184, 74, 74], 'srgb', -0.1, get_ortho_line_rgb(d_line, new colorObj([184, 74, 74], 'srgb'))],
+          //[[184, 74, 74], 'srgb',  0.3, get_ortho_line_rgb(t_line, new colorObj([184, 74, 74], 'srgb'))],
+          //[[184, 74, 74], 'srgb', -0.3, get_ortho_line_rgb(t_line, new colorObj([184, 74, 74], 'srgb'))],
+
+          //// pale green
+          [[100, 204, 102], 'srgb',  0.3, p_line],
+          [[100, 204, 102], 'srgb', -0.3, p_line],
+          [[100, 204, 102], 'srgb',  0.3, d_line],
+          [[100, 204, 102], 'srgb', -0.3, d_line],
+          [[100, 204, 102], 'srgb',  0.3, t_line],
+          [[100, 204, 102], 'srgb', -0.3, t_line],
+          [[100, 204, 102], 'srgb',  0.3, get_ortho_line_rgb(p_line, new colorObj([100, 204, 102], 'srgb'))],
+          [[100, 204, 102], 'srgb', -0.3, get_ortho_line_rgb(p_line, new colorObj([100, 204, 102], 'srgb'))],
+          //[[100, 204, 102], 'srgb',  0.3, get_ortho_line_rgb(d_line, new colorObj([100, 204, 102], 'srgb'))],
+          //[[100, 204, 102], 'srgb', -0.3, get_ortho_line_rgb(d_line, new colorObj([100, 204, 102], 'srgb'))],
+          //[[100, 204, 102], 'srgb',  0.3, get_ortho_line_rgb(t_line, new colorObj([100, 204, 102], 'srgb'))],
+          //[[100, 204, 102], 'srgb', -0.3, get_ortho_line_rgb(t_line, new colorObj([100, 204, 102], 'srgb'))],
+
+          //// gray
+          [[136, 136, 136], 'srgb',  0.1, p_line],
+          [[136, 136, 136], 'srgb', -0.1, p_line],
+          [[136, 136, 136], 'srgb',  0.1, d_line],
+          [[136, 136, 136], 'srgb', -0.1, d_line],
+          [[136, 136, 136], 'srgb',  0.3, t_line],
+          [[136, 136, 136], 'srgb', -0.3, t_line],
+          [[136, 136, 136], 'srgb',  0.1, get_ortho_line_rgb(p_line, new colorObj([136, 136, 136], 'srgb'))],
+          [[136, 136, 136], 'srgb', -0.1, get_ortho_line_rgb(p_line, new colorObj([136, 136, 136], 'srgb'))],
+          //[[136, 136, 136], 'srgb',  0.1, get_ortho_line_rgb(d_line, new colorObj([136, 136, 136], 'srgb'))],
+          //[[136, 136, 136], 'srgb', -0.1, get_ortho_line_rgb(d_line, new colorObj([136, 136, 136], 'srgb'))],
+          //[[136, 136, 136], 'srgb',  0.3, get_ortho_line_rgb(t_line, new colorObj([136, 136, 136], 'srgb'))],
+          //[[136, 136, 136], 'srgb', -0.3, get_ortho_line_rgb(t_line, new colorObj([136, 136, 136], 'srgb'))],
+         ];
+}
+
+function restore_test() {
+  var prev_test = JSON.parse(window.localStorage.getItem('results'));
+  var prev_test_stats = prev_test.all_test_stats;
+
+  page = new pageObj((prev_test_stats.test1.cs == 0) ? 'srgb' : 'p3');
+  var showConfig = true;
+  page.configPage(registerPickType, registerSimMode, registerPickSimMethod, registerGetAns, showConfig);
+ 
+  // these lines must change depending on whether we use srgb or P3
+  p_line = normalize((new colorObj([1, 0, 0], 'lms')).v_rgb);
+  d_line = normalize((new colorObj([0, 1, 0], 'lms')).v_rgb);
+  t_line = normalize((new colorObj([0, 0, 1], 'lms')).v_rgb);
+  all_tests = gen_all_tests();
+
+  indices = prev_test.indices;
+
+  testId = prev_test.testId;
+  prof = new Profiler();
+
+  all_test_stats = prev_test_stats;
+
+  pageId = 2;
+}
+
+function set_new_test() {
+  page = new pageObj('srgb');
+  var showConfig = true;
+  page.configPage(registerPickType, registerSimMode, registerPickSimMethod, registerGetAns, showConfig);
+
+  // these lines must change depending on whether we use srgb or P3
+  p_line = normalize((new colorObj([1, 0, 0], 'lms')).v_rgb);
+  d_line = normalize((new colorObj([0, 1, 0], 'lms')).v_rgb);
+  t_line = normalize((new colorObj([0, 0, 1], 'lms')).v_rgb);
+  all_tests = gen_all_tests();
+
+  indices = Array.from(Array(all_tests.length).keys());
+  shuffle(indices);
+
+  testId = 0;
+  prof = new Profiler();
+
+  all_test_stats = {};
+
+  pageId = 0;
+}
 
 // must use the base color for t1, because we want to get the orthogonal lines wrt to base color
 // also t2_new can be arbitrary
@@ -21,65 +156,6 @@ function get_ortho_line_rgb(line_rgb, baseColor) {
   return line_ortho_rgb;
 }
 
-var all_tests = [
-                 // navy blue
-                 [[86, 95, 214], 'srgb',  0.1, p_line],
-                 [[86, 95, 214], 'srgb', -0.1, p_line],
-                 [[86, 95, 214], 'srgb',  0.1, d_line],
-                 [[86, 95, 214], 'srgb', -0.1, d_line],
-                 [[86, 95, 214], 'srgb',  0.3, t_line],
-                 [[86, 95, 214], 'srgb', -0.3, t_line],
-                 [[86, 95, 214], 'srgb',  0.1, get_ortho_line_rgb(p_line, new colorObj([86, 95, 214], 'srgb'))],
-                 [[86, 95, 214], 'srgb', -0.1, get_ortho_line_rgb(p_line, new colorObj([86, 95, 214], 'srgb'))],
-                 //[[86, 95, 214], 'srgb',  0.1, get_ortho_line_rgb(d_line, new colorObj([86, 95, 214], 'srgb'))],
-                 //[[86, 95, 214], 'srgb', -0.1, get_ortho_line_rgb(d_line, new colorObj([86, 95, 214], 'srgb'))],
-                 //[[86, 95, 214], 'srgb',  0.3, get_ortho_line_rgb(t_line, new colorObj([86, 95, 214], 'srgb'))],
-                 //[[86, 95, 214], 'srgb', -0.3, get_ortho_line_rgb(t_line, new colorObj([86, 95, 214], 'srgb'))],
-
-                 //// dark red
-                 [[184, 74, 74], 'srgb',  0.1, p_line],
-                 [[184, 74, 74], 'srgb', -0.1, p_line],
-                 [[184, 74, 74], 'srgb',  0.1, d_line],
-                 [[184, 74, 74], 'srgb', -0.1, d_line],
-                 [[184, 74, 74], 'srgb',  0.3, t_line],
-                 [[184, 74, 74], 'srgb', -0.3, t_line],
-                 [[184, 74, 74], 'srgb',  0.1, get_ortho_line_rgb(p_line, new colorObj([184, 74, 74], 'srgb'))],
-                 [[184, 74, 74], 'srgb', -0.1, get_ortho_line_rgb(p_line, new colorObj([184, 74, 74], 'srgb'))],
-                 //[[184, 74, 74], 'srgb',  0.1, get_ortho_line_rgb(d_line, new colorObj([184, 74, 74], 'srgb'))],
-                 //[[184, 74, 74], 'srgb', -0.1, get_ortho_line_rgb(d_line, new colorObj([184, 74, 74], 'srgb'))],
-                 //[[184, 74, 74], 'srgb',  0.3, get_ortho_line_rgb(t_line, new colorObj([184, 74, 74], 'srgb'))],
-                 //[[184, 74, 74], 'srgb', -0.3, get_ortho_line_rgb(t_line, new colorObj([184, 74, 74], 'srgb'))],
-
-                 //// pale green
-                 [[100, 204, 102], 'srgb',  0.3, p_line],
-                 [[100, 204, 102], 'srgb', -0.3, p_line],
-                 [[100, 204, 102], 'srgb',  0.3, d_line],
-                 [[100, 204, 102], 'srgb', -0.3, d_line],
-                 [[100, 204, 102], 'srgb',  0.3, t_line],
-                 [[100, 204, 102], 'srgb', -0.3, t_line],
-                 [[100, 204, 102], 'srgb',  0.3, get_ortho_line_rgb(p_line, new colorObj([100, 204, 102], 'srgb'))],
-                 [[100, 204, 102], 'srgb', -0.3, get_ortho_line_rgb(p_line, new colorObj([100, 204, 102], 'srgb'))],
-                 //[[100, 204, 102], 'srgb',  0.3, get_ortho_line_rgb(d_line, new colorObj([100, 204, 102], 'srgb'))],
-                 //[[100, 204, 102], 'srgb', -0.3, get_ortho_line_rgb(d_line, new colorObj([100, 204, 102], 'srgb'))],
-                 //[[100, 204, 102], 'srgb',  0.3, get_ortho_line_rgb(t_line, new colorObj([100, 204, 102], 'srgb'))],
-                 //[[100, 204, 102], 'srgb', -0.3, get_ortho_line_rgb(t_line, new colorObj([100, 204, 102], 'srgb'))],
-
-                 //// gray
-                 [[136, 136, 136], 'srgb',  0.1, p_line],
-                 [[136, 136, 136], 'srgb', -0.1, p_line],
-                 [[136, 136, 136], 'srgb',  0.1, d_line],
-                 [[136, 136, 136], 'srgb', -0.1, d_line],
-                 [[136, 136, 136], 'srgb',  0.3, t_line],
-                 [[136, 136, 136], 'srgb', -0.3, t_line],
-                 [[136, 136, 136], 'srgb',  0.1, get_ortho_line_rgb(p_line, new colorObj([136, 136, 136], 'srgb'))],
-                 [[136, 136, 136], 'srgb', -0.1, get_ortho_line_rgb(p_line, new colorObj([136, 136, 136], 'srgb'))],
-                 //[[136, 136, 136], 'srgb',  0.1, get_ortho_line_rgb(d_line, new colorObj([136, 136, 136], 'srgb'))],
-                 //[[136, 136, 136], 'srgb', -0.1, get_ortho_line_rgb(d_line, new colorObj([136, 136, 136], 'srgb'))],
-                 //[[136, 136, 136], 'srgb',  0.3, get_ortho_line_rgb(t_line, new colorObj([136, 136, 136], 'srgb'))],
-                 //[[136, 136, 136], 'srgb', -0.3, get_ortho_line_rgb(t_line, new colorObj([136, 136, 136], 'srgb'))],
-                ];
-
-var indices = Array.from(Array(all_tests.length).keys());
 // https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array
 function shuffle(array) {
   let currentIndex = array.length,  randomIndex;
@@ -98,21 +174,6 @@ function shuffle(array) {
 
   return array;
 }
-shuffle(indices);
-
-var testId = 0;
-
-class Profiler {
-  constructor() {
-    // time used in each trial
-    this.start = 0;
-    this.time_elapsed = [];
-    // number of rotations in each trial
-    this.incs = 0;
-    this.num_incrs = [];
-  }
-}
-var prof = new Profiler();
 
 function hex_to_srgb(hex) {
   var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
@@ -124,9 +185,6 @@ function hex_to_srgb(hex) {
 
   return color;
 }
-
-var all_test_stats = {};
-var dashboardName;
 
 function post_data() {
   const jsonData = JSON.stringify(all_test_stats);
@@ -149,8 +207,6 @@ function post_data() {
   })
   .catch(error => console.error(error));
 }
-
-var pageId = 0; // 0: config; 1: inst; 2: test; 3: res
 
 $("body").keydown(function(e){
   if (e.which == 32) { // Space key
@@ -175,7 +231,7 @@ function prepare_test(evt) {
   //var base_srgb = hex_to_srgb(base_hex);
   //state = new discTestState(new colorObj(base_srgb, 'srgb'), '+', test_start_cb, test_finish_cb);
 
-  var test = all_tests[indices[0]];
+  var test = all_tests[indices[testId]];
   // TODO: we should differentiate between test line and actual confusion line
   state = new discTestState(new colorObj(test[0], test[1]), test[2],
       test_start_cb, test_finish_cb,
@@ -379,6 +435,10 @@ function test_finish_cb() {
   };
   all_test_stats['test'+testId.toString()] = stats;
 
+  window.localStorage.setItem('results', JSON.stringify({all_test_stats: all_test_stats,
+                                                         indices: indices,
+                                                         testId: testId}));
+
   //if (testId % 6 == 0) // testId won't be 0
   //  plot_ellipse();
 
@@ -393,6 +453,7 @@ function test_finish_cb() {
   } else {
     // done with all tests
     post_data(all_test_stats);
+    window.localStorage.removeItem('results');
 
     document.exitFullscreen();
 
@@ -492,7 +553,5 @@ $('#seeres').on('click', function(evt) {
   window.open(dashboardName);
 });
 
-var showConfig = true;
-page.configPage(registerPickType, registerSimMode, registerPickSimMethod, registerGetAns, showConfig);
 $('#customRange').prop('disabled', true);
 $('#customRange').css('visibility', 'hidden');

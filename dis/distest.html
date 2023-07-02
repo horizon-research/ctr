@@ -97,6 +97,9 @@
               <button class="nav-link" id="inst-tab" data-bs-toggle="tab" data-bs-target="#inst-tab-pane" type="button" role="tab" aria-controls="inst-tab-pane" aria-selected="true">instructions</button>
             </li>
             <li class="nav-item" role="presentation">
+              <button class="nav-link" id="reset-tab" data-bs-toggle="tab" data-bs-target="#reset-tab-pane" type="button" role="tab" aria-controls="reset-tab-pane" aria-selected="true">reset</button>
+            </li>
+            <li class="nav-item" role="presentation">
               <button class="nav-link" id="test-tab" data-bs-toggle="tab" data-bs-target="#test-tab-pane" type="button" role="tab" aria-controls="test-tab-pane" aria-selected="false">test</button>
             </li>
             <li class="nav-item" role="presentation">
@@ -188,6 +191,24 @@
                     <div class="alert alert-success text-center" role="alert">
                       When ready, press the <b>Space</b> key to proceed.
                     </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="tab-pane" id="reset-tab-pane" role="tabpanel" aria-labelledby="reset-tab" tabindex="0">
+              <div class="row d-flex justify-content-center">
+                <div class="row">
+                  <div class="col-sm-12 d-flex justify-content-center">
+<p>You have a previously unfinished test. Do you want to continue that session or start a new session?</p>
+                  </div>
+                </div>
+                <div class="row d-flex justify-content-center">
+                  <div class="col-sm-3 d-flex justify-content-center">
+                    <button type="button" id="resume" class="btn btn-primary">Resume Previous Test</button>
+                  </div>
+                  <div class="col-sm-3 d-flex justify-content-center">
+                    <button type="button" id="newtest" class="btn btn-success">New Test</button>
                   </div>
                 </div>
               </div>
