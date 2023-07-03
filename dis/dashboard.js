@@ -161,17 +161,17 @@ function gen_plot(data) {
   });
 }
 
-function displayConfig(test) {
-  $('#usedcs').html(test.cs ? 'Display P3' : 'sRGB');
-  $('#usedbd').html(test.bitdepth);
-  $('#usedxyz').html('CIE 1931 XYZ');
+function displayConfig(page_stats) {
+  $('#usedcs').html(page_stats.cs ? 'Display P3' : 'sRGB');
+  $('#usedbd').html(page_stats.bitdepth);
+  $('#usedxyz').html('CIE 1931 XYZ'); // TODO: add these two to page_stats?
   $('#usedlms').html('Hunt-Pointer-Estevez D65-adapted');
-  $('#bsrgb').html(test.color_supports.srgb_b ? '&#10003;' : '');
-  $('#bp3').html(test.color_supports.p3_b ? '&#10003;' : '');
-  $('#b2020').html(test.color_supports.rec2020_b ? '&#10003;' : '');
-  $('#dsrgb').html(test.color_supports.srgb_d ? '&#10003;' : '');
-  $('#dp3').html(test.color_supports.p3_d ? '&#10003;' : '');
-  $('#d2020').html(test.color_supports.rec2020_d ? '&#10003;' : '');
+  $('#bsrgb').html(page_stats.color_supports.srgb_b ? '&#10003;' : '');
+  $('#bp3').html(page_stats.color_supports.p3_b ? '&#10003;' : '');
+  $('#b2020').html(page_stats.color_supports.rec2020_b ? '&#10003;' : '');
+  $('#dsrgb').html(page_stats.color_supports.srgb_d ? '&#10003;' : '');
+  $('#dp3').html(page_stats.color_supports.p3_d ? '&#10003;' : '');
+  $('#d2020').html(page_stats.color_supports.rec2020_d ? '&#10003;' : '');
 }
 
 var page, dis_plot, exp_plot;
@@ -184,9 +184,9 @@ fetch(jsonFileName+'.json')
     return response.json();
   })
   .then(function (data) {
-    var cs = data.test1.cs;
+    var cs = data.page_stats.cs;
     page = new pageObj((cs == 0) ? 'srgb' : 'p3');
-    gen_plot(data);
-    displayConfig(data.test1); // TODO: should read json file rather than using this, which would query the device that shows the dashboard
+    gen_plot(data.all_test_stats);
+    displayConfig(data.page_stats);
   })
 

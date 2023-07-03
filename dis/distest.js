@@ -3,6 +3,7 @@ var indices, testId;
 var prof, all_test_stats, dashboardName;
 var pageId; // 0: config; 1: inst; 2: test; 3: res
 var all_tests;
+var page_stats;
 
 class Profiler {
   constructor() {
@@ -96,9 +97,9 @@ function gen_all_tests() {
 
 function restore_test() {
   var prev_test = JSON.parse(window.localStorage.getItem('results'));
-  var prev_test_stats = prev_test.all_test_stats;
 
-  page = new pageObj((prev_test_stats.test1.cs == 0) ? 'srgb' : 'p3');
+  page_stats = prev_test.page_stats;
+  page = new pageObj((page_stats.cs == 0) ? 'srgb' : 'p3');
   var showConfig = true;
   page.configPage(registerPickType, registerSimMode, registerPickSimMethod, registerGetAns, showConfig);
  
@@ -113,13 +114,22 @@ function restore_test() {
   testId = prev_test.testId;
   prof = new Profiler();
 
-  all_test_stats = prev_test_stats;
+  all_test_stats = prev_test.all_test_stats;
 
   pageId = 2;
 }
 
 function set_new_test() {
   page = new pageObj('srgb');
+  page_stats = {
+    sim: page.sim,
+    blindness_type: page.type,
+    simMethod: page.simMethod,
+    color_supports: page.color_supports,
+    has_hdr: page.hasHDR,
+    bitdepth: page.bitdepth,
+    cs: page.cs,
+  };
   var showConfig = true;
   page.configPage(registerPickType, registerSimMode, registerPickSimMethod, registerGetAns, showConfig);
 
@@ -186,8 +196,8 @@ function hex_to_srgb(hex) {
   return color;
 }
 
-function post_data() {
-  const jsonData = JSON.stringify(all_test_stats);
+function post_data(data) {
+  const jsonData = JSON.stringify(data);
 
   //fetch('https://colorvision.cs.rochester.edu/upload-disc-data', {
   fetch('http://localhost:9812/upload-disc-data', {
@@ -412,15 +422,7 @@ function test_finish_cb() {
   var thresholdColor = new colorObj(
       math.add(state.baseColor.v_rgb, math.multiply(state.confusion_lines_rgb, state.dir * threshold)), 'v_rgb');
 
-  var stats = {
-    sim: page.sim,
-    blindness_type: page.type,
-    simMethod: page.simMethod,
-    color_supports: page.color_supports,
-    has_hdr: page.hasHDR,
-    bitdepth: page.bitdepth,
-    cs: page.cs,
-
+  var test_stats = {
     base_rgb: state.baseColor.v_rgb,
     base_xy: state.baseColor.xy,
     dir: state.dir,
@@ -433,9 +435,11 @@ function test_finish_cb() {
     num_incrs: prof.num_incrs,
     time_elapsed: prof.time_elapsed,
   };
-  all_test_stats['test'+testId.toString()] = stats;
 
-  window.localStorage.setItem('results', JSON.stringify({all_test_stats: all_test_stats,
+  all_test_stats['test'+testId.toString()] = test_stats;
+
+  window.localStorage.setItem('results', JSON.stringify({page_stats: page_stats,
+                                                         all_test_stats: all_test_stats,
                                                          indices: indices,
                                                          testId: testId}));
 
@@ -453,7 +457,8 @@ function test_finish_cb() {
     prof.start = Date.now();
   } else {
     // done with all tests
-    post_data(all_test_stats);
+    post_data({page_stats: page_stats,
+               all_test_stats: all_test_stats});
     window.localStorage.removeItem('results');
 
     document.exitFullscreen();
