@@ -326,6 +326,9 @@ class pageObj {
     this.test_color_support();
   }
 
+  // https://dotnettutorials.net/lesson/jquery-id-selector/#:~:text=getElementById()%20will%20throw%20an,document.
+  // JavaScript’s document.getElementById() will throw an error if the specified element is not found. But $( ‘ID selector’ ) will not throw an error at all. jQuery will return only a jQuery object with zero elements.
+  // TODO: take IDs as inputs
   displayConfig() {
     $('#usedcs').html(this.cs ? 'Display P3' : 'sRGB');
     $('#usedbd').html(this.bitdepth);
@@ -337,7 +340,6 @@ class pageObj {
     $('#dsrgb').html(this.color_supports.srgb_d ? '&#10003;' : '');
     $('#dp3').html(this.color_supports.p3_d ? '&#10003;' : '');
     $('#d2020').html(this.color_supports.rec2020_d ? '&#10003;' : '');
-  
   }
 
   configPage(registerPickType, registerSimMode, registerPickSimMethod, registerGetAns, showConfig) {

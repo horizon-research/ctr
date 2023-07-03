@@ -40,7 +40,7 @@ function gen_all_tests() {
           // navy blue
           [[86, 95, 214], 'srgb',  0.1, p_line],
           [[86, 95, 214], 'srgb', -0.1, p_line],
-          [[86, 95, 214], 'srgb',  0.1, d_line],
+          //[[86, 95, 214], 'srgb',  0.1, d_line],
           //[[86, 95, 214], 'srgb', -0.1, d_line],
           //[[86, 95, 214], 'srgb',  0.3, t_line],
           //[[86, 95, 214], 'srgb', -0.3, t_line],
@@ -106,8 +106,15 @@ function restore_test() {
   // the test, which could be different from the original one.
   page_stats = prev_test.page_stats;
   page = new pageObj((page_stats.cs == 0) ? 'srgb' : 'p3');
-  var showConfig = true;
-  page.configPage(registerPickType, registerSimMode, registerPickSimMethod, registerGetAns, showConfig);
+  page.configPage(() => {}, //registerPickType,
+                  () => {}, //registerSimMode,
+                  () => {}, //registerPickSimMethod,
+                  registerGetAns,
+                  false, //showConfig
+                 );
+  page.sim = page_stats.sim;
+  page.type = page_stats.type;
+  page.simMethod = page_stats.simMethod;
  
   // these lines must change depending on whether we use srgb or P3
   p_line = normalize((new colorObj([1, 0, 0], 'lms')).v_rgb);
@@ -127,17 +134,12 @@ function restore_test() {
 
 function set_new_test() {
   page = new pageObj('srgb');
-  page_stats = {
-    sim: page.sim,
-    blindness_type: page.type,
-    simMethod: page.simMethod,
-    color_supports: page.color_supports,
-    has_hdr: page.hasHDR,
-    bitdepth: page.bitdepth,
-    cs: page.cs,
-  };
-  var showConfig = true;
-  page.configPage(registerPickType, registerSimMode, registerPickSimMethod, registerGetAns, showConfig);
+  page.configPage(registerPickType,
+                  registerSimMode,
+                  registerPickSimMethod,
+                  registerGetAns,
+                  false, //showConfig
+                 );
 
   // these lines must change depending on whether we use srgb or P3
   p_line = normalize((new colorObj([1, 0, 0], 'lms')).v_rgb);
@@ -443,6 +445,22 @@ function test_finish_cb() {
   };
 
   all_test_stats['test'+testId.toString()] = test_stats;
+
+  // TODO: move to inst page? must be after the user has picked the config and
+  // is in at least the inst page (can't be just after the page obj is created,
+  // where all sim related vars are init to null)
+  if (testId == 1) {
+    page_stats = {
+      sim: page.sim,
+      type: page.type,
+      simMethod: page.simMethod,
+
+      color_supports: page.color_supports,
+      has_hdr: page.hasHDR,
+      bitdepth: page.bitdepth,
+      cs: page.cs,
+    };
+  }
 
   window.localStorage.setItem('results', JSON.stringify({page_stats: page_stats,
                                                          all_test_stats: all_test_stats,
