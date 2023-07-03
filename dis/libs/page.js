@@ -366,12 +366,12 @@ class pageObj {
     var rec2020_display = window.matchMedia('(color-gamut: rec2020)').matches;
 
     this.color_supports = {srgb_b: srgb_browser,
-                            p3_b: p3_browser,
-                            rec2020_b: rec2020_browser,
-                            srgb_d: srgb_display,
-                            p3_d: p3_display,
-                            rec2020_d: rec2020_display
-                           };
+                           p3_b: p3_browser,
+                           rec2020_b: rec2020_browser,
+                           srgb_d: srgb_display,
+                           p3_d: p3_display,
+                           rec2020_d: rec2020_display,
+                          };
   
     this.hassRGB = srgb_browser && srgb_display;
     this.hasP3 = p3_browser && p3_display;

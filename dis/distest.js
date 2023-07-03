@@ -98,6 +98,12 @@ function gen_all_tests() {
 function restore_test() {
   var prev_test = JSON.parse(window.localStorage.getItem('results'));
 
+  // TODO: an issue here is that if user changes a browser/display that has a
+  // smaller page.color_supports than what was stored, we potentially can't
+  // resume the original test.
+  // TODO: should we create page obj based on page_stats? right now page obj is
+  // created based on querying the color supports on the system used to resume
+  // the test, which could be different from the original one.
   page_stats = prev_test.page_stats;
   page = new pageObj((page_stats.cs == 0) ? 'srgb' : 'p3');
   var showConfig = true;
