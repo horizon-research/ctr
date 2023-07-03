@@ -40,58 +40,58 @@ function gen_all_tests() {
           // navy blue
           [[86, 95, 214], 'srgb',  0.1, p_line],
           [[86, 95, 214], 'srgb', -0.1, p_line],
-          //[[86, 95, 214], 'srgb',  0.1, d_line],
-          //[[86, 95, 214], 'srgb', -0.1, d_line],
-          //[[86, 95, 214], 'srgb',  0.3, t_line],
-          //[[86, 95, 214], 'srgb', -0.3, t_line],
-          //[[86, 95, 214], 'srgb',  0.1, get_ortho_line_rgb(p_line, new colorObj([86, 95, 214], 'srgb'))],
-          //[[86, 95, 214], 'srgb', -0.1, get_ortho_line_rgb(p_line, new colorObj([86, 95, 214], 'srgb'))],
-          ////[[86, 95, 214], 'srgb',  0.1, get_ortho_line_rgb(d_line, new colorObj([86, 95, 214], 'srgb'))],
-          ////[[86, 95, 214], 'srgb', -0.1, get_ortho_line_rgb(d_line, new colorObj([86, 95, 214], 'srgb'))],
-          ////[[86, 95, 214], 'srgb',  0.3, get_ortho_line_rgb(t_line, new colorObj([86, 95, 214], 'srgb'))],
-          ////[[86, 95, 214], 'srgb', -0.3, get_ortho_line_rgb(t_line, new colorObj([86, 95, 214], 'srgb'))],
+          [[86, 95, 214], 'srgb',  0.1, d_line],
+          [[86, 95, 214], 'srgb', -0.1, d_line],
+          [[86, 95, 214], 'srgb',  0.3, t_line],
+          [[86, 95, 214], 'srgb', -0.3, t_line],
+          [[86, 95, 214], 'srgb',  0.1, get_ortho_line_rgb(p_line, new colorObj([86, 95, 214], 'srgb'))],
+          [[86, 95, 214], 'srgb', -0.1, get_ortho_line_rgb(p_line, new colorObj([86, 95, 214], 'srgb'))],
+          [[86, 95, 214], 'srgb',  0.1, get_ortho_line_rgb(d_line, new colorObj([86, 95, 214], 'srgb'))],
+          [[86, 95, 214], 'srgb', -0.1, get_ortho_line_rgb(d_line, new colorObj([86, 95, 214], 'srgb'))],
+          [[86, 95, 214], 'srgb',  0.3, get_ortho_line_rgb(t_line, new colorObj([86, 95, 214], 'srgb'))],
+          [[86, 95, 214], 'srgb', -0.3, get_ortho_line_rgb(t_line, new colorObj([86, 95, 214], 'srgb'))],
 
-          ////// dark red
-          //[[184, 74, 74], 'srgb',  0.1, p_line],
-          //[[184, 74, 74], 'srgb', -0.1, p_line],
-          //[[184, 74, 74], 'srgb',  0.1, d_line],
-          //[[184, 74, 74], 'srgb', -0.1, d_line],
-          //[[184, 74, 74], 'srgb',  0.3, t_line],
-          //[[184, 74, 74], 'srgb', -0.3, t_line],
-          //[[184, 74, 74], 'srgb',  0.1, get_ortho_line_rgb(p_line, new colorObj([184, 74, 74], 'srgb'))],
-          //[[184, 74, 74], 'srgb', -0.1, get_ortho_line_rgb(p_line, new colorObj([184, 74, 74], 'srgb'))],
-          ////[[184, 74, 74], 'srgb',  0.1, get_ortho_line_rgb(d_line, new colorObj([184, 74, 74], 'srgb'))],
-          ////[[184, 74, 74], 'srgb', -0.1, get_ortho_line_rgb(d_line, new colorObj([184, 74, 74], 'srgb'))],
-          ////[[184, 74, 74], 'srgb',  0.3, get_ortho_line_rgb(t_line, new colorObj([184, 74, 74], 'srgb'))],
-          ////[[184, 74, 74], 'srgb', -0.3, get_ortho_line_rgb(t_line, new colorObj([184, 74, 74], 'srgb'))],
+          //// dark red
+          [[184, 74, 74], 'srgb',  0.1, p_line],
+          [[184, 74, 74], 'srgb', -0.1, p_line],
+          [[184, 74, 74], 'srgb',  0.1, d_line],
+          [[184, 74, 74], 'srgb', -0.1, d_line],
+          [[184, 74, 74], 'srgb',  0.3, t_line],
+          [[184, 74, 74], 'srgb', -0.3, t_line],
+          [[184, 74, 74], 'srgb',  0.1, get_ortho_line_rgb(p_line, new colorObj([184, 74, 74], 'srgb'))],
+          [[184, 74, 74], 'srgb', -0.1, get_ortho_line_rgb(p_line, new colorObj([184, 74, 74], 'srgb'))],
+          //[[184, 74, 74], 'srgb',  0.1, get_ortho_line_rgb(d_line, new colorObj([184, 74, 74], 'srgb'))],
+          //[[184, 74, 74], 'srgb', -0.1, get_ortho_line_rgb(d_line, new colorObj([184, 74, 74], 'srgb'))],
+          //[[184, 74, 74], 'srgb',  0.3, get_ortho_line_rgb(t_line, new colorObj([184, 74, 74], 'srgb'))],
+          //[[184, 74, 74], 'srgb', -0.3, get_ortho_line_rgb(t_line, new colorObj([184, 74, 74], 'srgb'))],
 
-          ////// pale green
-          //[[100, 204, 102], 'srgb',  0.3, p_line],
-          //[[100, 204, 102], 'srgb', -0.3, p_line],
-          //[[100, 204, 102], 'srgb',  0.3, d_line],
-          //[[100, 204, 102], 'srgb', -0.3, d_line],
-          //[[100, 204, 102], 'srgb',  0.3, t_line],
-          //[[100, 204, 102], 'srgb', -0.3, t_line],
-          //[[100, 204, 102], 'srgb',  0.3, get_ortho_line_rgb(p_line, new colorObj([100, 204, 102], 'srgb'))],
-          //[[100, 204, 102], 'srgb', -0.3, get_ortho_line_rgb(p_line, new colorObj([100, 204, 102], 'srgb'))],
-          ////[[100, 204, 102], 'srgb',  0.3, get_ortho_line_rgb(d_line, new colorObj([100, 204, 102], 'srgb'))],
-          ////[[100, 204, 102], 'srgb', -0.3, get_ortho_line_rgb(d_line, new colorObj([100, 204, 102], 'srgb'))],
-          ////[[100, 204, 102], 'srgb',  0.3, get_ortho_line_rgb(t_line, new colorObj([100, 204, 102], 'srgb'))],
-          ////[[100, 204, 102], 'srgb', -0.3, get_ortho_line_rgb(t_line, new colorObj([100, 204, 102], 'srgb'))],
+          //// pale green
+          [[100, 204, 102], 'srgb',  0.3, p_line],
+          [[100, 204, 102], 'srgb', -0.3, p_line],
+          [[100, 204, 102], 'srgb',  0.3, d_line],
+          [[100, 204, 102], 'srgb', -0.3, d_line],
+          [[100, 204, 102], 'srgb',  0.3, t_line],
+          [[100, 204, 102], 'srgb', -0.3, t_line],
+          [[100, 204, 102], 'srgb',  0.3, get_ortho_line_rgb(p_line, new colorObj([100, 204, 102], 'srgb'))],
+          [[100, 204, 102], 'srgb', -0.3, get_ortho_line_rgb(p_line, new colorObj([100, 204, 102], 'srgb'))],
+          //[[100, 204, 102], 'srgb',  0.3, get_ortho_line_rgb(d_line, new colorObj([100, 204, 102], 'srgb'))],
+          //[[100, 204, 102], 'srgb', -0.3, get_ortho_line_rgb(d_line, new colorObj([100, 204, 102], 'srgb'))],
+          //[[100, 204, 102], 'srgb',  0.3, get_ortho_line_rgb(t_line, new colorObj([100, 204, 102], 'srgb'))],
+          //[[100, 204, 102], 'srgb', -0.3, get_ortho_line_rgb(t_line, new colorObj([100, 204, 102], 'srgb'))],
 
-          ////// gray
-          //[[136, 136, 136], 'srgb',  0.1, p_line],
-          //[[136, 136, 136], 'srgb', -0.1, p_line],
-          //[[136, 136, 136], 'srgb',  0.1, d_line],
-          //[[136, 136, 136], 'srgb', -0.1, d_line],
-          //[[136, 136, 136], 'srgb',  0.3, t_line],
-          //[[136, 136, 136], 'srgb', -0.3, t_line],
-          //[[136, 136, 136], 'srgb',  0.1, get_ortho_line_rgb(p_line, new colorObj([136, 136, 136], 'srgb'))],
-          //[[136, 136, 136], 'srgb', -0.1, get_ortho_line_rgb(p_line, new colorObj([136, 136, 136], 'srgb'))],
-          ////[[136, 136, 136], 'srgb',  0.1, get_ortho_line_rgb(d_line, new colorObj([136, 136, 136], 'srgb'))],
-          ////[[136, 136, 136], 'srgb', -0.1, get_ortho_line_rgb(d_line, new colorObj([136, 136, 136], 'srgb'))],
-          ////[[136, 136, 136], 'srgb',  0.3, get_ortho_line_rgb(t_line, new colorObj([136, 136, 136], 'srgb'))],
-          ////[[136, 136, 136], 'srgb', -0.3, get_ortho_line_rgb(t_line, new colorObj([136, 136, 136], 'srgb'))],
+          //// gray
+          [[136, 136, 136], 'srgb',  0.1, p_line],
+          [[136, 136, 136], 'srgb', -0.1, p_line],
+          [[136, 136, 136], 'srgb',  0.1, d_line],
+          [[136, 136, 136], 'srgb', -0.1, d_line],
+          [[136, 136, 136], 'srgb',  0.3, t_line],
+          [[136, 136, 136], 'srgb', -0.3, t_line],
+          [[136, 136, 136], 'srgb',  0.1, get_ortho_line_rgb(p_line, new colorObj([136, 136, 136], 'srgb'))],
+          [[136, 136, 136], 'srgb', -0.1, get_ortho_line_rgb(p_line, new colorObj([136, 136, 136], 'srgb'))],
+          //[[136, 136, 136], 'srgb',  0.1, get_ortho_line_rgb(d_line, new colorObj([136, 136, 136], 'srgb'))],
+          //[[136, 136, 136], 'srgb', -0.1, get_ortho_line_rgb(d_line, new colorObj([136, 136, 136], 'srgb'))],
+          //[[136, 136, 136], 'srgb',  0.3, get_ortho_line_rgb(t_line, new colorObj([136, 136, 136], 'srgb'))],
+          //[[136, 136, 136], 'srgb', -0.3, get_ortho_line_rgb(t_line, new colorObj([136, 136, 136], 'srgb'))],
          ];
 }
 
@@ -120,7 +120,7 @@ function restore_test() {
   p_line = normalize((new colorObj([1, 0, 0], 'lms')).v_rgb);
   d_line = normalize((new colorObj([0, 1, 0], 'lms')).v_rgb);
   t_line = normalize((new colorObj([0, 0, 1], 'lms')).v_rgb);
-  all_tests = gen_all_tests();
+  all_tests = prev_test.all_tests;
 
   indices = prev_test.indices;
 
@@ -466,8 +466,10 @@ function test_finish_cb() {
 
   window.localStorage.setItem('results', JSON.stringify({page_stats: page_stats,
                                                          all_test_stats: all_test_stats,
+                                                         all_tests: all_tests,
                                                          indices: indices,
-                                                         testId: testId}));
+                                                         testId: testId,
+                                                        }));
 
   //if (testId % 6 == 0) // testId won't be 0
   //  plot_ellipse();
@@ -484,7 +486,8 @@ function test_finish_cb() {
   } else {
     // done with all tests
     post_data({page_stats: page_stats,
-               all_test_stats: all_test_stats});
+               all_test_stats: all_test_stats,
+              });
     window.localStorage.removeItem('results');
 
     document.exitFullscreen();

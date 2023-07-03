@@ -297,7 +297,7 @@ var getAnswer = function(number) {
 
   state.ans_finish_cb(correct, rev);
 
-  if (state.numRevs == 2) {
+  if (state.numRevs == 4) {
     // terminate
     state.test_finish_cb();
   } else {
