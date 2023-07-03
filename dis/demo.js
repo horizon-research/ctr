@@ -19,7 +19,7 @@ function registerPickType() {
   $('#pickd').prop("checked", true).trigger('change');
 
   // we don't want to change blindness type during test
-  $('input[type=radio][name=pick]').prop('disabled', true);
+  //$('input[type=radio][name=pick]').prop('disabled', true);
 }
 
 function registerSimMode() {
@@ -113,12 +113,19 @@ function ans_finish_cb(correct, rev) {
 }
 
 page = new pageObj('srgb');
+// configPage should immediate follow page creation, as it sets the three sim related vars
+page.configPage(registerPickType,
+                registerSimMode,
+                registerPickSimMethod,
+                registerGetAns,
+                true, //showConfig,
+               );
+// define state after configPage so that we know page.type, which is needed to
+// get test_line_rgb when it's not explicitly defined
 state = new discTestState(new colorObj([0.2, 0.15, 0.65], 'xyz'), 0.1,
     test_start_cb, test_finish_cb,
     ans_start_cb, ans_finish_cb);
 
-var showConfig = true;
-page.configPage(registerPickType, registerSimMode, registerPickSimMethod, registerGetAns, showConfig);
 
 page.submit();
 

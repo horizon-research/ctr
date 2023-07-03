@@ -35,7 +35,8 @@ class discTestState {
     this._confusion_lines_lin_p3 = this.get_confusion_lines_lin_p3();
     this._confusion_lines_xy = this.get_confusion_lines_xy();
 
-    this._custom_confusion_line = line; // this will be in linear_srgb since CMEs are done in srgb
+    // this is defined in v_rgb (TODO: consider define as a colorObj)
+    this._test_line = line ? line : this.confusion_line_rgb;
 
     this.phase = 1; // step adjustment phase
   }
@@ -61,7 +62,7 @@ class discTestState {
     return [p_line, d_line, t_line];
   }
 
-  // TODO: this will be wrong if custom lines are used
+  // this is the three confusion lines crossing the R/G/B vertices
   get_confusion_lines_xy() {
     var lines = [];
 
@@ -80,8 +81,12 @@ class discTestState {
     return lines;
   }
 
-  get confusion_lines_rgb() {
-    return this._custom_confusion_line ? this._custom_confusion_line : (page.cs ? this._confusion_lines_lin_p3[page.type] : this._confusion_lines_lin_srgb[page.type]);
+  get test_line_rgb() {
+    return this._test_line;
+  }
+
+  get confusion_line_rgb() {
+    return (page.cs ? this._confusion_lines_lin_p3[page.type] : this._confusion_lines_lin_srgb[page.type]);
   }
 
   get confusion_lines_xy() {
@@ -141,7 +146,7 @@ class discTestState {
 	// constructed for up, but since going up requires a larger step size than
 	// going down, we can always guarantee that each step down will lead to an
 	// actual change too.
-    var line_RGB = this.confusion_lines_rgb;
+    var line_RGB = this.test_line_rgb;
 
     var deltaLUT = (page.bitdepth == 10) ? deltaLUT_10b : deltaLUT_8b;
     var deltaR = deltaLUT[this.testColor.v_quan_rgb[0]];
@@ -162,9 +167,12 @@ class discTestState {
     return math.multiply(transMat, math.transpose(colors_in_linear_rgb));
   }
 
+  // TODO: here we do need the actual confusion line of the particular
+  // blindness type that the participant has; this also suggests that we show
+  // allow participant to select page.type even when we are not running simulation
   dichromatic_gamut_mapping(colors, mode) {
     var colors_value = colors.map(color => color.v_rgb);
-    var mapped_colors_value = dichromatic_gamut_mapping(colors_value, this.confusion_lines_rgb, mode);
+    var mapped_colors_value = dichromatic_gamut_mapping(colors_value, this.confusion_line_rgb, mode);
 
     this.rotColorsMapped = mapped_colors_value.map(c => new colorObj(c, 'v_rgb'));
   }

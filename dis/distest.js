@@ -133,7 +133,10 @@ function restore_test() {
 }
 
 function set_new_test() {
-  page = new pageObj('srgb');
+  // TODO: can consider calling configPage from page constructor, but we need
+  // to move the initialization code in the three handler out of the
+  // constructor
+  page = new pageObj('srgb'); // intended cs; could be adjusted later if system doesn't support it
   page.configPage(registerPickType,
                   registerSimMode,
                   registerPickSimMethod,
@@ -250,7 +253,6 @@ function prepare_test(evt) {
   //state = new discTestState(new colorObj(base_srgb, 'srgb'), '+', test_start_cb, test_finish_cb);
 
   var test = all_tests[indices[testId]];
-  // TODO: we should differentiate between test line and actual confusion line
   state = new discTestState(new colorObj(test[0], test[1]), test[2],
       test_start_cb, test_finish_cb,
       ans_start_cb, ans_finish_cb,
@@ -428,13 +430,13 @@ function ans_finish_cb(correct, rev) {
 function test_finish_cb() {
   var threshold = math.mean(state.scalesAtRevs.slice(-3));
   var thresholdColor = new colorObj(
-      math.add(state.baseColor.v_rgb, math.multiply(state.confusion_lines_rgb, state.dir * threshold)), 'v_rgb');
+      math.add(state.baseColor.v_rgb, math.multiply(state.test_line_rgb, state.dir * threshold)), 'v_rgb');
 
   var test_stats = {
     base_rgb: state.baseColor.v_rgb,
     base_xy: state.baseColor.xy,
     dir: state.dir,
-    line: state.confusion_lines_rgb,
+    line: state.test_line_rgb,
     threshold: threshold,
     threshold_color: thresholdColor.v_rgb,
     scales: state.scales,

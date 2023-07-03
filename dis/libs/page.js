@@ -175,7 +175,7 @@ function getLimits(base, line){
 }
 
 function genTestColor(mode) {
-  var line_RGB = state.confusion_lines_rgb;
+  var line_RGB = state.test_line_rgb;
   var testColor;
 
   var hits = getLimits(state.baseColor.v_rgb, line_RGB);
@@ -308,9 +308,12 @@ var getAnswer = function(number) {
 class pageObj {
   constructor(color_space) {
     this.init = false;
+
+    // TODO: for now these three sim related vars are ignored when not doing simulation, but type is still useful when using real stimuli because we want to know the participant's blindness type for dichromatic gamut mapping
     this.simMethod = null; // 0 for Brettel 1997 (two planes) and 1 for Viénot 1999 (one plane)
     this.type = null; // 0 for P, 1 for D, 2 for T
     this.sim = null;
+
     this.hassRGB = false;
     this.hasP3 = false;
     this.hasRec2020 = false;
