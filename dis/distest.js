@@ -41,69 +41,63 @@ function gen_all_tests() {
           [[86, 95, 214], 'srgb',  0.1, p_line],
           [[86, 95, 214], 'srgb', -0.1, p_line],
           [[86, 95, 214], 'srgb',  0.1, d_line],
-          [[86, 95, 214], 'srgb', -0.1, d_line],
-          [[86, 95, 214], 'srgb',  0.3, t_line],
-          [[86, 95, 214], 'srgb', -0.3, t_line],
-          [[86, 95, 214], 'srgb',  0.1, get_ortho_line_rgb(p_line, new colorObj([86, 95, 214], 'srgb'))],
-          [[86, 95, 214], 'srgb', -0.1, get_ortho_line_rgb(p_line, new colorObj([86, 95, 214], 'srgb'))],
-          [[86, 95, 214], 'srgb',  0.1, get_ortho_line_rgb(d_line, new colorObj([86, 95, 214], 'srgb'))],
-          [[86, 95, 214], 'srgb', -0.1, get_ortho_line_rgb(d_line, new colorObj([86, 95, 214], 'srgb'))],
-          [[86, 95, 214], 'srgb',  0.3, get_ortho_line_rgb(t_line, new colorObj([86, 95, 214], 'srgb'))],
-          [[86, 95, 214], 'srgb', -0.3, get_ortho_line_rgb(t_line, new colorObj([86, 95, 214], 'srgb'))],
+          //[[86, 95, 214], 'srgb', -0.1, d_line],
+          //[[86, 95, 214], 'srgb',  0.3, t_line],
+          //[[86, 95, 214], 'srgb', -0.3, t_line],
+          //[[86, 95, 214], 'srgb',  0.1, get_ortho_line_rgb(p_line, new colorObj([86, 95, 214], 'srgb'))],
+          //[[86, 95, 214], 'srgb', -0.1, get_ortho_line_rgb(p_line, new colorObj([86, 95, 214], 'srgb'))],
+          //[[86, 95, 214], 'srgb',  0.1, get_ortho_line_rgb(d_line, new colorObj([86, 95, 214], 'srgb'))],
+          //[[86, 95, 214], 'srgb', -0.1, get_ortho_line_rgb(d_line, new colorObj([86, 95, 214], 'srgb'))],
+          //[[86, 95, 214], 'srgb',  0.3, get_ortho_line_rgb(t_line, new colorObj([86, 95, 214], 'srgb'))],
+          //[[86, 95, 214], 'srgb', -0.3, get_ortho_line_rgb(t_line, new colorObj([86, 95, 214], 'srgb'))],
 
-          //// dark red
-          [[184, 74, 74], 'srgb',  0.1, p_line],
-          [[184, 74, 74], 'srgb', -0.1, p_line],
-          [[184, 74, 74], 'srgb',  0.1, d_line],
-          [[184, 74, 74], 'srgb', -0.1, d_line],
-          [[184, 74, 74], 'srgb',  0.3, t_line],
-          [[184, 74, 74], 'srgb', -0.3, t_line],
-          [[184, 74, 74], 'srgb',  0.1, get_ortho_line_rgb(p_line, new colorObj([184, 74, 74], 'srgb'))],
-          [[184, 74, 74], 'srgb', -0.1, get_ortho_line_rgb(p_line, new colorObj([184, 74, 74], 'srgb'))],
-          //[[184, 74, 74], 'srgb',  0.1, get_ortho_line_rgb(d_line, new colorObj([184, 74, 74], 'srgb'))],
-          //[[184, 74, 74], 'srgb', -0.1, get_ortho_line_rgb(d_line, new colorObj([184, 74, 74], 'srgb'))],
-          //[[184, 74, 74], 'srgb',  0.3, get_ortho_line_rgb(t_line, new colorObj([184, 74, 74], 'srgb'))],
-          //[[184, 74, 74], 'srgb', -0.3, get_ortho_line_rgb(t_line, new colorObj([184, 74, 74], 'srgb'))],
+          ////// dark red
+          //[[184, 74, 74], 'srgb',  0.1, p_line],
+          //[[184, 74, 74], 'srgb', -0.1, p_line],
+          //[[184, 74, 74], 'srgb',  0.1, d_line],
+          //[[184, 74, 74], 'srgb', -0.1, d_line],
+          //[[184, 74, 74], 'srgb',  0.3, t_line],
+          //[[184, 74, 74], 'srgb', -0.3, t_line],
+          //[[184, 74, 74], 'srgb',  0.1, get_ortho_line_rgb(p_line, new colorObj([184, 74, 74], 'srgb'))],
+          //[[184, 74, 74], 'srgb', -0.1, get_ortho_line_rgb(p_line, new colorObj([184, 74, 74], 'srgb'))],
+          ////[[184, 74, 74], 'srgb',  0.1, get_ortho_line_rgb(d_line, new colorObj([184, 74, 74], 'srgb'))],
+          ////[[184, 74, 74], 'srgb', -0.1, get_ortho_line_rgb(d_line, new colorObj([184, 74, 74], 'srgb'))],
+          ////[[184, 74, 74], 'srgb',  0.3, get_ortho_line_rgb(t_line, new colorObj([184, 74, 74], 'srgb'))],
+          ////[[184, 74, 74], 'srgb', -0.3, get_ortho_line_rgb(t_line, new colorObj([184, 74, 74], 'srgb'))],
 
-          //// pale green
-          [[100, 204, 102], 'srgb',  0.3, p_line],
-          [[100, 204, 102], 'srgb', -0.3, p_line],
-          [[100, 204, 102], 'srgb',  0.3, d_line],
-          [[100, 204, 102], 'srgb', -0.3, d_line],
-          [[100, 204, 102], 'srgb',  0.3, t_line],
-          [[100, 204, 102], 'srgb', -0.3, t_line],
-          [[100, 204, 102], 'srgb',  0.3, get_ortho_line_rgb(p_line, new colorObj([100, 204, 102], 'srgb'))],
-          [[100, 204, 102], 'srgb', -0.3, get_ortho_line_rgb(p_line, new colorObj([100, 204, 102], 'srgb'))],
-          //[[100, 204, 102], 'srgb',  0.3, get_ortho_line_rgb(d_line, new colorObj([100, 204, 102], 'srgb'))],
-          //[[100, 204, 102], 'srgb', -0.3, get_ortho_line_rgb(d_line, new colorObj([100, 204, 102], 'srgb'))],
-          //[[100, 204, 102], 'srgb',  0.3, get_ortho_line_rgb(t_line, new colorObj([100, 204, 102], 'srgb'))],
-          //[[100, 204, 102], 'srgb', -0.3, get_ortho_line_rgb(t_line, new colorObj([100, 204, 102], 'srgb'))],
+          ////// pale green
+          //[[100, 204, 102], 'srgb',  0.3, p_line],
+          //[[100, 204, 102], 'srgb', -0.3, p_line],
+          //[[100, 204, 102], 'srgb',  0.3, d_line],
+          //[[100, 204, 102], 'srgb', -0.3, d_line],
+          //[[100, 204, 102], 'srgb',  0.3, t_line],
+          //[[100, 204, 102], 'srgb', -0.3, t_line],
+          //[[100, 204, 102], 'srgb',  0.3, get_ortho_line_rgb(p_line, new colorObj([100, 204, 102], 'srgb'))],
+          //[[100, 204, 102], 'srgb', -0.3, get_ortho_line_rgb(p_line, new colorObj([100, 204, 102], 'srgb'))],
+          ////[[100, 204, 102], 'srgb',  0.3, get_ortho_line_rgb(d_line, new colorObj([100, 204, 102], 'srgb'))],
+          ////[[100, 204, 102], 'srgb', -0.3, get_ortho_line_rgb(d_line, new colorObj([100, 204, 102], 'srgb'))],
+          ////[[100, 204, 102], 'srgb',  0.3, get_ortho_line_rgb(t_line, new colorObj([100, 204, 102], 'srgb'))],
+          ////[[100, 204, 102], 'srgb', -0.3, get_ortho_line_rgb(t_line, new colorObj([100, 204, 102], 'srgb'))],
 
-          //// gray
-          [[136, 136, 136], 'srgb',  0.1, p_line],
-          [[136, 136, 136], 'srgb', -0.1, p_line],
-          [[136, 136, 136], 'srgb',  0.1, d_line],
-          [[136, 136, 136], 'srgb', -0.1, d_line],
-          [[136, 136, 136], 'srgb',  0.3, t_line],
-          [[136, 136, 136], 'srgb', -0.3, t_line],
-          [[136, 136, 136], 'srgb',  0.1, get_ortho_line_rgb(p_line, new colorObj([136, 136, 136], 'srgb'))],
-          [[136, 136, 136], 'srgb', -0.1, get_ortho_line_rgb(p_line, new colorObj([136, 136, 136], 'srgb'))],
-          //[[136, 136, 136], 'srgb',  0.1, get_ortho_line_rgb(d_line, new colorObj([136, 136, 136], 'srgb'))],
-          //[[136, 136, 136], 'srgb', -0.1, get_ortho_line_rgb(d_line, new colorObj([136, 136, 136], 'srgb'))],
-          //[[136, 136, 136], 'srgb',  0.3, get_ortho_line_rgb(t_line, new colorObj([136, 136, 136], 'srgb'))],
-          //[[136, 136, 136], 'srgb', -0.3, get_ortho_line_rgb(t_line, new colorObj([136, 136, 136], 'srgb'))],
+          ////// gray
+          //[[136, 136, 136], 'srgb',  0.1, p_line],
+          //[[136, 136, 136], 'srgb', -0.1, p_line],
+          //[[136, 136, 136], 'srgb',  0.1, d_line],
+          //[[136, 136, 136], 'srgb', -0.1, d_line],
+          //[[136, 136, 136], 'srgb',  0.3, t_line],
+          //[[136, 136, 136], 'srgb', -0.3, t_line],
+          //[[136, 136, 136], 'srgb',  0.1, get_ortho_line_rgb(p_line, new colorObj([136, 136, 136], 'srgb'))],
+          //[[136, 136, 136], 'srgb', -0.1, get_ortho_line_rgb(p_line, new colorObj([136, 136, 136], 'srgb'))],
+          ////[[136, 136, 136], 'srgb',  0.1, get_ortho_line_rgb(d_line, new colorObj([136, 136, 136], 'srgb'))],
+          ////[[136, 136, 136], 'srgb', -0.1, get_ortho_line_rgb(d_line, new colorObj([136, 136, 136], 'srgb'))],
+          ////[[136, 136, 136], 'srgb',  0.3, get_ortho_line_rgb(t_line, new colorObj([136, 136, 136], 'srgb'))],
+          ////[[136, 136, 136], 'srgb', -0.3, get_ortho_line_rgb(t_line, new colorObj([136, 136, 136], 'srgb'))],
          ];
 }
 
 function restore_test() {
   var prev_test = JSON.parse(window.localStorage.getItem('results'));
 
-  // TODO: an issue here is that if user changes a browser/display that has a
-  // smaller page.color_supports than what was stored, we potentially can't
-  // resume the original test.
-  // TODO: should we create page obj based on page_stats? right now page obj is
-  // created based on querying the color supports on the system used to resume
-  // the test, which could be different from the original one.
   page_stats = prev_test.page_stats;
   page = new pageObj((page_stats.cs == 0) ? 'srgb' : 'p3');
   page.configPage(() => {}, //registerPickType,
@@ -115,8 +109,18 @@ function restore_test() {
   page.sim = page_stats.sim;
   page.type = page_stats.type;
   page.simMethod = page_stats.simMethod;
+
+  // so far page.color_supports (which determines bitdepth) is created based on
+  // querying the current system. so we check if the new system setting is
+  // compatible with the to-be-restored setting.
+  if ((page.bitdepth < page_stats.bitdepth) || (page_stats.cs > page.cs)) {
+    alert('Your current system\'s support for color is weaker than that of the previously stored session. It is recommendated that you refresh the page and start a new test. You might still choose to resume the previous test, but all belts are off.');
+  }
+  Object.assign(page.color_supports, page_stats.color_supports); // so that page.bitdepth is correctly set
  
-  // these lines must change depending on whether we use srgb or P3
+  // these lines must change depending on whether we use srgb or P3, so it must
+  // be initialized only after initializing page, when we know how to
+  // concretize v_rgb 
   p_line = normalize((new colorObj([1, 0, 0], 'lms')).v_rgb);
   d_line = normalize((new colorObj([0, 1, 0], 'lms')).v_rgb);
   t_line = normalize((new colorObj([0, 0, 1], 'lms')).v_rgb);
@@ -136,7 +140,7 @@ function set_new_test() {
   // TODO: can consider calling configPage from page constructor, but we need
   // to move the initialization code in the three handler out of the
   // constructor
-  page = new pageObj('srgb'); // intended cs; could be adjusted later if system doesn't support it
+  page = new pageObj('p3'); // intended cs; could be adjusted later if system doesn't support it
   page.configPage(registerPickType,
                   registerSimMode,
                   registerPickSimMethod,
@@ -458,7 +462,6 @@ function test_finish_cb() {
       simMethod: page.simMethod,
 
       color_supports: page.color_supports,
-      has_hdr: page.hasHDR,
       bitdepth: page.bitdepth,
       cs: page.cs,
     };

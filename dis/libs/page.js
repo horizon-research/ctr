@@ -314,11 +314,6 @@ class pageObj {
     this.type = null; // 0 for P, 1 for D, 2 for T
     this.sim = null;
 
-    this.hassRGB = false;
-    this.hasP3 = false;
-    this.hasRec2020 = false;
-    this.hasHDR = false;
-    this.color_supports = null;
     if (color_space == 'srgb')
       this.cs = 0;
     else if (color_space == 'p3')
@@ -326,6 +321,7 @@ class pageObj {
     else if (color_space == 'rec2020') // no support for this yet
       this.cs = 2;
 
+    this.color_supports = null;
     this.test_color_support();
   }
 
@@ -370,21 +366,41 @@ class pageObj {
     var p3_display = window.matchMedia('(color-gamut: p3)').matches;
     var rec2020_display = window.matchMedia('(color-gamut: rec2020)').matches;
 
+    var hdr_support = window.matchMedia('(dynamic-range: high)').matches;
+
     this.color_supports = {srgb_b: srgb_browser,
                            p3_b: p3_browser,
                            rec2020_b: rec2020_browser,
                            srgb_d: srgb_display,
                            p3_d: p3_display,
                            rec2020_d: rec2020_display,
+                           has_hdr: hdr_support,
                           };
-  
-    this.hassRGB = srgb_browser && srgb_display;
-    this.hasP3 = p3_browser && p3_display;
-    this.hasRec2020 = rec2020_browser && rec2020_display;
-    this.hasHDR = window.matchMedia('(dynamic-range: high)').matches;
   
     if (this.cs == 1 && !this.hasP3)
       this.cs = 0;
+  }
+
+  get hassRGB() {
+    return this.color_supports.srgb_b && this.color_supports.srgb_d;
+  }
+
+  get hasP3() {
+    return this.color_supports.p3_b && this.color_supports.p3_d;
+  }
+
+  get hasRec2020() {
+    return this.color_supports.rec2020_b && this.color_supports.rec2020_d;
+  }
+
+  get hasHDR() {
+    return this.color_supports.has_hdr;
+  }
+
+  // TODO: true to assume that sRGB is always 8 bits?
+  // TODO: can we query the exact depth?
+  get bitdepth() {
+    return (this.hasHDR && this.cs) ? 10 : 8;
   }
 
   submit() {
@@ -392,12 +408,6 @@ class pageObj {
     $('.rot-label').html('Rotation Angle (Degree): 0&#176;');
 
     state.test_start_cb().then(() => testOneColor(true));
-  }
-
-  // TODO: true to assume that sRGB is always 8 bits?
-  // TODO: can we query the exact depth?
-  get bitdepth() {
-    return (this.hasHDR && this.cs) ? 10 : 8;
   }
 }
 
