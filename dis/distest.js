@@ -39,8 +39,8 @@ function gen_all_tests() {
   return [
           // navy blue
           [[86, 95, 214], 'srgb',  0.1, p_line],
-          [[86, 95, 214], 'srgb', -0.1, p_line],
-          [[86, 95, 214], 'srgb',  0.1, d_line],
+          //[[86, 95, 214], 'srgb', -0.1, p_line],
+          //[[86, 95, 214], 'srgb',  0.1, d_line],
           //[[86, 95, 214], 'srgb', -0.1, d_line],
           //[[86, 95, 214], 'srgb',  0.3, t_line],
           //[[86, 95, 214], 'srgb', -0.3, t_line],
@@ -53,7 +53,7 @@ function gen_all_tests() {
 
           ////// dark red
           //[[184, 74, 74], 'srgb',  0.1, p_line],
-          //[[184, 74, 74], 'srgb', -0.1, p_line],
+          [[184, 74, 74], 'srgb', -0.1, p_line],
           //[[184, 74, 74], 'srgb',  0.1, d_line],
           //[[184, 74, 74], 'srgb', -0.1, d_line],
           //[[184, 74, 74], 'srgb',  0.3, t_line],
@@ -66,7 +66,7 @@ function gen_all_tests() {
           ////[[184, 74, 74], 'srgb', -0.3, get_ortho_line_rgb(t_line, new colorObj([184, 74, 74], 'srgb'))],
 
           ////// pale green
-          //[[100, 204, 102], 'srgb',  0.3, p_line],
+          [[100, 204, 102], 'srgb',  0.3, p_line],
           //[[100, 204, 102], 'srgb', -0.3, p_line],
           //[[100, 204, 102], 'srgb',  0.3, d_line],
           //[[100, 204, 102], 'srgb', -0.3, d_line],

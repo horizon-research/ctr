@@ -315,11 +315,11 @@ class pageObj {
     this.sim = null;
 
     if (color_space == 'srgb')
-      this.cs = 0;
+      this._cs = 0;
     else if (color_space == 'p3')
-      this.cs = 1;
+      this._cs = 1;
     else if (color_space == 'rec2020') // no support for this yet
-      this.cs = 2;
+      this._cs = 2;
 
     this.color_supports = null;
     this.test_color_support();
@@ -376,9 +376,6 @@ class pageObj {
                            rec2020_d: rec2020_display,
                            has_hdr: hdr_support,
                           };
-  
-    if (this.cs == 1 && !this.hasP3)
-      this.cs = 0;
   }
 
   get hassRGB() {
@@ -401,6 +398,12 @@ class pageObj {
   // TODO: can we query the exact depth?
   get bitdepth() {
     return (this.hasHDR && this.cs) ? 10 : 8;
+  }
+
+  get cs() {
+    if ((this._cs == 1) && !this.hasP3)
+      return 0;
+    else return this._cs;
   }
 
   submit() {
