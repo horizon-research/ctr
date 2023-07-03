@@ -309,7 +309,10 @@ class pageObj {
   constructor(color_space) {
     this.init = false;
 
-    // TODO: for now these three sim related vars are ignored when not doing simulation, but type is still useful when using real stimuli because we want to know the participant's blindness type for dichromatic gamut mapping
+	// TODO: for now these three sim related vars are ignored when not doing
+	// simulation, but type is still useful when using real stimuli because we
+	// want to know the participant's blindness type if we choose to use the
+	// dichromatic gamut mapping method
     this.simMethod = null; // 0 for Brettel 1997 (two planes) and 1 for Viénot 1999 (one plane)
     this.type = null; // 0 for P, 1 for D, 2 for T
     this.sim = null;
@@ -321,8 +324,7 @@ class pageObj {
     else if (color_space == 'rec2020') // no support for this yet
       this._cs = 2;
 
-    this.color_supports = null;
-    this.test_color_support();
+    this.color_supports = this.test_color_support(); // could be a getter but we do it once here and cache it
   }
 
   // https://dotnettutorials.net/lesson/jquery-id-selector/#:~:text=getElementById()%20will%20throw%20an,document.
@@ -368,14 +370,14 @@ class pageObj {
 
     var hdr_support = window.matchMedia('(dynamic-range: high)').matches;
 
-    this.color_supports = {srgb_b: srgb_browser,
-                           p3_b: p3_browser,
-                           rec2020_b: rec2020_browser,
-                           srgb_d: srgb_display,
-                           p3_d: p3_display,
-                           rec2020_d: rec2020_display,
-                           has_hdr: hdr_support,
-                          };
+    return {srgb_b: srgb_browser,
+            p3_b: p3_browser,
+            rec2020_b: rec2020_browser,
+            srgb_d: srgb_display,
+            p3_d: p3_display,
+            rec2020_d: rec2020_display,
+            has_hdr: hdr_support,
+           };
   }
 
   get hassRGB() {
