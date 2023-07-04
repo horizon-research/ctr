@@ -16,6 +16,13 @@ class Profiler {
   }
 }
 
+// https://www.sitepoint.com/get-url-parameters-with-javascript/
+const queryString = window.location.search;
+const urlParams = new URLSearchParams(queryString);
+const para_type = urlParams.get('type')
+const para_sim = urlParams.get('sim')
+const para_plane = urlParams.get('plane')
+
 if (window.localStorage.getItem('results')) {
   $('#reset-tab').trigger('click');
 
@@ -34,6 +41,21 @@ if (window.localStorage.getItem('results')) {
 } else {
   set_new_test();
 }
+
+$('#seeres').on('click', function(evt) {
+  // open the dashboard page
+  window.open(dashboardName);
+});
+
+$('#customRange').prop('disabled', true);
+$('#customRange').css('visibility', 'hidden');
+
+
+
+
+/*-------------------------------------*/
+/* all the functions are defined below */
+/*-------------------------------------*/
 
 function gen_all_tests() {
   return [
@@ -110,6 +132,20 @@ function restore_test() {
   page.type = page_stats.type;
   page.simMethod = page_stats.simMethod;
 
+  // check if the store sim setting is compatible with what the query string asks for
+  var map = {sim: {yes: true,
+                   no: false,},
+             type: {p: 0,
+                    d: 1,
+                    t: 2},
+             method: {1: 1,
+                      2: 0,},
+            };
+  if ((para_sim && (map.sim[para_sim] != page.sim)) ||
+      (para_type && (map.type[para_type] != page.type)) ||
+      (para_plane && page.sim && (map.method[para_plane] != page.simMethod))) // check simMethod only when sim is true
+    alert('Your current configuration is incompatible with the previously stored session. It is recommendated that you refresh the page and start a new test. You might still choose to resume the previous test, but all belts are off.');
+
   // so far page.color_supports (which determines bitdepth) is created based on
   // querying the current system. so we check if the new system setting is
   // compatible with the to-be-restored setting.
@@ -163,6 +199,24 @@ function set_new_test() {
   all_test_stats = {};
 
   pageId = 0;
+
+  // if there is a query string we will skip the setting page
+  // TODO: even if the query string is ill-formed
+  if (queryString != "") {
+    // null or incorrect para names will simply be ignored (no error)
+    if (para_sim) {
+      $('#' + para_sim).prop("checked", true).trigger('change');
+    }
+    if (para_type) {
+      $('#pick' + para_type).prop("checked", true).trigger('change');
+    }
+    if (para_plane) {
+      $('#m' + para_plane).prop("checked", true).trigger('change');
+    }
+
+    $('#inst-tab').trigger('click');
+    pageId = 1;
+  }
 }
 
 // must use the base color for t1, because we want to get the orthogonal lines wrt to base color
@@ -319,11 +373,11 @@ function registerSimMode() {
     if (this.id == 'yes') {
       page.sim = true;
       $('input[type=radio][name=method]').prop('disabled', false);
-      $('input[type=radio][name=pick]').prop('disabled', false);
+      //$('input[type=radio][name=pick]').prop('disabled', false);
     } else {
       page.sim = false;
       $('input[type=radio][name=method]').prop('disabled', true);
-      $('input[type=radio][name=pick]').prop('disabled', true);
+      //$('input[type=radio][name=pick]').prop('disabled', true);
     }
   });
 
@@ -501,11 +555,3 @@ function test_finish_cb() {
     $('body').css('background-color', '#FFFFFF');
   }
 }
-
-$('#seeres').on('click', function(evt) {
-  // open the dashboard page
-  window.open(dashboardName);
-});
-
-$('#customRange').prop('disabled', true);
-$('#customRange').css('visibility', 'hidden');

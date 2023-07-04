@@ -1,6 +1,7 @@
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
+const url = require('url');
 
 const server = http.createServer((req, res) => {
   if (req.method === 'POST' && req.url === '/upload-disc-data') {
@@ -39,7 +40,10 @@ const server = http.createServer((req, res) => {
       }
     });
   } else if (req.method === 'GET') {
-    const filePath = path.join(__dirname, req.url);
+    // https://stackoverflow.com/questions/68177628/how-can-i-use-the-new-url-api-to-get-request-details
+    // https://nodejs.org/api/url.html#urlpathname
+    const link = new URL(`http://${req.headers.host}${req.url}`)
+    const filePath = path.join(__dirname, link.pathname);
 
     fs.readFile(filePath, 'utf8', (err, content) => {
       if (err) {
