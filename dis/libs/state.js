@@ -167,9 +167,8 @@ class discTestState {
     return math.multiply(transMat, math.transpose(colors_in_linear_rgb));
   }
 
-  // TODO: here we do need the actual confusion line of the particular
-  // blindness type that the participant has; this also suggests that we show
-  // allow participant to select page.type even when we are not running simulation
+  // here we do need the actual confusion line of the particular
+  // blindness type that the participant has.
   dichromatic_gamut_mapping(colors, mode) {
     var colors_value = colors.map(color => color.v_rgb);
     var mapped_colors_value = dichromatic_gamut_mapping(colors_value, this.confusion_line_rgb, mode);

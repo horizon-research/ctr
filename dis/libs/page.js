@@ -309,10 +309,9 @@ class pageObj {
   constructor(color_space) {
     this.init = false;
 
-	// TODO: for now these three sim related vars are ignored when not doing
-	// simulation, but type is still useful when using real stimuli because we
-	// want to know the participant's blindness type if we choose to use the
-	// dichromatic gamut mapping method
+	// |type| is still need when not doing simulation for two reasons: 1) we want
+	// to log the participant's blindness type, and 2) the dichromatic gamut
+	// mapping method uses the confusion line of the corresponding type
     this.simMethod = null; // 0 for Brettel 1997 (two planes) and 1 for Viénot 1999 (one plane)
     this.type = null; // 0 for P, 1 for D, 2 for T
     this.sim = null;

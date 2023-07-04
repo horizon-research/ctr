@@ -311,7 +311,7 @@ function registerPickType() {
   // init color blindness type
   $('#pickd').prop("checked", true).trigger('change');
 
-  $('input[type=radio][name=pick]').prop('disabled', true);
+  $('input[type=radio][name=pick]').prop('disabled', false);
 }
 
 function registerSimMode() {
