@@ -474,9 +474,6 @@ function test_finish_cb() {
                                                          testId: testId,
                                                         }));
 
-  //if (testId % 6 == 0) // testId won't be 0
-  //  plot_ellipse();
-
   if (testId != all_tests.length) {
     var test = all_tests[indices[testId]];
     state = new discTestState(new colorObj(test[0], test[1]), test[2],
@@ -503,87 +500,6 @@ function test_finish_cb() {
     $("body").unbind('keydown');
     $('body').css('background-color', '#FFFFFF');
   }
-}
-
-function plot_ellipse() {
-  var trace_id = page.dis_plot.data.length - 1;
-  var xs = page.dis_plot.data[trace_id].x;
-  var ys = page.dis_plot.data[trace_id].y;
-
-  var e_x_center = xs[0];
-  var e_y_center = ys[0];
-  var end = xs.length;
-
-  var e_x_offset = math.subtract(xs.slice(1, end), e_x_center);
-  var e_y_offset = math.subtract(ys.slice(1, end), e_y_center);
-
-  var e_xx = math.dotMultiply(e_x_offset, e_x_offset);
-  var e_xy = math.dotMultiply(e_x_offset, e_y_offset);
-  var e_yy = math.dotMultiply(e_y_offset, e_y_offset);
-
-  var e_X = math.transpose([e_xx, e_xy, e_yy]);
-  var e_Y = math.transpose([1, 1, 1, 1, 1, 1]);
-
-  // XT=Y
-  var e_XTX = math.multiply(math.transpose(e_X), e_X);
-  var e_XTX_inv = math.inv(e_XTX);
-  var e_T = math.multiply(math.multiply(e_XTX_inv, math.transpose(e_X)), e_Y);
-  var a = e_T[0];
-  var b = e_T[1];
-  var c = e_T[2];
-
-  var x_max_h = Math.sqrt(b**2 / (4 * a**2 * c - a * b**2));
-  var x_min_h = -x_max_h;
-  var y_max_h = -2 * a * x_max_h / b;
-  var y_min_h = -y_max_h;
-
-  var ellip_h = {
-    x: [x_min_h+e_x_center, x_max_h+e_x_center],
-    y: [y_min_h+e_y_center, y_max_h+e_y_center],
-    text: [''],
-    mode: 'lines+markers',
-    marker: {
-      size: 8,
-      opacity: 1,
-      color: [0,0,0],
-      symbol: 'x',
-    },
-    line: {
-      width: 1,
-      color: '#000000',
-    },
-    name: 'Ellipses',
-    hovertemplate: 'x: %{x}' +
-      '<br>y: %{y}<extra></extra>',
-  };
-
-  var y_max_v = Math.sqrt(b**2 / (4 * a * c**2 - c * b**2));
-  var y_min_v = -y_max_v;
-  var x_max_v = -2 * c * y_max_v / b;
-  var x_min_v = -x_max_v;
-
-  var ellip_v = {
-    x: [x_min_v+e_x_center, x_max_v+e_x_center],
-    y: [y_min_v+e_y_center, y_max_v+e_y_center],
-    text: [''],
-    mode: 'lines+markers',
-    marker: {
-      size: 8,
-      opacity: 1,
-      color: [0,0,0],
-      symbol: 'x',
-    },
-    line: {
-      width: 1,
-      color: '#000000',
-    },
-    name: 'Ellipses',
-    hovertemplate: 'x: %{x}' +
-      '<br>y: %{y}<extra></extra>',
-  };
-
-  Plotly.addTraces(page.dis_plot, ellip_h);
-  Plotly.addTraces(page.dis_plot, ellip_v);
 }
 
 $('#seeres').on('click', function(evt) {
