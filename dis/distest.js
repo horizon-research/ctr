@@ -24,6 +24,8 @@ const para_sim = urlParams.get('sim')
 const para_plane = urlParams.get('plane')
 
 if (window.localStorage.getItem('results')) {
+  var alerted = false;
+
   $('#reset-tab').trigger('click');
 
   // start a new test
@@ -35,6 +37,7 @@ if (window.localStorage.getItem('results')) {
   // restore a previous session
   $('#resume').on('click', function(evt) {
     restore_test();
+    if (alerted) return;
     prepare_test();
     pageId = 2; // so that pressing space won't trigger an event
   });
@@ -49,6 +52,7 @@ $('#seeres').on('click', function(evt) {
 
 $('#customRange').prop('disabled', true);
 $('#customRange').css('visibility', 'hidden');
+$('#alertbox').css('visibility', 'hidden');
 
 
 
@@ -132,26 +136,33 @@ function restore_test() {
   page.type = page_stats.type;
   page.simMethod = page_stats.simMethod;
 
-  // check if the store sim setting is compatible with what the query string asks for
-  var map = {sim: {yes: true,
-                   no: false,},
-             type: {p: 0,
-                    d: 1,
-                    t: 2},
-             method: {1: 1,
-                      2: 0,},
-            };
-  if ((para_sim && (map.sim[para_sim] != page.sim)) ||
-      (para_type && (map.type[para_type] != page.type)) ||
-      (para_plane && page.sim && (map.method[para_plane] != page.simMethod))) // check simMethod only when sim is true
-    alert('Your current configuration specified in the URL query string is incompatible with the previously stored session. It is recommendated that you refresh the page and start a new test. You might still choose to resume the previous test, but all belts are off.');
-
-  // so far page.color_supports (which determines bitdepth) is created based on
-  // querying the current system. so we check if the new system setting is
-  // compatible with the to-be-restored setting.
-  if ((page.bitdepth < page_stats.bitdepth) || (page_stats.cs > page.cs)) {
-    alert('Your current system\'s support for color is weaker than that of the previously stored session. It is recommendated that you refresh the page and start a new test. You might still choose to resume the previous test, but all belts are off.');
+  if (!alerted) {
+    // check if the store sim setting is compatible with what the query string asks for
+    var map = {sim: {yes: true,
+                     no: false,},
+               type: {p: 0,
+                      d: 1,
+                      t: 2},
+               method: {1: 1,
+                        2: 0,},
+              };
+    // check simMethod only when sim is true
+    var setting_bad = (para_sim && (map.sim[para_sim] != page.sim)) ||
+        (para_type && (map.type[para_type] != page.type)) ||
+        (para_plane && page.sim && (map.method[para_plane] != page.simMethod));
+    // so far page.color_supports (which determines bitdepth) is created based on
+    // querying the current system. so we check if the new system setting is
+    // compatible with the to-be-restored setting.
+    var color_bad = (page.bitdepth < page_stats.bitdepth) || (page_stats.cs > page.cs);
+    if (setting_bad || color_bad) {
+      $('#alertbox').css('visibility', 'visible');
+      alerted = true;
+      return alerted;
+    }
+  } else {
+    alerted = false;
   }
+
   Object.assign(page.color_supports, page_stats.color_supports); // so that page.bitdepth is correctly set
  
   // these lines must change depending on whether we use srgb or P3, so it must

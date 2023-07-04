@@ -198,9 +198,9 @@
 
             <div class="tab-pane" id="reset-tab-pane" role="tabpanel" aria-labelledby="reset-tab" tabindex="0">
               <div class="row d-flex justify-content-center">
-                <div class="row">
+                <div class="row mb-4">
                   <div class="col-sm-12 d-flex justify-content-center">
-<p>You have a previously unfinished test. Do you want to continue that session or start a new session?</p>
+<h5>You have a previously unfinished test. Do you want to continue that session or start a new session?</h5>
                   </div>
                 </div>
                 <div class="row d-flex justify-content-center">
@@ -209,6 +209,13 @@
                   </div>
                   <div class="col-sm-3 d-flex justify-content-center">
                     <button type="button" id="newtest" class="btn btn-success">New Test</button>
+                  </div>
+                </div>
+                <div class="row d-flex justify-content-center mt-4" id="alertbox">
+                  <div class="col-sm-6">
+                    <div class="alert alert-danger" role="alert" id="alerttext">
+                      Either the current configuration specified in the URL query string is incompatible with the previously stored session, or the color support in your current system is weaker than that used in the stored session. It is recommendated that you refresh the page and start a new test. If you still want resume the previous test, click the <b>Resume Previous Test</b> button again, but all belts are off.
+                    </div>
                   </div>
                 </div>
               </div>
