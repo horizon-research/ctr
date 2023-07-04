@@ -144,7 +144,7 @@ function restore_test() {
   if ((para_sim && (map.sim[para_sim] != page.sim)) ||
       (para_type && (map.type[para_type] != page.type)) ||
       (para_plane && page.sim && (map.method[para_plane] != page.simMethod))) // check simMethod only when sim is true
-    alert('Your current configuration is incompatible with the previously stored session. It is recommendated that you refresh the page and start a new test. You might still choose to resume the previous test, but all belts are off.');
+    alert('Your current configuration specified in the URL query string is incompatible with the previously stored session. It is recommendated that you refresh the page and start a new test. You might still choose to resume the previous test, but all belts are off.');
 
   // so far page.color_supports (which determines bitdepth) is created based on
   // querying the current system. so we check if the new system setting is
