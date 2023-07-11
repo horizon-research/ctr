@@ -310,12 +310,34 @@ $("body").keydown(function(e){
   }
 });
 
+//https://www.w3schools.com/jsref/met_element_exitfullscreen.asp
+// https://developer.mozilla.org/en-US/docs/Web/API/Fullscreen_API
+function openFullScreen() {
+  var elem = document.documentElement;
+  if (elem.requestFullscreen) {
+    elem.requestFullscreen();
+  } else if (elem.webkitRequestFullscreen) { /* Safari */
+    elem.webkitRequestFullscreen();
+  } else if (elem.msRequestFullscreen) { /* IE11 */
+    elem.msRequestFullscreen();
+  }
+}
+
+function closeFullScreen() {
+  if (document.exitFullscreen) {
+    document.exitFullscreen();
+  } else if (document.webkitExitFullscreen) { /* Safari */
+    document.webkitExitFullscreen();
+  } else if (document.msExitFullscreen) { /* IE11 */
+    document.msExitFullscreen();
+  }
+}
+
 function prepare_test(evt) {
   canvas.width = window.screen.width;
   canvas.height = window.screen.height;
 
-  // https://developer.mozilla.org/en-US/docs/Web/API/Fullscreen_API
-  document.documentElement.requestFullscreen();
+  openFullScreen();
 
   //var base_hex = $('#colorpicker').val();
   //var base_srgb = hex_to_srgb(base_hex);
@@ -555,7 +577,7 @@ function test_finish_cb() {
               });
     window.localStorage.removeItem('results');
 
-    document.exitFullscreen();
+    closeFullScreen();
 
     $('#res-tab').trigger('click');
 

@@ -79,6 +79,8 @@ function plot_ellipse() {
   Plotly.addTraces(page.dis_plot, ellip_v);
 }
 
+// https://autotrace.sourceforge.net/WSCG98.pdf
+// https://scipython.com/blog/direct-linear-least-squares-fitting-of-an-ellipse/
 var colors = [
               math.subtract((new colorObj([0.10542769189528832,0.11196318749090527,0.6220472049063162], 'v_rgb')).xy, [0.19958547204032873,0.14937709890627032]),
               math.subtract((new colorObj([0.0836435021223491,0.11644263432725839,0.6219285682712985] , 'v_rgb')).xy, [0.19958547204032873,0.14937709890627032]),
