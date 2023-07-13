@@ -19,7 +19,6 @@ class Profiler {
 // https://www.sitepoint.com/get-url-parameters-with-javascript/
 const queryString = window.location.search;
 const urlParams = new URLSearchParams(queryString);
-const para_type = urlParams.get('type')
 const para_sim = urlParams.get('sim')
 const para_plane = urlParams.get('plane')
 
@@ -72,7 +71,14 @@ $('#fbbox').css('visibility', 'hidden');
 
 function set_cvdtype_cb() {
   var val = this.value;
-  page.cvdType = val; // TODO: this might eventually replace page.type
+  page.cvdType = val; // just for logging purpose 
+
+  // page.type is used for actual simulation.
+  // TODO: best effort simulation. right now supports only three strong CVD
+  // types. mono, unknown, normal are simulated incorrectly
+  if (val == 'prot' || val == 'proa') page.type = 0;
+  else if (val == 'deut' || val == 'deua') page.type = 1;
+  else if (val == 'trit' || val == 'tria') page.type = 2;
 }
 
 function open_dashboard_cb() {
@@ -191,7 +197,6 @@ function restore_test() {
               };
     // check simMethod only when sim is true
     var setting_bad = (para_sim && (map.sim[para_sim] != page.sim)) ||
-        (para_type && (map.type[para_type] != page.type)) ||
         (para_plane && page.sim && (map.method[para_plane] != page.simMethod));
     // so far page.color_supports (which determines bitdepth) is created based on
     // querying the current system. so we check if the new system setting is
@@ -253,22 +258,23 @@ function set_new_test() {
 
   pageId = 0;
 
-  // if there is a query string we will skip the setting page
-  // TODO: even if the query string is ill-formed
+  var map = {sim: {yes: true,
+                   no: false,},
+             type: {p: 0,
+                    d: 1,
+                    t: 2},
+             method: {1: 1,
+                      2: 0,},
+            };
+
   if (queryString != "") {
     // null or incorrect para names will simply be ignored (no error)
     if (para_sim) {
-      $('#' + para_sim).prop("checked", true).trigger('change');
-    }
-    if (para_type) {
-      $('#pick' + para_type).prop("checked", true).trigger('change');
+      page.sim = map.sim[para_sim];
     }
     if (para_plane) {
-      $('#m' + para_plane).prop("checked", true).trigger('change');
+      page.simMethod = map.method[para_plane];
     }
-
-    $('#inst-tab').trigger('click');
-    pageId = 1;
   }
 }
 
@@ -412,7 +418,7 @@ function prepare_training() {
     updatePlot(this.value, 0)
   });
   $(page.slider).prop('disabled', false);
-  $(page.slider).css('visibility', 'hidden');
+  //$(page.slider).css('visibility', 'hidden');
 
   $(page.slider_reset).on('click', function(evt) {
     $(page.slider).val(0);
@@ -503,10 +509,14 @@ function prepare_test(evt) {
   page.slider = '#customRange';
   page.slider_reset = '#reset';
 
-  canvas.width = window.screen.width;
-  canvas.height = window.screen.height;
-
   openFullScreen();
+
+  // https://dmitripavlutin.com/screen-window-page-sizes/
+  // TODO: on MBP for some reaon screen.height is higher than screen height
+  //canvas.width = window.screen.width;
+  //canvas.height = window.screen.height;
+  canvas.width = window.screen.availWidth;
+  canvas.height = window.screen.availHeight;
 
   //var base_hex = $('#colorpicker').val();
   //var base_srgb = hex_to_srgb(base_hex);
@@ -520,7 +530,7 @@ function prepare_test(evt) {
   page.submit();
 
   $("body").on('keydown', get_ans_cb);
-  $("body").keydown(key_slider_cb);
+  $("body").on('keydown', key_slider_cb);
 
   $('body').css('background-color', 'rgb(120, 120, 120)');
   $('#test-tab').trigger('click');
@@ -528,57 +538,17 @@ function prepare_test(evt) {
 };
 
 function registerPickType() {
-  $('input[type=radio][name=pick]').change(function() {
-    if (this.id == 'pickp') {
-      page.type = 0;
-    } else if (this.id == 'pickd') {
-      page.type = 1;
-    } else if (this.id == 'pickt') {
-      page.type = 2;
-    }
-  });
-
-  // init color blindness type
-  $('#pickd').prop("checked", true).trigger('change');
-
-  $('input[type=radio][name=pick]').prop('disabled', false);
+  page.cvdType = 'normal';
+  page.type = 0; // TODO: we need something here since updatePlot does simulation anyways. could init in constructor
+  $('#cvdtype').on('change', set_cvdtype_cb);
 }
 
 function registerSimMode() {
-  $('input[type=radio][name=sim]').change(function() {
-    if (this.id == 'yes') {
-      page.sim = true;
-      $('input[type=radio][name=method]').prop('disabled', false);
-      //$('input[type=radio][name=pick]').prop('disabled', false);
-    } else {
-      page.sim = false;
-      $('input[type=radio][name=method]').prop('disabled', true);
-      //$('input[type=radio][name=pick]').prop('disabled', true);
-    }
-  });
-
-  // choose to show actual colors
-  $('#no').prop("checked", true).trigger('change');
-
-  $('input[type=radio][name=sim]').prop('disabled', false);
+  page.sim = false;
 }
 
 function registerPickSimMethod() {
-  $('input[type=radio][name=method]').change(function() {
-    if (this.id == 'm1') {
-    // TODO: could disable keyboard events
-      // one plane
-      page.simMethod = 1;
-    } else {
-      // two planes
-      page.simMethod = 0;
-    }
-  });
-
-  $('#m2').prop("checked", true).trigger('change');
-
-  // only enable when simulation is on
-  $('input[type=radio][name=method]').prop('disabled', true);
+  page.simMethod = 0;
 }
 
 function get_ans_cb(e) {

@@ -87,7 +87,7 @@
       <canvas id="c11" width="100%" height="100%"></canvas>
       <div class="container d-flex align-items-center justify-content-center min-vh-100">
     
-        <div class="d-grid gap-3 mt-4" id="patches">
+        <div class="d-grid gap-3" id="patches">
     
           <ul class="nav nav-tabs" id="mainTab" role="tablist" style="display: none">
             <li class="nav-item" role="presentation">
@@ -115,7 +115,7 @@
 
           <div class="tab-content" id="myTabContent">
             <div class="tab-pane show active" id="faq-tab-pane" role="tabpanel" aria-labelledby="faq-tab" tabindex="0">
-              <h1 class="d-flex justify-content-md-center mt-4 nofocus fixed-top">Welcome</h1>
+              <h1 class="d-flex justify-content-md-center mt-4 nofocus">Welcome</h1>
               <div class="row d-flex justify-content-center align-items-center">
                 <div class="col-sm-10">
                   <p class="fs-5">Thank you for participating in our study. We value your participation and hope that the points below answer some key questions you may have.</p>
@@ -123,7 +123,7 @@
                   <div class="card">
                     <div class="card-body">
                       <h5 class="card-title">What is the goal of our study?</h5>
-                      <p class="card-text">The goal of our project is to develop simple and widely usable assistive technologies for individuals with color vision deficiency (CVD). Eventually, our technologies will help individuals with CVD: 1) better discriminate commonly confusing colors, and 2) communicate in unambiguous color vocabaulary with normal-vision people.</p>
+                      <p class="card-text">The goal of our project is to develop simple and widely usable assistive technologies for individuals with color vision deficiency (CVD). Eventually, our technologies will help individuals with CVD: 1) better discriminate commonly confusing colors, and 2) communicate in unambiguous color vocabaulary with color normal individuals.</p>
                     </div>
                   </div>
                   
@@ -137,14 +137,14 @@
                   <div class="card mt-3">
                     <div class="card-body">
                       <h5 class="card-title">How long will this study take?</h5>
-                      <p class="card-text">The entire study might take about 60 minutes. We recognize that we are requesting a substantial time investment from you and appreciate your patience and diligence as you go through the tasks. At any time during the test you should feel free, and are recommended, to take a break. During the break, you can leave the browser tab open, or you can close the browser tab or even shut down the computer. Your progress is automatically saved, so when you come back to this link, the previous state will be automatically restored.</p>
+                      <p class="card-text">The entire study might take between 1 and 2 hours. We recognize that we are requesting a substantial time investment from you and appreciate your patience and diligence as you go through the tasks. At any time during the test you should feel free to take a break; in fact; we recommend you take breaks as needed to maintain attentiveness. During the break, you can leave the browser tab open, or you can close the browser tab or even shut down the computer. Your progress is automatically saved, so when you come back to this link, the previous state will be automatically restored.</p>
                     </div>
                   </div>
                   
                   <div class="card mt-3">
                     <div class="card-body">
-                      <h5 class="card-title">In what environment should I take the test?</h5>
-                      <p class="card-text">Ideally you take the study in an indoor setting where you can turn off lights and use window blinds to block outdoor lights. Throughout the study the monitor should be at a distance of about 80 cm from your eyes, and you should focus your gaze at the center of the monitor.</p>
+                      <h5 class="card-title">In what environment should you take the test?</h5>
+                      <p class="card-text">Ideally you take the study in an indoor setting where you can turn off lights and use window blinds to block outdoor lights. Throughout the study the monitor should be at a distance of about 80 cm from your eyes, and you should focus your gaze at the center of the monitor. Make sure the lighting conditions are roughly the same before and after a break.</p>
                     </div>
                   </div>
                   
@@ -158,10 +158,12 @@
             </div>
     
             <div class="tab-pane" id="setting-tab-pane" role="tabpanel" aria-labelledby="setting-tab" tabindex="0">
-              <h1 class="d-flex justify-content-md-center mt-4 nofocus fixed-top">Privacy</h1>
+              <h1 class="d-flex justify-content-md-center mt-4 nofocus">Information About You</h1>
               <div class="row d-flex justify-content-center align-items-center">
                 <div class="col-sm-6">
-                  <p class="fs-5">We take privacy seriously. We do not collect any <a href="https://www.dol.gov/general/ppii">Personal Identifiable Information</a>. The only personal information we ask from you is your color blindness type. Please choose your type using the dropdown below.</p>
+                  <p class="fs-5">We take privacy seriously. We do not collect any <a href="https://www.dol.gov/general/ppii" target="_blank" rel="noopener noreferrer">Personal Identifiable Information</a>. There is no tracker on this site. Only demographic information relevant to colod blindness is requested.</p>
+                  <p class="fs-5">The important information is your color blindness type. If are not 100% sure, we request that you take an online color blindness test, such as <a href="https://pilestone.com/pages/color-blind-test" target="_blank" rel="noopener noreferrer">this one</a>. Note that different color blindness tests use slightly different terminologies. Choose the one from the dropdown that best matches what the online test tells you.</p>
+                  <b>Type of color blindness</b>
                   <select id="cvdtype" class="mb-3 form-select">
                     <option value="normal">Normal Color Vision &nbsp; | &nbsp; Trichromacy</option>
                     <option value="prot">Protanopia &nbsp; | &nbsp; Strong Protan &nbsp; | &nbsp; Severe Protan</option>
@@ -173,37 +175,30 @@
                     <option value="mono">Monochromacy &nbsp; | &nbsp; Achromatopsia</option>
                     <option value="unknown">Unknown</option>
                   </select>
-                  <p class="fs-5">If are not 100% sure, we would appreciate it if you could take an online color blindness test, such as <a href="https://pilestone.com/pages/color-blind-test">this one</a>. Note that different color blindness tests use slightly different terminologies. Choose the one from the dropdown that best matches what the test tells you.</p>
+                  <b>Sex at birth</b>
+                  <select id="sex" class="mb-3 form-select">
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                    <option value="unknown" selected>Prefer not to answer</option>
+                  </select>
+                  <b>Ethnicity</b>
+                  <select id="eth" class="mb-3 form-select">
+                    <option value="white">White</option>
+                    <option value="female">Asian</option>
+                    <option value="unknown" selected>Prefer not to answer</option>
+                  </select>
+                  <b>Age</b>
+                  <select id="age" class="mb-3 form-select">
+                    <option value="y17">17 or younger</option>
+                    <option value="y30">18-30</option>
+                    <option value="y50">31-50</option>
+                    <option value="old">51 or older</option>
+                    <option value="unknown" selected>Prefer not to answer</option>
+                  </select>
                 </div>
               </div>
               <div class="row d-flex justify-content-center align-items-center">
                 <div class="col-sm-6">
-                  <div class="row" style="display: none">
-                    <div class="btn-group mb-2" role="group" aria-label="Basic radio toggle button group">
-                      <input type="radio" class="btn-check" name="sim" id="no" autocomplete="off">
-                      <label class="btn btn-outline-secondary" for="no">Real Stimuli</label>
-    
-                      <input type="radio" class="btn-check" name="sim" id="yes" autocomplete="off">
-                      <label class="btn btn-outline-secondary" for="yes">Simulation</label>
-                    </div>
-                    <div class="btn-group mb-2" role="group" aria-label="Basic radio toggle button group">
-                      <input type="radio" class="btn-check" name="pick" id="pickp" autocomplete="off">
-                      <label class="btn btn-outline-secondary" for="pickp">Protanopia</label>
-                    
-                      <input type="radio" class="btn-check" name="pick" id="pickd" autocomplete="off">
-                      <label class="btn btn-outline-secondary" for="pickd">Deuteranopia</label>
-                    
-                      <input type="radio" class="btn-check" name="pick" id="pickt" autocomplete="off">
-                      <label class="btn btn-outline-secondary" for="pickt">Tritanopia</label>
-                    </div>
-                    <div class="btn-group mb-2" role="group" aria-label="Basic radio toggle button group">
-                      <input type="radio" class="btn-check" name="method" id="m1" autocomplete="off">
-                      <label class="btn btn-outline-secondary" for="m1">One Plane (Viénot et al. 1999)</label>
-                    
-                      <input type="radio" class="btn-check" name="method" id="m2" autocomplete="off">
-                      <label class="btn btn-outline-secondary" for="m2">Two Plane (Brettel et al. 1997)</label>
-                    </div>
-                  </div>
 <!--
                   <div class="row col-md-5 mx-auto my-4">
                     Pick a base color
@@ -220,7 +215,7 @@
             </div>
 
             <div class="tab-pane" id="inst-tab-pane" role="tabpanel" aria-labelledby="inst-tab" tabindex="0">
-              <h1 class="d-flex justify-content-md-center mt-4 nofocus fixed-top">Instructions</h1>
+              <h1 class="d-flex justify-content-md-center mt-4 nofocus">Instructions</h1>
               <div class="row d-flex justify-content-center">
                 <div class="col-sm-8">
                   <div class="row">
@@ -260,7 +255,7 @@
 
             <div class="tab-pane" id="train-tab-pane" role="tabpanel" aria-labelledby="train-tab">
               <div class="container text-center nofocus" tabindex="-1">
-                <h1 class="justify-content-md-center mt-4 nofocus fixed-top">Training</h1>
+                <h1 class="justify-content-md-center mt-4 nofocus">Training</h1>
                 <div class="col-sm-8 mx-auto">
                   <div class="row justify-content-md-center my-auto nofocus">
                     <p class="fs-5">These training tasks help you be familiar with the user interface. You are encouraged to use the <b>Left Arrow</b> and <b>Right Arrow</b> keys to shift the colors and use the <b>Space</b> key to reset the shift, even though you might not need them to identify the differing patch here.</p>
@@ -281,6 +276,14 @@
                         <font size="4">S</font>
                     </div>
                   </div>
+                  <div class="row justify-content-md-center mt-4 opacity-50">
+                    <div class="col-sm-3">
+                      <input type="range" class="form-range" min="-3.14" max="3.14" step="0.02" id="t_customRange">
+                    </div>
+                    <div class="col-sm-2" style="display: none">
+                      <button id="t_reset" class="btn btn-secondary">Reset</button>
+                    </div>
+                  </div>
                   <div class="row justify-content-md-center mt-4 nofocus">
                     <p class="fs-4">You've made <span id="counter" class="fw-bold text-success">0</span> correct choices in a row. Target: <b>6</b> in a row.</p>
                   </div>
@@ -291,23 +294,14 @@
                   </div>
                 </div>
               </div>
-    
-              <div class="row mt-4 opacity-25">
-                <div class="col-sm-12">
-                  <label for="customRange" class="rot-label" style="font-size:20px; display: none">Rotation Angle (Degree): 0&#176;</label>
-                  <input type="range" class="form-range" min="-3.14" max="3.14" step="0.02" id="t_customRange">
-                </div>
-                <div class="col-sm-2" style="display: none">
-                  <button id="t_reset" class="btn btn-secondary">Reset</button>
-                </div>
-              </div>
             </div>
 
             <div class="tab-pane" id="reset-tab-pane" role="tabpanel" aria-labelledby="reset-tab" tabindex="0">
+              <h1 class="d-flex justify-content-md-center mt-4 nofocus">Welcome Back</h1>
               <div class="row d-flex justify-content-center">
                 <div class="row mb-4">
                   <div class="col-sm-12 d-flex justify-content-center">
-                    <p class="fs-4">You have a previously unfinished test. Do you want to resume that session or start a new session?</p>
+                    <p class="fs-4">You have a previously unfinished session. Here are your options.</p>
                   </div>
                 </div>
                 <div class="row d-flex justify-content-center">
@@ -320,7 +314,7 @@
                 <div class="row d-flex justify-content-center mt-4" id="alertbox">
                   <div class="col-sm-6">
                     <div class="alert alert-danger" role="alert" id="alerttext">
-                      Either the current configuration specified in the URL query string is incompatible with the previously stored session, or the color support in your current system is weaker than that used in the stored session. It is recommendated that you refresh the page and start a new test. If you still want resume the previous test, click the <b>Resume Previous Test</b> button again, but all belts are off.
+                      Either the current configuration specified in the URL query string is incompatible with the previously stored session, or the color support in your current system is weaker than that used in the stored session. It is recommendated that you start a new session. If you still want resume the previous session, click the same button again, but all belts are off.
                     </div>
                   </div>
                 </div>
@@ -355,7 +349,7 @@
             </div>
     
             <div class="tab-pane" id="res-tab-pane" role="tabpanel" aria-labelledby="res-tab" tabindex="0">
-              <h1 class="d-flex justify-content-md-center mt-4 nofocus fixed-top">Optional Feedback</h1>
+              <h1 class="d-flex justify-content-md-center mt-4 nofocus">Optional Feedback</h1>
               <div class="row d-flex justify-content-center">
                 <div class="col-sm-8">
                 <div class="mb-3">
