@@ -87,46 +87,46 @@ function gen_all_tests() {
           //[[86, 95, 214], 'srgb', -0.3, get_ortho_line_rgb(t_line, new colorObj([86, 95, 214], 'srgb'))],
 
           // dark red
-          [[184, 74, 74], 'srgb',  0.1, p_line],
-          [[184, 74, 74], 'srgb', -0.1, p_line],
-          [[184, 74, 74], 'srgb',  0.1, d_line],
-          [[184, 74, 74], 'srgb', -0.1, d_line],
-          [[184, 74, 74], 'srgb',  0.3, t_line],
-          [[184, 74, 74], 'srgb', -0.3, t_line],
-          [[184, 74, 74], 'srgb',  0.1, get_ortho_line_rgb(p_line, new colorObj([184, 74, 74], 'srgb'))],
-          [[184, 74, 74], 'srgb', -0.1, get_ortho_line_rgb(p_line, new colorObj([184, 74, 74], 'srgb'))],
-          //[[184, 74, 74], 'srgb',  0.1, get_ortho_line_rgb(d_line, new colorObj([184, 74, 74], 'srgb'))],
-          //[[184, 74, 74], 'srgb', -0.1, get_ortho_line_rgb(d_line, new colorObj([184, 74, 74], 'srgb'))],
-          //[[184, 74, 74], 'srgb',  0.3, get_ortho_line_rgb(t_line, new colorObj([184, 74, 74], 'srgb'))],
-          //[[184, 74, 74], 'srgb', -0.3, get_ortho_line_rgb(t_line, new colorObj([184, 74, 74], 'srgb'))],
+          //[[184, 74, 74], 'srgb',  0.1, p_line],
+          //[[184, 74, 74], 'srgb', -0.1, p_line],
+          //[[184, 74, 74], 'srgb',  0.1, d_line],
+          //[[184, 74, 74], 'srgb', -0.1, d_line],
+          //[[184, 74, 74], 'srgb',  0.3, t_line],
+          //[[184, 74, 74], 'srgb', -0.3, t_line],
+          //[[184, 74, 74], 'srgb',  0.1, get_ortho_line_rgb(p_line, new colorObj([184, 74, 74], 'srgb'))],
+          //[[184, 74, 74], 'srgb', -0.1, get_ortho_line_rgb(p_line, new colorObj([184, 74, 74], 'srgb'))],
+          ////[[184, 74, 74], 'srgb',  0.1, get_ortho_line_rgb(d_line, new colorObj([184, 74, 74], 'srgb'))],
+          ////[[184, 74, 74], 'srgb', -0.1, get_ortho_line_rgb(d_line, new colorObj([184, 74, 74], 'srgb'))],
+          ////[[184, 74, 74], 'srgb',  0.3, get_ortho_line_rgb(t_line, new colorObj([184, 74, 74], 'srgb'))],
+          ////[[184, 74, 74], 'srgb', -0.3, get_ortho_line_rgb(t_line, new colorObj([184, 74, 74], 'srgb'))],
 
-          // pale green
-          [[100, 204, 102], 'srgb',  0.3, p_line],
-          [[100, 204, 102], 'srgb', -0.3, p_line],
-          [[100, 204, 102], 'srgb',  0.3, d_line],
-          [[100, 204, 102], 'srgb', -0.3, d_line],
-          [[100, 204, 102], 'srgb',  0.3, t_line],
-          [[100, 204, 102], 'srgb', -0.3, t_line],
-          [[100, 204, 102], 'srgb',  0.3, get_ortho_line_rgb(p_line, new colorObj([100, 204, 102], 'srgb'))],
-          [[100, 204, 102], 'srgb', -0.3, get_ortho_line_rgb(p_line, new colorObj([100, 204, 102], 'srgb'))],
-          //[[100, 204, 102], 'srgb',  0.3, get_ortho_line_rgb(d_line, new colorObj([100, 204, 102], 'srgb'))],
-          //[[100, 204, 102], 'srgb', -0.3, get_ortho_line_rgb(d_line, new colorObj([100, 204, 102], 'srgb'))],
-          //[[100, 204, 102], 'srgb',  0.3, get_ortho_line_rgb(t_line, new colorObj([100, 204, 102], 'srgb'))],
-          //[[100, 204, 102], 'srgb', -0.3, get_ortho_line_rgb(t_line, new colorObj([100, 204, 102], 'srgb'))],
+          //// pale green
+          //[[100, 204, 102], 'srgb',  0.3, p_line],
+          //[[100, 204, 102], 'srgb', -0.3, p_line],
+          //[[100, 204, 102], 'srgb',  0.3, d_line],
+          //[[100, 204, 102], 'srgb', -0.3, d_line],
+          //[[100, 204, 102], 'srgb',  0.3, t_line],
+          //[[100, 204, 102], 'srgb', -0.3, t_line],
+          //[[100, 204, 102], 'srgb',  0.3, get_ortho_line_rgb(p_line, new colorObj([100, 204, 102], 'srgb'))],
+          //[[100, 204, 102], 'srgb', -0.3, get_ortho_line_rgb(p_line, new colorObj([100, 204, 102], 'srgb'))],
+          ////[[100, 204, 102], 'srgb',  0.3, get_ortho_line_rgb(d_line, new colorObj([100, 204, 102], 'srgb'))],
+          ////[[100, 204, 102], 'srgb', -0.3, get_ortho_line_rgb(d_line, new colorObj([100, 204, 102], 'srgb'))],
+          ////[[100, 204, 102], 'srgb',  0.3, get_ortho_line_rgb(t_line, new colorObj([100, 204, 102], 'srgb'))],
+          ////[[100, 204, 102], 'srgb', -0.3, get_ortho_line_rgb(t_line, new colorObj([100, 204, 102], 'srgb'))],
 
-          // gray
-          [[136, 136, 136], 'srgb',  0.1, p_line],
-          [[136, 136, 136], 'srgb', -0.1, p_line],
-          [[136, 136, 136], 'srgb',  0.1, d_line],
-          [[136, 136, 136], 'srgb', -0.1, d_line],
-          [[136, 136, 136], 'srgb',  0.3, t_line],
-          [[136, 136, 136], 'srgb', -0.3, t_line],
-          [[136, 136, 136], 'srgb',  0.1, get_ortho_line_rgb(p_line, new colorObj([136, 136, 136], 'srgb'))],
-          [[136, 136, 136], 'srgb', -0.1, get_ortho_line_rgb(p_line, new colorObj([136, 136, 136], 'srgb'))],
-          //[[136, 136, 136], 'srgb',  0.1, get_ortho_line_rgb(d_line, new colorObj([136, 136, 136], 'srgb'))],
-          //[[136, 136, 136], 'srgb', -0.1, get_ortho_line_rgb(d_line, new colorObj([136, 136, 136], 'srgb'))],
-          //[[136, 136, 136], 'srgb',  0.3, get_ortho_line_rgb(t_line, new colorObj([136, 136, 136], 'srgb'))],
-          //[[136, 136, 136], 'srgb', -0.3, get_ortho_line_rgb(t_line, new colorObj([136, 136, 136], 'srgb'))],
+          //// gray
+          //[[136, 136, 136], 'srgb',  0.1, p_line],
+          //[[136, 136, 136], 'srgb', -0.1, p_line],
+          //[[136, 136, 136], 'srgb',  0.1, d_line],
+          //[[136, 136, 136], 'srgb', -0.1, d_line],
+          //[[136, 136, 136], 'srgb',  0.3, t_line],
+          //[[136, 136, 136], 'srgb', -0.3, t_line],
+          //[[136, 136, 136], 'srgb',  0.1, get_ortho_line_rgb(p_line, new colorObj([136, 136, 136], 'srgb'))],
+          //[[136, 136, 136], 'srgb', -0.1, get_ortho_line_rgb(p_line, new colorObj([136, 136, 136], 'srgb'))],
+          ////[[136, 136, 136], 'srgb',  0.1, get_ortho_line_rgb(d_line, new colorObj([136, 136, 136], 'srgb'))],
+          ////[[136, 136, 136], 'srgb', -0.1, get_ortho_line_rgb(d_line, new colorObj([136, 136, 136], 'srgb'))],
+          ////[[136, 136, 136], 'srgb',  0.3, get_ortho_line_rgb(t_line, new colorObj([136, 136, 136], 'srgb'))],
+          ////[[136, 136, 136], 'srgb', -0.3, get_ortho_line_rgb(t_line, new colorObj([136, 136, 136], 'srgb'))],
          ];
 }
 
@@ -628,7 +628,7 @@ function ans_finish_cb(correct, rev) {
 
 // called after each test terminates
 function test_finish_cb() {
-  var threshold = math.mean(state.scalesAtRevs.slice(-3));
+  var threshold = math.mean(state.scalesAtRevs.slice(-2)); // TODO: average last 2 since we do only 4 reversals (more general)
   var thresholdColor = new colorObj(
       math.add(state.baseColor.v_rgb, math.multiply(state.test_line_rgb, state.dir * threshold)), 'v_rgb');
 
