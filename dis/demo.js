@@ -126,6 +126,12 @@ state = new discTestState(new colorObj([0.2, 0.15, 0.65], 'xyz'), 0.1,
     test_start_cb, test_finish_cb,
     ans_start_cb, ans_finish_cb);
 
+page.s11 = '#s11';
+page.s12 = '#s12';
+page.s13 = '#s13';
+page.s14 = '#s14';
+page.slider = '#customRange';
+page.slider_reset = '#reset';
 
 page.submit();
 

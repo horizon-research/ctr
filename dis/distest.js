@@ -39,7 +39,7 @@ if (window.localStorage.getItem('results')) {
     restore_test();
     if (alerted) return;
     prepare_test();
-    pageId = 2; // so that pressing space won't trigger an event
+    pageId = 3; // so that pressing space won't trigger an event
   });
 } else {
   set_new_test();
@@ -50,9 +50,12 @@ $('#seeres').on('click', function(evt) {
   window.open(dashboardName);
 });
 
-$('#customRange').prop('disabled', true);
-$('#customRange').css('visibility', 'hidden');
+//$('#customRange').prop('disabled', true);
+//$('#customRange').css('visibility', 'hidden');
 $('#alertbox').css('visibility', 'hidden');
+$('#trainbox').css('visibility', 'hidden');
+
+$("body").keydown(advance_phase_cb);
 
 
 
@@ -180,7 +183,7 @@ function restore_test() {
 
   all_test_stats = prev_page.all_test_stats;
 
-  pageId = 2;
+  pageId = 3;
 }
 
 function set_new_test() {
@@ -298,17 +301,105 @@ function post_data(data) {
   .catch(error => console.error(error));
 }
 
-$("body").keydown(function(e){
-  if (e.which == 32) { // Space key
+function advance_phase_cb(e){
+  if (e.which == 13) { // Enter key to advance to next phase
     if (pageId == 0) {
       $('#inst-tab').trigger('click');
       pageId = 1;
     } else if (pageId == 1) {
-      prepare_test();
+      prepare_training();
       pageId = 2;
+    } else if (pageId == 2) {
+      prepare_test();
+      pageId = 3; // will be in 'test-tab'
     }
   }
-});
+}
+
+function get_test_ans_cb(e) {
+  // https://stackoverflow.com/questions/4471582/keycode-vs-which
+  // arrows to pick answers
+  if (e.which == 81 || e.which == 87 || e.which == 65 || e.which == 83) {
+    var map = {81: 0,
+               87: 1,
+               65: 2,
+               83: 3,};
+    if (map[e.which] == page.train_id) page.num_con_cors++;
+    else page.num_con_cors = 0;
+    $('#counter').text(page.num_con_cors.toString());
+
+    if (page.num_con_cors == 6) {
+      $('#trainbox').css('visibility', 'visible');
+
+      $("body").on('keydown', advance_phase_cb);
+      $("body").off('keydown', get_test_ans_cb);
+
+      return;
+    }
+
+    var id = Math.floor(Math.random() * 4);
+    page.train_id = id;
+    var sameC = shuffle([180, 200, 220]);
+    for (var i = 0; i <= 3; i++) {
+      if (i != id) state.colors[i] = new colorObj(sameC, 'srgb');
+      else {
+        var channel = 200 + Math.floor(Math.random() * 20);
+        var idt = Math.floor(Math.random() * 3);
+        var diffC = [18, 18, 18];
+        diffC[idt] = channel;
+        state.colors[i] = new colorObj(diffC, 'srgb');
+      }
+    }
+
+    updatePlot(0, 3);
+    $(page.slider).val(0);
+  }
+}
+
+// TODO: complete duck tapes
+function prepare_training() {
+  page.s11 = '#t_s11';
+  page.s12 = '#t_s12';
+  page.s13 = '#t_s13';
+  page.s14 = '#t_s14';
+  page.slider = '#t_customRange';
+  page.slider_reset = '#t_reset';
+
+  $(page.slider).on('input', function() {
+    $('.rot-label').html('Rotation Angle (Degree): ' + (this.value/Math.PI*180).toFixed(2) + '&#176;')
+    updatePlot(this.value, 0)
+  });
+  $(page.slider).prop('disabled', false);
+  $(page.slider).css('visibility', 'hidden');
+
+  $(page.slider_reset).on('click', function(evt) {
+    $(page.slider).val(0);
+    // need to explicitly trigger input event
+    $(page.slider).trigger('input');
+  });
+  $(page.slider_reset).prop('disabled', false);
+
+  page.num_con_cors = 0;
+
+  $("body").off('keydown', advance_phase_cb);
+  $("body").off('keydown', get_ans_cb);
+  $("body").on('keydown', key_slider_cb);
+  $("body").on('keydown', get_test_ans_cb);
+
+  // baseColor and scale are meaningless here
+  state = new discTestState(new colorObj([0.2, 0.15, 0.65], 'xyz'), 0.1,
+      ()=>{}, ()=>{},
+      ()=>{}, ()=>{});
+  state.colors[0] = new colorObj([210, 200, 203], 'srgb');
+  state.colors[1] = new colorObj([210, 200, 203], 'srgb');
+  state.colors[2] = new colorObj([210, 200, 203], 'srgb');
+  state.colors[3] = new colorObj([255, 18, 18], 'srgb');
+  page.train_id = 3;
+
+  updatePlot(0, 3);
+
+  $('#train-tab').trigger('click');
+}
 
 //https://www.w3schools.com/jsref/met_element_exitfullscreen.asp
 // https://developer.mozilla.org/en-US/docs/Web/API/Fullscreen_API
@@ -333,7 +424,43 @@ function closeFullScreen() {
   }
 }
 
+function key_slider_cb(e) {
+  var current = parseFloat($(page.slider).val());
+
+  function set_next(ang) {
+    // TODO: change the unit to degree (in html as well) so that it's more precise.
+    // this is a cyclic rotation.
+    // technically no need to do since since sinusoids are periodic. we do
+    // this here because we use the slider, which has to have a range.
+    if (ang < -3.14) ang += 3.14*2;
+    else if (ang > 3.14) ang -= 3.14*2;
+
+    $(page.slider).val(ang);
+    $(page.slider).trigger('input');
+
+    prof.incs++;
+  }
+
+  if (e.which == 37) {
+    // left arrow
+    set_next(current - 0.06);
+  } else if (e.which == 39) {
+    // right arrow
+    set_next(current + 0.06);
+  } else if (e.which == 32) {
+    // space
+    set_next(0);
+  }
+}
+
 function prepare_test(evt) {
+  page.s11 = '#s11';
+  page.s12 = '#s12';
+  page.s13 = '#s13';
+  page.s14 = '#s14';
+  page.slider = '#customRange';
+  page.slider_reset = '#reset';
+
   canvas.width = window.screen.width;
   canvas.height = window.screen.height;
 
@@ -350,34 +477,8 @@ function prepare_test(evt) {
       test[3]);
   page.submit();
 
-  $("body").keydown(function(e){
-    var current = parseFloat($('#customRange').val());
-
-    function set_next(ang) {
-      // TODO: change the unit to degree (in html as well) so that it's more precise.
-      // this is a cyclic rotation.
-	  // technically no need to do since since sinusoids are periodic. we do
-	  // this here because we use the slider, which has to have a range.
-      if (ang < -3.14) ang += 3.14*2;
-      else if (ang > 3.14) ang -= 3.14*2;
-
-      $('#customRange').val(ang);
-      $('#customRange').trigger('input');
-
-      prof.incs++;
-    }
-
-    if (e.which == 37) {
-      // left arrow
-      set_next(current - 0.06);
-    } else if (e.which == 39) {
-      // right arrow
-      set_next(current + 0.06);
-    } else if (e.which == 32) {
-      // space
-      set_next(0);
-    }
-  });
+  $("body").on('keydown', get_ans_cb);
+  $("body").keydown(key_slider_cb);
 
   $('body').css('background-color', 'rgb(120, 120, 120)');
   $('#test-tab').trigger('click');
@@ -438,22 +539,24 @@ function registerPickSimMethod() {
   $('input[type=radio][name=method]').prop('disabled', true);
 }
 
-function registerGetAns() {
+function get_ans_cb(e) {
   var map = {81: 1,
              87: 2,
              65: 3,
              83: 4,};
 
-  $("body").keydown(function(e){
-    // https://stackoverflow.com/questions/4471582/keycode-vs-which
-    if (e.which == 81 || e.which == 87 || e.which == 65 || e.which == 83) {
-      prof.num_incrs.push(prof.incs);
-      prof.incs = 0;
-      prof.time_elapsed.push(Date.now() - prof.start);
-      getAnswer(map[e.which]);
-      prof.start = Date.now();
-    }
-  });
+  // https://stackoverflow.com/questions/4471582/keycode-vs-which
+  if (e.which == 81 || e.which == 87 || e.which == 65 || e.which == 83) {
+    prof.num_incrs.push(prof.incs);
+    prof.incs = 0;
+    prof.time_elapsed.push(Date.now() - prof.start);
+    getAnswer(map[e.which]);
+    prof.start = Date.now();
+  }
+}
+
+function registerGetAns() {
+  $("body").keydown(get_ans_cb);
 }
 
 function add_new_base_trace(plot) {
@@ -485,10 +588,10 @@ function test_start_cb() {
 
   // display "Next Trial" in-between tests
   var bg_color = $('#patches').css('background-color');
-  $('#s11').css('background-color', bg_color);
-  $('#s12').css('background-color', bg_color);
-  $('#s13').css('background-color', bg_color);
-  $('#s14').css('background-color', bg_color);
+  $(page.s11).css('background-color', bg_color);
+  $(page.s12).css('background-color', bg_color);
+  $(page.s13).css('background-color', bg_color);
+  $(page.s14).css('background-color', bg_color);
 
   context.font = "bold 60px Arial";
   context.textAlign = "center";
@@ -497,13 +600,13 @@ function test_start_cb() {
       canvas.width/2, canvas.height/2);
 
   // https://javascript.info/promise-basics
-  $('#customRange').css('visibility', 'hidden');
+  $(page.slider).css('visibility', 'hidden');
   return promise = new Promise(function(resolve, reject) {
     // TODO: could unbind keyboard events
     setTimeout(() => {
       context.clearRect(0, 0, canvas.width, canvas.height);
       resolve("done");
-      $('#customRange').css('visibility', 'visible');
+      $(page.slider).css('visibility', 'visible');
     }, 700);
   });
 }

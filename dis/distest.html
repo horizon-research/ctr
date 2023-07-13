@@ -97,6 +97,9 @@
               <button class="nav-link" id="inst-tab" data-bs-toggle="tab" data-bs-target="#inst-tab-pane" type="button" role="tab" aria-controls="inst-tab-pane" aria-selected="true">instructions</button>
             </li>
             <li class="nav-item" role="presentation">
+              <button class="nav-link" id="train-tab" data-bs-toggle="tab" data-bs-target="#train-tab-pane" type="button" role="tab" aria-controls="train-tab-pane" aria-selected="true">training</button>
+            </li>
+            <li class="nav-item" role="presentation">
               <button class="nav-link" id="reset-tab" data-bs-toggle="tab" data-bs-target="#reset-tab-pane" type="button" role="tab" aria-controls="reset-tab-pane" aria-selected="true">reset</button>
             </li>
             <li class="nav-item" role="presentation">
@@ -147,7 +150,7 @@
                     <button type="button" class="btn btn-secondary my-4" id="toInst">Next</button>
 -->
                     <div class="alert alert-success text-center" role="alert">
-                      When ready, press the <b>Space</b> key to proceed.
+                      When ready, press the <b>Enter</b> key to proceed.
                     </div>
                   </div>
                 </div>
@@ -155,11 +158,11 @@
             </div>
     
             <div class="tab-pane" id="inst-tab-pane" role="tabpanel" aria-labelledby="inst-tab" tabindex="0">
+              <h1 class="d-flex justify-content-md-center mt-4 nofocus fixed-top">Instructions</h1>
               <div class="row d-flex justify-content-center">
                 <div class="col-sm-6">
                   <div class="row">
-                    <h5>Instructions</h5>
-<p>During the test, you will be presented with four color patches laid out as below. Your task is to identify the patch whose color differs from the other three.</p>
+<p>During the test, you will be presented with four color patches laid out as below. Your task is to identify the patch whose color differs from the other three. The placement of the differing patch is random.</p>
 <p>You can use the <b>Left Arrow</b> and <b>Right Arrow</b> keys to shift the colors of all patches to try and identify the different one. Pressing the <b>Space</b> resets the color shift.</p>
 <p>Once you have identified the patch whose color differs from the other three, indicate your choice by pressing one of the four <b>Q/W/A/S</b> letter keys corresponding to the patch's placement (e.g., <b>W</b> in the example below).</p>
                   </div>
@@ -171,7 +174,7 @@
                       <font size="4">W</font>
                     </div>
                   </div>
-                  <div class="row justify-content-center mb-2">
+                  <div class="row justify-content-center mb-4">
                     <div class="col col-lg-2 me-1 square content_center" style="background-color: #DE3412">
                       <font size="4">A</font>
                     </div>
@@ -180,18 +183,65 @@
                     </div>
                   </div>
                   <div class="row">
-<p>To move to the next set of patches, you <b>must</b> make a choice. Select randomly if you are unable to identify the differing patch.</p>
-<p>After each trial, you will see random gray dots on the screen to reset your visual field, followed by the next trial. The placement of the differing patch is randomized across trials.</p>
+<p>You <b>must</b> make a choice. Select randomly if you are unable to identify the differing patch.</p>
+<p>After each trial, you will see random gray dots to reset your visual field, followed by the next trial.</p>
+<!--
 <p>The task is progressively more challenging as long as you keep identifying the correct patch and less challenging if you make errors. The experiment terminates when a threshold is found.</p>
+-->
                   </div>
                   <div class="row mx-auto mt-2">
 <!--
                     <button type="button" class="btn btn-secondary my-4" id="toTest">Next</button>
 -->
                     <div class="alert alert-success text-center" role="alert">
-                      When ready, press the <b>Space</b> key to proceed.
+                      When ready, press the <b>Enter</b> key to proceed.
                     </div>
                   </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="tab-pane" id="train-tab-pane" role="tabpanel" aria-labelledby="train-tab">
+              <div class="container text-center nofocus" tabindex="-1">
+                <h1 class="justify-content-md-center mt-4 nofocus fixed-top">Training</h1>
+                <div class="col-sm-6 mx-auto">
+                  <div class="row justify-content-md-center my-auto nofocus">
+                    <p>The goal is for you to be familiar with the interface. You are encouraged to use the <b>Left Arrow</b> and <b>Right Arrow</b> keys to shift the colors and use the <b>Space</b> key to reset the shift, even though you might not need them to identify the differing patch here.</p>
+                  </div>
+                  <div class="row justify-content-md-center my-2 nofocus">
+                    <div class="col col-lg-2 me-1 square content_center" id="t_s11">
+                        <font size="4">Q</font>
+                    </div>
+                    <div class="col col-lg-2 ms-1 square content_center" id="t_s12">
+                        <font size="4">W</font>
+                    </div>
+                  </div>
+                  <div class="row justify-content-md-center my-2 nofocus">
+                    <div class="col col-lg-2 me-1 square content_center" id="t_s13">
+                        <font size="4">A</font>
+                    </div>
+                    <div class="col col-lg-2 ms-1 square content_center" id="t_s14">
+                        <font size="4">S</font>
+                    </div>
+                  </div>
+                  <div class="row justify-content-md-center my-auto nofocus">
+                    <p class="fs-4">You've made <span id="counter" class="fw-bold text-success">0</span> correct choices in a row. Target: <b>6</b> in a row.</p>
+                  </div>
+                  <div class="row justify-content-md-center mt-auto nofocus" id="trainbox">
+                    <div class="alert alert-success text-center" role="alert">
+                      Training phase completed; press the <b>Enter</b> key to proceed to the test.
+                    </div>
+                  </div>
+                </div>
+              </div>
+    
+              <div class="row mt-4 opacity-25">
+                <div class="col-sm-12">
+                  <label for="customRange" class="rot-label" style="font-size:20px; display: none">Rotation Angle (Degree): 0&#176;</label>
+                  <input type="range" class="form-range" min="-3.14" max="3.14" step="0.02" id="t_customRange">
+                </div>
+                <div class="col-sm-2" style="display: none">
+                  <button id="t_reset" class="btn btn-secondary">Reset</button>
                 </div>
               </div>
             </div>
