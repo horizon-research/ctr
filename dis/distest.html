@@ -114,7 +114,24 @@
               <h1 class="d-flex justify-content-md-center mt-4 nofocus fixed-top">Welcome</h1>
               <div class="row d-flex justify-content-center align-items-center">
                 <div class="col-sm-6">
-                  <div class="row">
+                  <p class="fs-4">We take privacy seriously. We do not collect any <a href="https://www.dol.gov/general/ppii">Personal Identifiable Information</a>. The only personal information we ask from you is your color blindness type. Please choose your type using the dropdown below.</p>
+                  <select id="cvdtype" class="my-2 form-select">
+                    <option value="normal">Normal Color Vision &nbsp; | &nbsp; Trichromacy</option>
+                    <option value="prot">Protanopia &nbsp; | &nbsp; Strong Protan &nbsp; | &nbsp; Severe Protan</option>
+                    <option value="proa">Protanomaly &nbsp; | &nbsp; Weak Protan &nbsp; | &nbsp; Mild Protan</option>
+                    <option value="deut">Deuteranopia &nbsp; | &nbsp; Strong Deutan &nbsp; | &nbsp; Severe Deutan</option>
+                    <option value="deua">Deuteranomaly &nbsp; | &nbsp; Weak Deutan &nbsp; | &nbsp; Mild Deutan</option>
+                    <option value="trit">Tritanopia &nbsp; | &nbsp; Strong Tritan &nbsp; | &nbsp; Severe Tritan</option>
+                    <option value="tria">Tritanomaly &nbsp; | &nbsp; Weak Tritan &nbsp; | &nbsp; Mild Tritan</option>
+                    <option value="mono">Monochromacy &nbsp; | &nbsp; Achromatopsia</option>
+                    <option value="unknown">Unknown</option>
+                  </select>
+                  <p class="fs-4">If are not 100% sure, we would appreciate it if you could take an online color blindness test, such as <a href="https://pilestone.com/pages/color-blind-test">this one</a>. Note that different color blindness tests use slightly different terminologies. Choose the one from the dropdown that best matches what the test tells you.</p>
+                </div>
+              </div>
+              <div class="row d-flex justify-content-center align-items-center">
+                <div class="col-sm-6">
+                  <div class="row" style="display: none">
                     <div class="btn-group mb-2" role="group" aria-label="Basic radio toggle button group">
                       <input type="radio" class="btn-check" name="sim" id="no" autocomplete="off">
                       <label class="btn btn-outline-secondary" for="no">Real Stimuli</label>

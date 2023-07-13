@@ -82,6 +82,11 @@ $('#seeres').on('click', function(evt) {
   window.open('dashboard/'+dashboardName+'.html');
 });
 
+$('#cvdtype').on('change', function(evt) {
+  var val = this.value;
+  page.cvdType = val; // TODO: this might eventually replace page.type
+});
+
 $('#alertbox').css('visibility', 'hidden');
 $('#trainbox').css('visibility', 'hidden');
 $('#fbbox').css('visibility', 'hidden');
@@ -370,7 +375,7 @@ function get_test_ans_cb(e) {
 
     var id = Math.floor(Math.random() * 4);
     page.train_id = id;
-    var sameC = shuffle([180, 200, 220]);
+    var sameC = shuffle([195, 200, 205]);
     for (var i = 0; i <= 3; i++) {
       if (i != id) state.colors[i] = new colorObj(sameC, 'srgb');
       else {
@@ -681,6 +686,7 @@ function test_finish_cb() {
       sim: page.sim,
       type: page.type,
       simMethod: page.simMethod,
+      cvdType: page.cvdType,
 
       color_supports: page.color_supports,
       bitdepth: page.bitdepth, // bitdepth is technically derived; save it for convenience
