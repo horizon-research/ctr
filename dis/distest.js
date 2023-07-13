@@ -58,8 +58,6 @@ $('#seeres').on('click', function(evt) {
   window.open(dashboardName);
 });
 
-//$('#customRange').prop('disabled', true);
-//$('#customRange').css('visibility', 'hidden');
 $('#alertbox').css('visibility', 'hidden');
 $('#trainbox').css('visibility', 'hidden');
 
