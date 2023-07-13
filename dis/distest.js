@@ -338,9 +338,9 @@ function advance_phase_cb(e){
       $('#inst-tab').trigger('click');
       pageId = 1;
     } else if (pageId == 1) {
-    //  prepare_training();
-    //  pageId = 2;
-    //} else if (pageId == 2) {
+      prepare_training();
+      pageId = 2;
+    } else if (pageId == 2) {
       prepare_test();
       pageId = 3; // will be in 'test-tab'
     }
