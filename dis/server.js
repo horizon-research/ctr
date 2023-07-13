@@ -29,15 +29,10 @@ const server = http.createServer((req, res) => {
           fs.mkdirSync('dashboard');
 
         // Save the JSON data to a file
-        var today = new Date();
-        //var filename = today.getFullYear()+
-        //               format(today.getMonth()+1)+
-        //               format(today.getDate())+
-        //               format(today.getHours())+
-        //               format(today.getMinutes())+
-        //               format(today.getSeconds());
+        //var today = new Date();
+        //var filename = today.getFullYear()+format(today.getMonth()+1)+format(today.getDate())+format(today.getHours())+format(today.getMinutes())+format(today.getSeconds());
         var filename = uid();
-        fs.writeFile('dashboard/' + filename+'.json', JSON.stringify(jsonData), err => {
+        fs.writeFile('dashboard/'+filename+'.json', JSON.stringify(jsonData), err => {
           if (err) {
             res.writeHead(500, { 'Content-Type': 'text/plain' });
             res.end('Internal Server Error');
@@ -45,9 +40,47 @@ const server = http.createServer((req, res) => {
           } else {
             fs.copyFile('dashboard.html', 'dashboard/'+filename+'.html', (err) => {
               res.writeHead(200, { 'Content-Type': 'text/plain' });
-              res.end('dashboard/'+filename+'.html');
+              res.end(filename);
             });
           }
+        });
+      } catch (error) {
+        res.writeHead(400, { 'Content-Type': 'text/plain' });
+        res.end('Invalid JSON format');
+        console.error(error);
+      }
+    });
+  } else if (req.method === 'POST' && req.url === '/upload-feedback') {
+    let data = '';
+    
+    req.on('data', chunk => {
+      data += chunk;
+    });
+
+    req.on('end', () => {
+      try {
+        const jsonData = JSON.parse(data);
+        var uid = jsonData.uid;
+        var fb = jsonData.fb;
+
+        if (!fs.existsSync('dashboard'))
+          fs.mkdirSync('dashboard');
+
+        fs.readFile('dashboard/'+uid+'.json', 'utf8', (err, res) => {
+          if (err) {
+            console.error(err);
+            return;
+          }
+          const resData = JSON.parse(res);
+          // update the result obj
+          resData.fb = fb;
+
+          // update the json file
+          fs.writeFile('dashboard/'+uid+'.json', JSON.stringify(resData), err => {
+            if (err) {
+              console.error(err);
+            }
+          });
         });
       } catch (error) {
         res.writeHead(400, { 'Content-Type': 'text/plain' });

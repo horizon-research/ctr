@@ -53,9 +53,29 @@ if (window.localStorage.getItem('results')) {
   set_new_test();
 }
 
+$('#feedback').on('click', function(evt) {
+  const feedbackData = {uid: dashboardName,
+                        fb: $('#fbtext').val()};
+
+  fetch('http://localhost:9812/upload-feedback', {
+    method: 'POST',
+    mode: "cors", // no-cors, *cors, same-origin
+    cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
+    credentials: "same-origin", // include, *same-origin, omit
+    body: JSON.stringify(feedbackData),
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  })
+  .then(response => response.text())
+  .then(result => {
+  })
+  .catch(error => console.error(error));
+});
+
 $('#seeres').on('click', function(evt) {
   // open the dashboard page
-  window.open(dashboardName);
+  window.open('dashboard/'+dashboardName+'.html');
 });
 
 $('#alertbox').css('visibility', 'hidden');

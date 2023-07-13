@@ -174,6 +174,10 @@ function displayConfig(page_stats) {
   $('#d2020').html(page_stats.color_supports.rec2020_d ? '&#10003;' : '');
 }
 
+function displayFb(t) {
+  $('#fbtext').text(t);
+}
+
 var page, dis_plot, exp_plot;
 
 var fileName = location.href.split("/").at(-1);
@@ -188,5 +192,6 @@ fetch(jsonFileName+'.json')
     page = new pageObj((cs == 0) ? 'srgb' : 'p3');
     gen_plot(data.all_test_stats);
     displayConfig(data.page_stats);
+    displayFb(data.fb);
   })
 
