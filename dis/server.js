@@ -66,12 +66,12 @@ const server = http.createServer((req, res) => {
         if (!fs.existsSync('dashboard'))
           fs.mkdirSync('dashboard');
 
-        fs.readFile('dashboard/'+uid+'.json', 'utf8', (err, res) => {
+        fs.readFile('dashboard/'+uid+'.json', 'utf8', (err, results) => {
           if (err) {
             console.error(err);
             return;
           }
-          const resData = JSON.parse(res);
+          const resData = JSON.parse(results);
           // update the result obj
           resData.fb = fb;
 
@@ -79,6 +79,9 @@ const server = http.createServer((req, res) => {
           fs.writeFile('dashboard/'+uid+'.json', JSON.stringify(resData), err => {
             if (err) {
               console.error(err);
+            } else {
+              res.writeHead(200, { 'Content-Type': 'text/plain' });
+              res.end();
             }
           });
         });

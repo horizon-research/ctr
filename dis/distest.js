@@ -69,6 +69,10 @@ $('#feedback').on('click', function(evt) {
   })
   .then(response => response.text())
   .then(result => {
+    // show live toast, which will auto hide
+    const toastLiveExample = document.getElementById('liveToast')
+    const toastBootstrap = bootstrap.Toast.getOrCreateInstance(toastLiveExample)
+    toastBootstrap.show()
   })
   .catch(error => console.error(error));
 });
@@ -80,6 +84,7 @@ $('#seeres').on('click', function(evt) {
 
 $('#alertbox').css('visibility', 'hidden');
 $('#trainbox').css('visibility', 'hidden');
+$('#fbbox').css('visibility', 'hidden');
 
 $("body").keydown(advance_phase_cb);
 
@@ -94,7 +99,7 @@ function gen_all_tests() {
   return [
           // navy blue
           [[86, 95, 214], 'srgb',  0.1, p_line],
-          [[86, 95, 214], 'srgb', -0.1, p_line],
+          //[[86, 95, 214], 'srgb', -0.1, p_line],
           //[[86, 95, 214], 'srgb',  0.1, d_line],
           //[[86, 95, 214], 'srgb', -0.1, d_line],
           //[[86, 95, 214], 'srgb',  0.3, t_line],
@@ -333,9 +338,9 @@ function advance_phase_cb(e){
       $('#inst-tab').trigger('click');
       pageId = 1;
     } else if (pageId == 1) {
-      prepare_training();
-      pageId = 2;
-    } else if (pageId == 2) {
+    //  prepare_training();
+    //  pageId = 2;
+    //} else if (pageId == 2) {
       prepare_test();
       pageId = 3; // will be in 'test-tab'
     }
