@@ -53,7 +53,34 @@ if (window.localStorage.getItem('results')) {
   set_new_test();
 }
 
-$('#feedback').on('click', function(evt) {
+$('#feedback').on('click', get_fb_cb);
+$('#seeres').on('click', open_dashboard_cb);
+$('#cvdtype').on('change', set_cvdtype_cb);
+$("body").on('keydown', advance_phase_cb);
+
+$('#alertbox').css('visibility', 'hidden');
+$('#trainbox').css('visibility', 'hidden');
+$('#fbbox').css('visibility', 'hidden');
+
+
+
+
+
+/*-------------------------------------*/
+/* all the functions are defined below */
+/*-------------------------------------*/
+
+function set_cvdtype_cb() {
+  var val = this.value;
+  page.cvdType = val; // TODO: this might eventually replace page.type
+}
+
+function open_dashboard_cb() {
+  // open the dashboard page
+  window.open('dashboard/'+dashboardName+'.html');
+}
+
+function get_fb_cb() {
   const feedbackData = {uid: dashboardName,
                         fb: $('#fbtext').val()};
 
@@ -75,30 +102,7 @@ $('#feedback').on('click', function(evt) {
     toastBootstrap.show()
   })
   .catch(error => console.error(error));
-});
-
-$('#seeres').on('click', function(evt) {
-  // open the dashboard page
-  window.open('dashboard/'+dashboardName+'.html');
-});
-
-$('#cvdtype').on('change', function(evt) {
-  var val = this.value;
-  page.cvdType = val; // TODO: this might eventually replace page.type
-});
-
-$('#alertbox').css('visibility', 'hidden');
-$('#trainbox').css('visibility', 'hidden');
-$('#fbbox').css('visibility', 'hidden');
-
-$("body").keydown(advance_phase_cb);
-
-
-
-
-/*-------------------------------------*/
-/* all the functions are defined below */
-/*-------------------------------------*/
+}
 
 function gen_all_tests() {
   return [
