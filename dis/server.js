@@ -3,6 +3,16 @@ const fs = require('fs');
 const path = require('path');
 const url = require('url');
 
+//function format(num) {
+//  if (parseInt(num) < 10) return '0'+num;
+//  else return num;
+//}
+
+// https://stackoverflow.com/questions/3231459/how-can-i-create-unique-ids-with-javascript
+const uid = function() {
+  return Date.now().toString(36) + Math.floor(Math.pow(10, 12) + Math.random()*9*Math.pow(10, 12)).toString(36);
+}
+
 const server = http.createServer((req, res) => {
   if (req.method === 'POST' && req.url === '/upload-disc-data') {
     let data = '';
@@ -20,7 +30,13 @@ const server = http.createServer((req, res) => {
 
         // Save the JSON data to a file
         var today = new Date();
-        var filename = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate()+'-'+today.getHours()+'-'+today.getMinutes()+'-'+today.getSeconds();
+        //var filename = today.getFullYear()+
+        //               format(today.getMonth()+1)+
+        //               format(today.getDate())+
+        //               format(today.getHours())+
+        //               format(today.getMinutes())+
+        //               format(today.getSeconds());
+        var filename = uid();
         fs.writeFile('dashboard/' + filename+'.json', JSON.stringify(jsonData), err => {
           if (err) {
             res.writeHead(500, { 'Content-Type': 'text/plain' });
