@@ -91,7 +91,10 @@
     
           <ul class="nav nav-tabs" id="mainTab" role="tablist" style="display: none">
             <li class="nav-item" role="presentation">
-              <button class="nav-link active" id="setting-tab" data-bs-toggle="tab" data-bs-target="#setting-tab-pane" type="button" role="tab" aria-controls="setting-tab-pane" aria-selected="true">settings</button>
+              <button class="nav-link active" id="faq-tab" data-bs-toggle="tab" data-bs-target="#faq-tab-pane" type="button" role="tab" aria-controls="faq-tab-pane" aria-selected="true">faqs</button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button class="nav-link" id="setting-tab" data-bs-toggle="tab" data-bs-target="#setting-tab-pane" type="button" role="tab" aria-controls="setting-tab-pane" aria-selected="true">settings</button>
             </li>
             <li class="nav-item" role="presentation">
               <button class="nav-link" id="inst-tab" data-bs-toggle="tab" data-bs-target="#inst-tab-pane" type="button" role="tab" aria-controls="inst-tab-pane" aria-selected="true">instructions</button>
@@ -109,13 +112,57 @@
               <button class="nav-link" id="res-tab" data-bs-toggle="tab" data-bs-target="#res-tab-pane" type="button" role="tab" aria-controls="res-tab-pane" aria-selected="false">results</button>
             </li>
           </ul>
+
           <div class="tab-content" id="myTabContent">
-            <div class="tab-pane show active" id="setting-tab-pane" role="tabpanel" aria-labelledby="setting-tab" tabindex="0">
+            <div class="tab-pane show active" id="faq-tab-pane" role="tabpanel" aria-labelledby="faq-tab" tabindex="0">
               <h1 class="d-flex justify-content-md-center mt-4 nofocus fixed-top">Welcome</h1>
               <div class="row d-flex justify-content-center align-items-center">
+                <div class="col-sm-10">
+                  <p class="fs-5">Thank you for participating in our study. We value your participation and hope that the points below answer some key questions you may have.</p>
+
+                  <div class="card">
+                    <div class="card-body">
+                      <h5 class="card-title">What is the goal of our study?</h5>
+                      <p class="card-text">The goal of our project is to develop simple and widely usable assistive technologies for individuals with color vision deficiency (CVD). Eventually, our technologies will help individuals with CVD: 1) better discriminate commonly confusing colors, and 2) communicate in unambiguous color vocabaulary with normal-vision people.</p>
+                    </div>
+                  </div>
+                  
+                  <div class="card mt-3">
+                    <div class="card-body">
+                      <h5 class="card-title">Why do you need my participation?</h5>
+                      <p class="card-text">In order to develop our assistive technologies, we need to collect data from individuals who actually suffer from CVD. The data will be collected by asking you to perform a sequence of tasks. The data collected will help improve our internal model and assess the effectiveness of our technologies. Unlike many human labeling tasks that are meant to help train a computer, the tasks you will perform in this study are intended to help CVD individuals like yourself better navigate day to day life.</p>
+                    </div>
+                  </div>
+                  
+                  <div class="card mt-3">
+                    <div class="card-body">
+                      <h5 class="card-title">How long will this study take?</h5>
+                      <p class="card-text">The entire study might take about 60 minutes. We recognize that we are requesting a substantial time investment from you and appreciate your patience and diligence as you go through the tasks. At any time during the test you should feel free, and are recommended, to take a break. During the break, you can leave the browser tab open, or you can close the browser tab or even shut down the computer. Your progress is automatically saved, so when you come back to this link, the previous state will be automatically restored.</p>
+                    </div>
+                  </div>
+                  
+                  <div class="card mt-3">
+                    <div class="card-body">
+                      <h5 class="card-title">In what environment should I take the test?</h5>
+                      <p class="card-text">Ideally you take the study in an indoor setting where you can turn off lights and use window blinds to block outdoor lights. Throughout the study the monitor should be at a distance of about 80 cm from your eyes, and you should focus your gaze at the center of the monitor.</p>
+                    </div>
+                  </div>
+                  
+                  <div class="row mx-auto mt-4">
+                    <div class="alert alert-success text-center" role="alert">
+                      When ready, press <b>Enter</b> to proceed.
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+    
+            <div class="tab-pane" id="setting-tab-pane" role="tabpanel" aria-labelledby="setting-tab" tabindex="0">
+              <h1 class="d-flex justify-content-md-center mt-4 nofocus fixed-top">Privacy</h1>
+              <div class="row d-flex justify-content-center align-items-center">
                 <div class="col-sm-6">
-                  <p class="fs-4">We take privacy seriously. We do not collect any <a href="https://www.dol.gov/general/ppii">Personal Identifiable Information</a>. The only personal information we ask from you is your color blindness type. Please choose your type using the dropdown below.</p>
-                  <select id="cvdtype" class="my-2 form-select">
+                  <p class="fs-5">We take privacy seriously. We do not collect any <a href="https://www.dol.gov/general/ppii">Personal Identifiable Information</a>. The only personal information we ask from you is your color blindness type. Please choose your type using the dropdown below.</p>
+                  <select id="cvdtype" class="mb-3 form-select">
                     <option value="normal">Normal Color Vision &nbsp; | &nbsp; Trichromacy</option>
                     <option value="prot">Protanopia &nbsp; | &nbsp; Strong Protan &nbsp; | &nbsp; Severe Protan</option>
                     <option value="proa">Protanomaly &nbsp; | &nbsp; Weak Protan &nbsp; | &nbsp; Mild Protan</option>
@@ -126,7 +173,7 @@
                     <option value="mono">Monochromacy &nbsp; | &nbsp; Achromatopsia</option>
                     <option value="unknown">Unknown</option>
                   </select>
-                  <p class="fs-4">If are not 100% sure, we would appreciate it if you could take an online color blindness test, such as <a href="https://pilestone.com/pages/color-blind-test">this one</a>. Note that different color blindness tests use slightly different terminologies. Choose the one from the dropdown that best matches what the test tells you.</p>
+                  <p class="fs-5">If are not 100% sure, we would appreciate it if you could take an online color blindness test, such as <a href="https://pilestone.com/pages/color-blind-test">this one</a>. Note that different color blindness tests use slightly different terminologies. Choose the one from the dropdown that best matches what the test tells you.</p>
                 </div>
               </div>
               <div class="row d-flex justify-content-center align-items-center">
@@ -164,25 +211,22 @@
                   </div>
 -->
                   <div class="row mx-auto mt-4">
-<!--
-                    <button type="button" class="btn btn-secondary my-4" id="toInst">Next</button>
--->
                     <div class="alert alert-success text-center" role="alert">
-                      When ready, press the <b>Enter</b> key to proceed.
+                      When ready, press <b>Enter</b> to proceed.
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-    
+
             <div class="tab-pane" id="inst-tab-pane" role="tabpanel" aria-labelledby="inst-tab" tabindex="0">
               <h1 class="d-flex justify-content-md-center mt-4 nofocus fixed-top">Instructions</h1>
               <div class="row d-flex justify-content-center">
-                <div class="col-sm-6">
+                <div class="col-sm-8">
                   <div class="row">
-<p>The test consists of a sequence of trials. In each trial, you will be presented with four color patches laid out as below. Your task is to identify the patch whose color differs from the other three. The placement of the differing patch is random.</p>
-<p>You can use the <b>Left Arrow</b> and <b>Right Arrow</b> keys to shift the colors of all patches to try and identify the different one. Pressing the <b>Space</b> resets the color shift.</p>
-<p>Once you have identified the patch whose color differs from the other three, indicate your choice by pressing one of the four <b>Q/W/A/S</b> letter keys corresponding to the patch's placement (e.g., <b>W</b> in the example below).</p>
+<p class="fs-5">The test consists of a sequence of trials. In each trial, you will be presented with four color patches laid out as below. Your task is to identify the patch whose color differs from the other three. The placement of the differing patch is random.</p>
+<p class="fs-5">You might use the <b>Left Arrow</b> and <b>Right Arrow</b> keys, which will shift all the patch colors together and might help you identify the different one. Pressing the <b>Space</b> resets the color shift.</p>
+<p class="fs-5">Once you have identified the differing patch, indicate your choice by pressing one of the four <b>Q/W/A/S</b> letter keys corresponding to the patch's placement (e.g., <b>W</b> in the example below).</p>
                   </div>
                   <div class="row justify-content-center mb-2">
                     <div class="col col-lg-2 me-1 square content_center" style="background-color: #DE3412">
@@ -201,18 +245,13 @@
                     </div>
                   </div>
                   <div class="row">
-<p>You <b>must</b> make a choice. Select randomly if you are unable to identify the differing patch.</p>
-<p>After each trial, you will see random gray dots to reset your visual field, followed by the next trial.</p>
-<!--
-<p>The task is progressively more challenging as long as you keep identifying the correct patch and less challenging if you make errors. The experiment terminates when a threshold is found.</p>
--->
+<p class="fs-5">You <b>must</b> make a choice. Select randomly if you are unable to identify the differing patch.</p>
+<p class="fs-5">After each trial, you will see random gray dots to reset your visual field, followed by the next trial.</p>
+<p class="fs-5">Think of this as a game: the trials are progressively more challenging as long as you keep identifying the correct patch and less challenging if you make errors. The experiment terminates when a threshold is found.</p>
                   </div>
                   <div class="row mx-auto mt-2">
-<!--
-                    <button type="button" class="btn btn-secondary my-4" id="toTest">Next</button>
--->
                     <div class="alert alert-success text-center" role="alert">
-                      When ready, press the <b>Enter</b> key to proceed.
+                      When ready, press <b>Enter</b> to proceed.
                     </div>
                   </div>
                 </div>
@@ -222,9 +261,9 @@
             <div class="tab-pane" id="train-tab-pane" role="tabpanel" aria-labelledby="train-tab">
               <div class="container text-center nofocus" tabindex="-1">
                 <h1 class="justify-content-md-center mt-4 nofocus fixed-top">Training</h1>
-                <div class="col-sm-6 mx-auto">
+                <div class="col-sm-8 mx-auto">
                   <div class="row justify-content-md-center my-auto nofocus">
-                    <p>The goal is for you to be familiar with the interface. You are encouraged to use the <b>Left Arrow</b> and <b>Right Arrow</b> keys to shift the colors and use the <b>Space</b> key to reset the shift, even though you might not need them to identify the differing patch here.</p>
+                    <p class="fs-5">These training tasks help you be familiar with the user interface. You are encouraged to use the <b>Left Arrow</b> and <b>Right Arrow</b> keys to shift the colors and use the <b>Space</b> key to reset the shift, even though you might not need them to identify the differing patch here.</p>
                   </div>
                   <div class="row justify-content-md-center my-2 nofocus">
                     <div class="col col-lg-2 me-1 square content_center" id="t_s11">
@@ -242,12 +281,12 @@
                         <font size="4">S</font>
                     </div>
                   </div>
-                  <div class="row justify-content-md-center my-auto nofocus">
+                  <div class="row justify-content-md-center mt-4 nofocus">
                     <p class="fs-4">You've made <span id="counter" class="fw-bold text-success">0</span> correct choices in a row. Target: <b>6</b> in a row.</p>
                   </div>
                   <div class="row justify-content-md-center mt-auto nofocus" id="trainbox">
                     <div class="alert alert-success text-center" role="alert">
-                      Training phase completed; press the <b>Enter</b> key to proceed to the test.
+                      Training phase completed; press <b>Enter</b> to proceed to the test.
                     </div>
                   </div>
                 </div>
@@ -273,7 +312,7 @@
                 </div>
                 <div class="row d-flex justify-content-center">
                   <div class="d-grid gap-2 col-4 mx-auto">
-                    <button type="button" id="resume_train" class="btn btn-warning">Resume Previous Session and Redo Training</button>
+                    <button type="button" id="resume_train" class="btn btn-warning">Redo Training and Resume Previous Session (recommended if returning from a long break)</button>
                     <button type="button" id="resume" class="btn btn-primary">Resume Previous Session Without Training</button>
                     <button type="button" id="newtest" class="btn btn-success">Start a New Session</button>
                   </div>
@@ -318,8 +357,9 @@
             <div class="tab-pane" id="res-tab-pane" role="tabpanel" aria-labelledby="res-tab" tabindex="0">
               <h1 class="d-flex justify-content-md-center mt-4 nofocus fixed-top">Optional Feedback</h1>
               <div class="row d-flex justify-content-center">
+                <div class="col-sm-8">
                 <div class="mb-3">
-                  <label for="fbtext" class="form-label">Do you have any comments/feedback that you'd like to share with us?</label>
+                  <label for="fbtext" class="form-label">Do you have any comments/feedback that you'd like to share with us? Things we are interested in (and if you are willing to share) are: your overall experience with the tasks, the lighting condition of the environment in which you take the test, did you take breaks and for how long, or your color experience in your day to day life, etc. </label>
                   <textarea class="form-control" id="fbtext" rows="3"></textarea>
                 </div>
                 <div class="d-flex">
@@ -340,6 +380,7 @@
                       Feedback submitted!
                     </div>
                   </div>
+                </div>
                 </div>
               </div>
             </div>

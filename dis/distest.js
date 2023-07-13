@@ -1,7 +1,7 @@
 var p_line, d_line, t_line;
 var indices, testId;
 var prof, all_test_stats, dashboardName;
-var pageId; // 0: config; 1: inst; 2: test; 3: res
+var pageId; // 0: config; 1: faq; 2: inst; 3: test; 4: fb
 var all_tests;
 var page_stats;
 
@@ -39,7 +39,7 @@ if (window.localStorage.getItem('results')) {
     restore_test();
     if (alerted) return;
     prepare_training();
-    pageId = 2;
+    pageId = 3;
   });
 
   // restore a previous session without training
@@ -47,7 +47,7 @@ if (window.localStorage.getItem('results')) {
     restore_test();
     if (alerted) return;
     prepare_test();
-    pageId = 3; // so that pressing space won't trigger an event
+    pageId = 4; // so that pressing space won't trigger an event
   });
 } else {
   set_new_test();
@@ -104,7 +104,7 @@ function gen_all_tests() {
   return [
           // navy blue
           [[86, 95, 214], 'srgb',  0.1, p_line],
-          //[[86, 95, 214], 'srgb', -0.1, p_line],
+          [[86, 95, 214], 'srgb', -0.1, p_line],
           //[[86, 95, 214], 'srgb',  0.1, d_line],
           //[[86, 95, 214], 'srgb', -0.1, d_line],
           //[[86, 95, 214], 'srgb',  0.3, t_line],
@@ -218,8 +218,7 @@ function restore_test() {
   prof = new Profiler();
 
   all_test_stats = prev_page.all_test_stats;
-
-  pageId = 3;
+  //pageId = 4;
 }
 
 function set_new_test() {
@@ -340,14 +339,17 @@ function post_data(data) {
 function advance_phase_cb(e){
   if (e.which == 13) { // Enter key to advance to next phase
     if (pageId == 0) {
-      $('#inst-tab').trigger('click');
+      $('#setting-tab').trigger('click');
       pageId = 1;
     } else if (pageId == 1) {
-      prepare_training();
+      $('#inst-tab').trigger('click');
       pageId = 2;
     } else if (pageId == 2) {
+      prepare_training();
+      pageId = 3;
+    } else if (pageId == 3) {
       prepare_test();
-      pageId = 3; // will be in 'test-tab'
+      pageId = 4; // will be in 'test-tab'
     }
   }
 }
