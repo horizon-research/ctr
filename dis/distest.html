@@ -250,15 +250,14 @@
               <div class="row d-flex justify-content-center">
                 <div class="row mb-4">
                   <div class="col-sm-12 d-flex justify-content-center">
-<h5>You have a previously unfinished test. Do you want to continue that session or start a new session?</h5>
+                    <p class="fs-4">You have a previously unfinished test. Do you want to resume that session or start a new session?</p>
                   </div>
                 </div>
                 <div class="row d-flex justify-content-center">
-                  <div class="col-sm-3 d-flex justify-content-center">
-                    <button type="button" id="resume" class="btn btn-primary">Resume Previous Test</button>
-                  </div>
-                  <div class="col-sm-3 d-flex justify-content-center">
-                    <button type="button" id="newtest" class="btn btn-success">New Test</button>
+                  <div class="d-grid gap-2 col-4 mx-auto">
+                    <button type="button" id="resume" class="btn btn-primary">Resume Previous Session Without Training</button>
+                    <button type="button" id="resume_train" class="btn btn-warning">Resume Previous Session With Training</button>
+                    <button type="button" id="newtest" class="btn btn-success">Start a New Session</button>
                   </div>
                 </div>
                 <div class="row d-flex justify-content-center mt-4" id="alertbox">

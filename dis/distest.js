@@ -34,7 +34,15 @@ if (window.localStorage.getItem('results')) {
     location.reload();
   });
 
-  // restore a previous session
+  // restore a previous session with training
+  $('#resume_train').on('click', function(evt) {
+    restore_test();
+    if (alerted) return;
+    prepare_training();
+    pageId = 2;
+  });
+
+  // restore a previous session without training
   $('#resume').on('click', function(evt) {
     restore_test();
     if (alerted) return;
