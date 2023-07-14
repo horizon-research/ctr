@@ -27,6 +27,7 @@ if (window.localStorage.getItem('results')) {
 
   $('#reset-tab').trigger('click');
   $('#title').text('Welcome Back');
+  set_keyboard_cb(false, false, false, false); // equivalent to $("body").off('keydown');
 
   // start a new test
   $('#newtest').on('click', function(evt) {
@@ -46,21 +47,13 @@ if (window.localStorage.getItem('results')) {
   $('#resume').on('click', function(evt) {
     restore_test();
     if (alerted) return;
-    $("body").off('keydown', get_ans_cb); // TODO: this is to prevent two get_ans_cb to be registered, which will be triggered twice.
     prepare_test();
-    pageId = 4; // so that pressing space won't trigger an event
   });
 } else {
   set_new_test();
 }
 
-$('#feedback').on('click', get_fb_cb);
-$('#seeres').on('click', open_dashboard_cb);
-$('#cvdtype').on('change', set_cvdtype_cb);
-$('#sex').on('change', set_sex_cb);
-$('#eth').on('change', set_eth_cb);
-$('#age').on('change', set_age_cb);
-$("body").on('keydown', advance_phase_cb);
+set_keyboard_cb(true, false, false, false);
 
 $('#alertbox').css('visibility', 'hidden');
 $('#trainbox').css('visibility', 'hidden');
@@ -73,6 +66,22 @@ $('#fbbox').css('visibility', 'hidden');
 /*-------------------------------------*/
 /* all the functions are defined below */
 /*-------------------------------------*/
+
+function set_keyboard_cb(enter_evt, slider_evt, ans_evt, train_ans_evt) {
+  $("body").off('keydown');
+
+  if (enter_evt) $("body").on('keydown', advance_phase_cb);
+  else $("body").off('keydown', advance_phase_cb);
+
+  if (slider_evt) $("body").on('keydown', key_slider_cb);
+  else $("body").off('keydown', key_slider_cb);
+
+  if (ans_evt) $("body").on('keydown', get_ans_cb);
+  else $("body").off('keydown', get_ans_cb);
+
+  if (train_ans_evt) $("body").on('keydown', get_train_ans_cb);
+  else $("body").off('keydown', get_train_ans_cb);
+}
 
 function set_age_cb() {
   var val = this.value;
@@ -295,6 +304,11 @@ function set_new_test() {
       page.simMethod = map.method[para_plane];
     }
   }
+
+  $('#cvdtype').on('change', set_cvdtype_cb);
+  $('#sex').on('change', set_sex_cb);
+  $('#eth').on('change', set_eth_cb);
+  $('#age').on('change', set_age_cb);
 }
 
 // must use the base color for t1, because we want to get the orthogonal lines wrt to base color
@@ -370,10 +384,12 @@ function advance_phase_cb(e){
     if (pageId == 0) {
       $('#setting-tab').trigger('click');
       $('#title').text('Information About You');
+      set_keyboard_cb(true, false, false, false);
       pageId = 1;
     } else if (pageId == 1) {
       $('#inst-tab').trigger('click');
       $('#title').text('Instructions');
+      set_keyboard_cb(true, false, false, false);
       pageId = 2;
     } else if (pageId == 2) {
       prepare_training();
@@ -385,7 +401,7 @@ function advance_phase_cb(e){
   }
 }
 
-function get_test_ans_cb(e) {
+function get_train_ans_cb(e) {
   // https://stackoverflow.com/questions/4471582/keycode-vs-which
   // arrows to pick answers
   if (e.which == 81 || e.which == 87 || e.which == 65 || e.which == 83) {
@@ -400,8 +416,9 @@ function get_test_ans_cb(e) {
     if (page.num_con_cors == 6) {
       $('#trainbox').css('visibility', 'visible');
 
-      $("body").on('keydown', advance_phase_cb);
-      $("body").off('keydown', get_test_ans_cb);
+      //$("body").on('keydown', advance_phase_cb);
+      //$("body").off('keydown', get_train_ans_cb);
+      set_keyboard_cb(true, false, false, false);
 
       return;
     }
@@ -450,11 +467,6 @@ function prepare_training() {
 
   page.num_con_cors = 0;
 
-  $("body").off('keydown', advance_phase_cb);
-  $("body").off('keydown', get_ans_cb);
-  $("body").on('keydown', key_slider_cb);
-  $("body").on('keydown', get_test_ans_cb);
-
   // baseColor and scale are meaningless here
   state = new discTestState(new colorObj([0.2, 0.15, 0.65], 'xyz'), 0.1,
       ()=>{}, ()=>{},
@@ -469,6 +481,7 @@ function prepare_training() {
 
   $('#train-tab').trigger('click');
   $('#title').text('Training');
+  set_keyboard_cb(false, true, false, true);
 }
 
 //https://www.w3schools.com/jsref/met_element_exitfullscreen.asp
@@ -551,13 +564,12 @@ function prepare_test(evt) {
       test[3]);
   page.submit();
 
-  $("body").on('keydown', get_ans_cb);
-  $("body").on('keydown', key_slider_cb);
-
   $('body').css('background-color', 'rgb(120, 120, 120)');
 
   $('#test-tab').trigger('click');
   $('#title').text('');
+  set_keyboard_cb(false, true, true, false);
+
   prof.start = Date.now();
 };
 
@@ -592,7 +604,7 @@ function get_ans_cb(e) {
 }
 
 function registerGetAns() {
-  $("body").on('keydown', get_ans_cb);
+  //$("body").on('keydown', get_ans_cb);
 }
 
 function add_new_base_trace(plot) {
@@ -726,11 +738,13 @@ function test_finish_cb() {
 
     $('#res-tab').trigger('click');
     $('#title').text('Optinal Feedback');
+    $('#feedback').on('click', get_fb_cb);
+    $('#seeres').on('click', open_dashboard_cb);
+    set_keyboard_cb(false, false, false, false); // equivalent to $("body").off('keydown');
 
     canvas.width = 0;
     canvas.height = 0;
 
-    $("body").off('keydown');
     $('body').css('background-color', '#FFFFFF');
   }
 }
