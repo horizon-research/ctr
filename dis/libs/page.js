@@ -402,6 +402,7 @@ class pageObj {
 
   // TODO: true to assume that sRGB is always 8 bits?
   // TODO: can we query the exact depth?
+  // TODO: maybe https://developer.mozilla.org/en-US/docs/Web/API/Screen/colorDepth?
   get bitdepth() {
     return (this.hasHDR && this.cs) ? 10 : 8;
   }
