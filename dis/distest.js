@@ -26,6 +26,7 @@ if (window.localStorage.getItem('results')) {
   var alerted = false;
 
   $('#reset-tab').trigger('click');
+  $('#title').text('Welcome Back');
 
   // start a new test
   $('#newtest').on('click', function(evt) {
@@ -55,6 +56,9 @@ if (window.localStorage.getItem('results')) {
 $('#feedback').on('click', get_fb_cb);
 $('#seeres').on('click', open_dashboard_cb);
 $('#cvdtype').on('change', set_cvdtype_cb);
+$('#sex').on('change', set_sex_cb);
+$('#eth').on('change', set_eth_cb);
+$('#age').on('change', set_age_cb);
 $("body").on('keydown', advance_phase_cb);
 
 $('#alertbox').css('visibility', 'hidden');
@@ -68,6 +72,21 @@ $('#fbbox').css('visibility', 'hidden');
 /*-------------------------------------*/
 /* all the functions are defined below */
 /*-------------------------------------*/
+
+function set_age_cb() {
+  var val = this.value;
+  page.age = val;
+}
+
+function set_eth_cb() {
+  var val = this.value;
+  page.ethnicity = val;
+}
+
+function set_sex_cb() {
+  var val = this.value;
+  page.sex = val;
+}
 
 function set_cvdtype_cb() {
   var val = this.value;
@@ -227,7 +246,6 @@ function restore_test() {
   prof = new Profiler();
 
   all_test_stats = prev_page.all_test_stats;
-  //pageId = 4;
 }
 
 function set_new_test() {
@@ -350,9 +368,11 @@ function advance_phase_cb(e){
   if (e.which == 13) { // Enter key to advance to next phase
     if (pageId == 0) {
       $('#setting-tab').trigger('click');
+      $('#title').text('Information About You');
       pageId = 1;
     } else if (pageId == 1) {
       $('#inst-tab').trigger('click');
+      $('#title').text('Instructions');
       pageId = 2;
     } else if (pageId == 2) {
       prepare_training();
@@ -447,6 +467,7 @@ function prepare_training() {
   updatePlot(0, 3);
 
   $('#train-tab').trigger('click');
+  $('#title').text('Training');
 }
 
 //https://www.w3schools.com/jsref/met_element_exitfullscreen.asp
@@ -533,7 +554,9 @@ function prepare_test(evt) {
   $("body").on('keydown', key_slider_cb);
 
   $('body').css('background-color', 'rgb(120, 120, 120)');
+
   $('#test-tab').trigger('click');
+  $('#title').text('');
   prof.start = Date.now();
 };
 
@@ -662,7 +685,11 @@ function test_finish_cb() {
       sim: page.sim,
       type: page.type,
       simMethod: page.simMethod,
+
       cvdType: page.cvdType,
+      eth: page.ethnicity,
+      sex: page.sex,
+      age: page.age,
 
       color_supports: page.color_supports,
       bitdepth: page.bitdepth, // bitdepth is technically derived; save it for convenience
@@ -696,6 +723,7 @@ function test_finish_cb() {
     closeFullScreen();
 
     $('#res-tab').trigger('click');
+    $('#title').text('Optinal Feedback');
 
     canvas.width = 0;
     canvas.height = 0;
