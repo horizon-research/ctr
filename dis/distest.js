@@ -143,7 +143,7 @@ function gen_all_tests() {
   return [
           // navy blue
           [[86, 95, 214], 'srgb',  0.1, p_line],
-          [[86, 95, 214], 'srgb', -0.1, p_line],
+          //[[86, 95, 214], 'srgb', -0.1, p_line],
           //[[86, 95, 214], 'srgb',  0.1, d_line],
           //[[86, 95, 214], 'srgb', -0.1, d_line],
           //[[86, 95, 214], 'srgb',  0.3, t_line],
@@ -207,7 +207,7 @@ function restore_test() {
   page.configPage(() => {}, //registerPickType,
                   () => {}, //registerSimMode,
                   () => {}, //registerPickSimMethod,
-                  registerGetAns,
+                  () => {}, //registerGetAns,
                   false, //showConfig
                  );
   page.sim = page_stats.sim;
@@ -455,7 +455,6 @@ function prepare_training() {
     updatePlot(this.value, 0)
   });
   $(page.slider).prop('disabled', false);
-  //$(page.slider).css('visibility', 'hidden');
 
   $(page.slider_reset).on('click', function(evt) {
     $(page.slider).val(0);
@@ -556,7 +555,7 @@ function prepare_test(evt) {
   //var base_srgb = hex_to_srgb(base_hex);
   //state = new discTestState(new colorObj(base_srgb, 'srgb'), '+', test_start_cb, test_finish_cb);
 
-  var test = all_tests[indices[testId]];
+  var test = all_tests[indices[testId % all_tests.length]]; // because prepare_test can be called by resume
   state = new discTestState(new colorObj(test[0], test[1]), test[2],
       test_start_cb, test_finish_cb,
       ans_start_cb, ans_finish_cb,
@@ -567,15 +566,14 @@ function prepare_test(evt) {
 
   $('#test-tab').trigger('click');
   $('#title').text('');
-  set_keyboard_cb(false, true, true, false);
+  if (testId < all_tests.length) set_keyboard_cb(false, true, true, false);
+  else set_keyboard_cb(false, false, true, false);
 
   prof.start = Date.now();
 };
 
 function registerPickType() {
-  //page.cvdType = $('#cvdtype').val();
   page.type = 0; // TODO: we need something here since updatePlot does simulation anyways. could init in constructor
-  //$('#cvdtype').on('change', set_cvdtype_cb);
 }
 
 function registerSimMode() {
@@ -603,7 +601,6 @@ function get_ans_cb(e) {
 }
 
 function registerGetAns() {
-  //$("body").on('keydown', get_ans_cb);
 }
 
 function add_new_base_trace(plot) {
@@ -643,7 +640,7 @@ function test_start_cb() {
   context.font = "bold 60px Arial";
   context.textAlign = "center";
   context.fillStyle = "#eeeeee";
-  context.fillText("Trial " +testId.toString()+"/"+all_tests.length.toString(),
+  context.fillText("Trial " +testId.toString()+"/"+(2*all_tests.length).toString(),
       canvas.width/2, canvas.height/2);
 
   // https://javascript.info/promise-basics
@@ -653,7 +650,7 @@ function test_start_cb() {
     setTimeout(() => {
       context.clearRect(0, 0, canvas.width, canvas.height);
       resolve("done");
-      $(page.slider).css('visibility', 'visible');
+      if (testId <= all_tests.length) $(page.slider).css('visibility', 'visible');
     }, 700);
   });
 }
@@ -713,7 +710,8 @@ function test_finish_cb() {
                                                          testId: testId,
                                                         }));
 
-  if (testId != all_tests.length) {
+  if (testId < all_tests.length) {
+    // with slider
     var test = all_tests[indices[testId]];
     state = new discTestState(new colorObj(test[0], test[1]), test[2],
         test_start_cb, test_finish_cb,
@@ -722,6 +720,42 @@ function test_finish_cb() {
     page.submit();
     prof = new Profiler();
     prof.start = Date.now();
+  } else if (testId < 2 * all_tests.length) {
+    // without slider
+    set_keyboard_cb(false, false, false, false); // first disable all key cbs
+    test = all_tests[indices[testId % all_tests.length]];
+    $(page.slider).css('visibility', 'hidden');
+
+    // display info when switching to no slider
+    var bg_color = $('#patches').css('background-color');
+    $(page.s11).css('background-color', bg_color);
+    $(page.s12).css('background-color', bg_color);
+    $(page.s13).css('background-color', bg_color);
+    $(page.s14).css('background-color', bg_color);
+
+    context.font = "bold 60px Arial";
+    context.textAlign = "center";
+    context.fillStyle = "#eeeeee";
+    context.fillText("For the remaining tests,", canvas.width/2, canvas.height/2-80);
+    context.fillText("the slider will be disabled.", canvas.width/2, canvas.height/2);
+    context.fillText("Press Enter to continue.", canvas.width/2, canvas.height/2+80);
+
+    function switch_test_cb(e) {
+      if (e.which == 13) {
+        context.clearRect(0, 0, canvas.width, canvas.height);
+        state = new discTestState(new colorObj(test[0], test[1]), test[2],
+            test_start_cb, test_finish_cb,
+            ans_start_cb, ans_finish_cb,
+            test[3]);
+        page.submit();
+        prof = new Profiler();
+        prof.start = Date.now();
+        $("body").off('keydown', switch_test_cb);
+        set_keyboard_cb(false, false, true, false);
+      }
+    }
+    $("body").on('keydown', switch_test_cb);
+
   } else {
     // done with all tests
     post_data({page_stats: page_stats,
