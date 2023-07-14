@@ -561,7 +561,7 @@ function prepare_test(evt) {
 };
 
 function registerPickType() {
-  page.cvdType = 'normal';
+  page.cvdType = $('#cvdtype').val();
   page.type = 0; // TODO: we need something here since updatePlot does simulation anyways. could init in constructor
   $('#cvdtype').on('change', set_cvdtype_cb);
 }
