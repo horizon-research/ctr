@@ -396,7 +396,6 @@ function advance_phase_cb(e){
       pageId = 3;
     } else if (pageId == 3) {
       prepare_test();
-      pageId = 4; // will be in 'test-tab'
     }
   }
 }
@@ -700,10 +699,6 @@ function test_finish_cb() {
       simMethod: page.simMethod,
 
       info: page.info,
-      //cvdType: page.cvdType,
-      //eth: page.ethnicity,
-      //sex: page.sex,
-      //age: page.age,
 
       color_supports: page.color_supports,
       bitdepth: page.bitdepth, // bitdepth is technically derived; save it for convenience
