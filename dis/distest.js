@@ -550,7 +550,7 @@ function prepare_test(evt) {
   //canvas.width = window.screen.width;
   //canvas.height = window.screen.height;
   canvas.width = window.screen.availWidth;
-  canvas.height = window.screen.availHeight;
+  canvas.height = window.screen.availHeight-50; // TODO: not sure why it's always taller
 
   //var base_hex = $('#colorpicker').val();
   //var base_srgb = hex_to_srgb(base_hex);
