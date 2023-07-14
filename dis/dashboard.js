@@ -174,8 +174,12 @@ function displayConfig(page_stats) {
   $('#d2020').html(page_stats.color_supports.rec2020_d ? '&#10003;' : '');
 }
 
-function displayFb(t) {
+function displayFb(t, i) {
   $('#fbtext').text(t);
+  $('#cvdtype').html(i.cvdType);
+  $('#sex').html(i.sex);
+  $('#eth').html(i.ethnicity);
+  $('#age').html(i.age);
 }
 
 var page, dis_plot, exp_plot;
@@ -192,6 +196,6 @@ fetch(jsonFileName+'.json')
     page = new pageObj((cs == 0) ? 'srgb' : 'p3');
     gen_plot(data.all_test_stats);
     displayConfig(data.page_stats);
-    displayFb(data.fb);
+    displayFb(data.fb, data.page_stats.info);
   })
 
