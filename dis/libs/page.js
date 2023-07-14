@@ -324,6 +324,11 @@ class pageObj {
       this._cs = 2;
 
     this.color_supports = this.test_color_support(); // could be a getter but we do it once here and cache it
+    this.info = {cvdType: $('#cvdtype').val(),
+                 ethnicity: $('#eth').val(),
+                 sex: $('#sex').val(),
+                 age: $('#age').val(),
+    };
   }
 
   // https://dotnettutorials.net/lesson/jquery-id-selector/#:~:text=getElementById()%20will%20throw%20an,document.

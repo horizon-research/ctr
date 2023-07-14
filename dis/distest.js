@@ -46,6 +46,7 @@ if (window.localStorage.getItem('results')) {
   $('#resume').on('click', function(evt) {
     restore_test();
     if (alerted) return;
+    $("body").off('keydown', get_ans_cb); // TODO: this is to prevent two get_ans_cb to be registered, which will be triggered twice.
     prepare_test();
     pageId = 4; // so that pressing space won't trigger an event
   });
@@ -75,22 +76,22 @@ $('#fbbox').css('visibility', 'hidden');
 
 function set_age_cb() {
   var val = this.value;
-  page.age = val;
+  page.info.age = val;
 }
 
 function set_eth_cb() {
   var val = this.value;
-  page.ethnicity = val;
+  page.info.ethnicity = val;
 }
 
 function set_sex_cb() {
   var val = this.value;
-  page.sex = val;
+  page.info.sex = val;
 }
 
 function set_cvdtype_cb() {
   var val = this.value;
-  page.cvdType = val; // just for logging purpose 
+  page.info.cvdType = val; // just for logging purpose 
 
   // page.type is used for actual simulation.
   // TODO: best effort simulation. right now supports only three strong CVD
@@ -561,9 +562,9 @@ function prepare_test(evt) {
 };
 
 function registerPickType() {
-  page.cvdType = $('#cvdtype').val();
+  //page.cvdType = $('#cvdtype').val();
   page.type = 0; // TODO: we need something here since updatePlot does simulation anyways. could init in constructor
-  $('#cvdtype').on('change', set_cvdtype_cb);
+  //$('#cvdtype').on('change', set_cvdtype_cb);
 }
 
 function registerSimMode() {
@@ -591,7 +592,7 @@ function get_ans_cb(e) {
 }
 
 function registerGetAns() {
-  $("body").keydown(get_ans_cb);
+  $("body").on('keydown', get_ans_cb);
 }
 
 function add_new_base_trace(plot) {
@@ -686,10 +687,11 @@ function test_finish_cb() {
       type: page.type,
       simMethod: page.simMethod,
 
-      cvdType: page.cvdType,
-      eth: page.ethnicity,
-      sex: page.sex,
-      age: page.age,
+      info: page.info,
+      //cvdType: page.cvdType,
+      //eth: page.ethnicity,
+      //sex: page.sex,
+      //age: page.age,
 
       color_supports: page.color_supports,
       bitdepth: page.bitdepth, // bitdepth is technically derived; save it for convenience
@@ -728,7 +730,7 @@ function test_finish_cb() {
     canvas.width = 0;
     canvas.height = 0;
 
-    $("body").unbind('keydown');
+    $("body").off('keydown');
     $('body').css('background-color', '#FFFFFF');
   }
 }
