@@ -26,6 +26,10 @@
         height: 2.6cm;
       }
 
+      #slider{
+        width: 5.8cm;
+      }
+
       #colorpicker {
         height: 100px;
         padding-top: 5px;
@@ -327,6 +331,14 @@
             </div>
 
             <div class="tab-pane" id="test-tab-pane" role="tabpanel" aria-labelledby="test-tab">
+              <div class="row justify-content-md-center mt-auto nofocus" id="fsbox">
+                <div class="col-sm-12">
+                  <div class="alert alert-danger text-center" role="alert">
+                    <span class="fs-4">To continue the task, press <b>F</b> to return to fullscreen mode.</span>
+                  </div>
+                </div>
+              </div>
+
               <div class="container text-center nofocus" tabindex="-1">
                 <div class="row justify-content-md-center mb-2 nofocus">
                   <div class="col col-lg-2 me-1 square" id="s11">
@@ -342,14 +354,12 @@
                 </div>
               </div>
     
-              <div class="row mt-4 opacity-25">
-                <div class="col-sm-12">
+              <div class="row justify-content-md-center mt-4 opacity-25 nofocus">
+                <div id="slider">
                   <label for="customRange" class="rot-label" style="font-size:20px; display: none">Rotation Angle (Degree): 0&#176;</label>
                   <input type="range" class="form-range" min="-3.14" max="3.14" step="0.02" id="customRange">
                 </div>
-                <div class="col-sm-2" style="display: none">
-                  <button id="reset" class="btn btn-secondary">Reset</button>
-                </div>
+                <button id="reset" style="display: none">Reset</button>
               </div>
             </div>
     

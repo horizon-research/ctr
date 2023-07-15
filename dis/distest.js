@@ -55,10 +55,30 @@ if (window.localStorage.getItem('results')) {
 
 set_keyboard_cb(true, false, false, false);
 
+function fullscreenchanged() {
+  if (!document.fullscreenElement) {
+    $('#fsbox').css('visibility', 'visible');
+    set_keyboard_cb(false, false, false, false);
+
+    function goto_fs_cb(e) {
+      if (e.which == 70) { // F
+        $('#fsbox').css('visibility', 'hidden');
+        openFullScreen();
+        $("body").off('keydown', goto_fs_cb);
+        set_keyboard_cb(false, true, true, false);
+      }
+    }
+    $("body").on('keydown', goto_fs_cb);
+  } else if (document.exitFullscreen) {
+  }
+}
+
+$(document).on("fullscreenchange", fullscreenchanged);
+
 $('#alertbox').css('visibility', 'hidden');
 $('#trainbox').css('visibility', 'hidden');
 $('#fbbox').css('visibility', 'hidden');
-
+$('#fsbox').css('visibility', 'hidden');
 
 
 
