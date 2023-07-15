@@ -143,7 +143,7 @@ function gen_all_tests() {
   return [
           // navy blue
           [[86, 95, 214], 'srgb',  0.1, p_line],
-          //[[86, 95, 214], 'srgb', -0.1, p_line],
+          [[86, 95, 214], 'srgb', -0.1, p_line],
           //[[86, 95, 214], 'srgb',  0.1, d_line],
           //[[86, 95, 214], 'srgb', -0.1, d_line],
           //[[86, 95, 214], 'srgb',  0.3, t_line],
@@ -415,8 +415,6 @@ function get_train_ans_cb(e) {
     if (page.num_con_cors == 6) {
       $('#trainbox').css('visibility', 'visible');
 
-      //$("body").on('keydown', advance_phase_cb);
-      //$("body").off('keydown', get_train_ans_cb);
       set_keyboard_cb(true, false, false, false);
 
       return;
@@ -566,8 +564,7 @@ function prepare_test(evt) {
 
   $('#test-tab').trigger('click');
   $('#title').text('');
-  if (testId < all_tests.length) set_keyboard_cb(false, true, true, false);
-  else set_keyboard_cb(false, false, true, false);
+  // no need to call set_key_cb here; it will be set in test_start_cb for each test
 
   prof.start = Date.now();
 };
@@ -626,6 +623,43 @@ function add_new_base_trace(plot) {
   Plotly.addTraces(plot, new_trace);
 }
 
+function setupNextColor() {
+  // briefly blank the colors to reset the visual field
+  var bg_color = $('#patches').css('background-color');
+  $(page.s11).css('background-color', bg_color);
+  $(page.s12).css('background-color', bg_color);
+  $(page.s13).css('background-color', bg_color);
+  $(page.s14).css('background-color', bg_color);
+
+  $(page.slider).val(0);
+  $(page.slider).css('visibility', 'hidden');
+  set_keyboard_cb(false, false, false, false); // first disable all key cbs
+
+  $('#c11').css('zIndex', '10');
+  let start = Date.now();
+  let timer = setInterval(function() {
+    let timePassed = Date.now() - start;
+  
+    if (timePassed >= 300) {
+      clearInterval(timer);
+      $('#c11').css('zIndex', '-10');
+      context.clearRect(0, 0, canvas.width, canvas.height);
+
+      testOneColor(true);
+      if (testId <= all_tests.length) {
+        $(page.slider).css('visibility', 'visible');
+        set_keyboard_cb(false, true, true, false); // enable slider and get_anc
+      } else {
+        set_keyboard_cb(false, false, true, false); // enable only get_anc
+      }
+
+      return;
+    }
+  
+    createDots();
+  }, 20);
+}
+
 // called during page.submit, which is called once per test
 function test_start_cb() {
   testId++;
@@ -645,12 +679,18 @@ function test_start_cb() {
 
   // https://javascript.info/promise-basics
   $(page.slider).css('visibility', 'hidden');
+  set_keyboard_cb(false, false, false, false); // first disable all key cbs
+
   return promise = new Promise(function(resolve, reject) {
-    // TODO: could unbind keyboard events
     setTimeout(() => {
       context.clearRect(0, 0, canvas.width, canvas.height);
       resolve("done");
-      if (testId <= all_tests.length) $(page.slider).css('visibility', 'visible');
+      if (testId <= all_tests.length) {
+        $(page.slider).css('visibility', 'visible');
+        set_keyboard_cb(false, true, true, false); // enable slider and get_anc
+      } else {
+        set_keyboard_cb(false, false, true, false); // enable only get_anc
+      }
     }, 700);
   });
 }
@@ -662,6 +702,24 @@ function ans_start_cb() {
 function ans_finish_cb(correct, rev) {
   state.corrects.push(correct);
   state.revs.push(rev);
+
+  if (state.numRevs == 4) {
+    // terminate
+    state.test_finish_cb();
+  } else {
+    setupNextColor();
+  }
+}
+
+function startNextTest() {
+  var test = all_tests[indices[testId % all_tests.length]];
+  state = new discTestState(new colorObj(test[0], test[1]), test[2],
+      test_start_cb, test_finish_cb,
+      ans_start_cb, ans_finish_cb,
+      test[3]);
+  page.submit();
+  prof = new Profiler();
+  prof.start = Date.now();
 }
 
 // called after each test terminates
@@ -712,21 +770,12 @@ function test_finish_cb() {
 
   if (testId < all_tests.length) {
     // with slider
-    var test = all_tests[indices[testId]];
-    state = new discTestState(new colorObj(test[0], test[1]), test[2],
-        test_start_cb, test_finish_cb,
-        ans_start_cb, ans_finish_cb,
-        test[3]);
-    page.submit();
-    prof = new Profiler();
-    prof.start = Date.now();
-  } else if (testId < 2 * all_tests.length) {
-    // without slider
+    startNextTest();
+  } else if (testId == all_tests.length) {
+    // display info when switching to no slider
     set_keyboard_cb(false, false, false, false); // first disable all key cbs
-    test = all_tests[indices[testId % all_tests.length]];
     $(page.slider).css('visibility', 'hidden');
 
-    // display info when switching to no slider
     var bg_color = $('#patches').css('background-color');
     $(page.s11).css('background-color', bg_color);
     $(page.s12).css('background-color', bg_color);
@@ -743,19 +792,15 @@ function test_finish_cb() {
     function switch_test_cb(e) {
       if (e.which == 13) {
         context.clearRect(0, 0, canvas.width, canvas.height);
-        state = new discTestState(new colorObj(test[0], test[1]), test[2],
-            test_start_cb, test_finish_cb,
-            ans_start_cb, ans_finish_cb,
-            test[3]);
-        page.submit();
-        prof = new Profiler();
-        prof.start = Date.now();
+        startNextTest();
         $("body").off('keydown', switch_test_cb);
         set_keyboard_cb(false, false, true, false);
       }
     }
     $("body").on('keydown', switch_test_cb);
-
+  } else if (testId < 2 * all_tests.length) {
+    // without slider
+    startNextTest();
   } else {
     // done with all tests
     post_data({page_stats: page_stats,

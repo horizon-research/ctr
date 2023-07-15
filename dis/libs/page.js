@@ -208,47 +208,6 @@ function testOneColor(random) {
   updatePlot(0, 3);
 }
 
-function setupNextColor() {
-  // briefly blank the colors to reset the visual field
-  var bg_color = $('#patches').css('background-color');
-  $('#s11').css('background-color', bg_color);
-  $('#s12').css('background-color', bg_color);
-  $('#s13').css('background-color', bg_color);
-  $('#s14').css('background-color', bg_color);
-
-  $('#customRange').val(0);
-  $('.rot-label').html('Rotation Angle (Degree): 0&#176;')
-  //$('#customRange').prop('disabled', true);
-  $('#customRange').css('visibility', 'hidden');
-  $('#s11, #s12, #s13, #s14').unbind("click");
-
-  $('#c11').css('zIndex', '10');
-  let start = Date.now();
-  let timer = setInterval(function() {
-    let timePassed = Date.now() - start;
-  
-    if (timePassed >= 300) {
-      clearInterval(timer);
-      $('#c11').css('zIndex', '-10');
-      context.clearRect(0, 0, canvas.width, canvas.height);
-
-      testOneColor(true);
-	  // TODO: previously we toggle enable/disable of the range bar, but we now
-	  // toggle visibility, because the distest app doesn't want the range bar
-	  // during dots. need to have a better logic to reconcile demo and distest.
-      //$('#customRange').prop('disabled', false);
-      $('#customRange').css('visibility', 'visible');
-
-	  // TODO: this always bind click even if an app uses keyboard. need a
-	  // better logic, maybe specify keyboard vs. mouse mode at the beginning.
-      $('#s11, #s12, #s13, #s14').bind("click", getAnswer);
-      return;
-    }
-  
-    createDots();
-  }, 20);
-}
-
 var getAnswer = function(number) {
   var correct = true;
   var rev = false;
@@ -296,13 +255,6 @@ var getAnswer = function(number) {
   }
 
   state.ans_finish_cb(correct, rev);
-
-  if (state.numRevs == 4) {
-    // terminate
-    state.test_finish_cb();
-  } else {
-    setupNextColor();
-  }
 }
 
 class pageObj {

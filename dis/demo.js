@@ -92,7 +92,7 @@ function test_finish_cb() {
   data_update = {'visible': [true, true, true]};
   Plotly.update(state.exp_plot, data_update, {}, [2, 3, 4]);
 
-  $('#expDiv').trigger('finish');
+  $('#s11, #s12, #s13, #s14').unbind("click");
 }
 
 function ans_start_cb() {
@@ -110,6 +110,47 @@ function ans_finish_cb(correct, rev) {
   data_update = {'marker.color': [state.exp_plot.data[1].marker.color],
                  'marker.line.width': [state.exp_plot.data[1].marker.line.width]};
   Plotly.update(state.exp_plot, data_update, {}, [1]);
+
+  if (state.numRevs == 4) {
+    // terminate
+    state.test_finish_cb();
+  } else {
+    setupNextColor();
+  }
+}
+
+function setupNextColor() {
+  // briefly blank the colors to reset the visual field
+  var bg_color = $('#patches').css('background-color');
+  $('#s11').css('background-color', bg_color);
+  $('#s12').css('background-color', bg_color);
+  $('#s13').css('background-color', bg_color);
+  $('#s14').css('background-color', bg_color);
+
+  $('#customRange').val(0);
+  $('.rot-label').html('Rotation Angle (Degree): 0&#176;')
+  $('#customRange').prop('disabled', true);
+  $('#s11, #s12, #s13, #s14').unbind("click");
+
+  $('#c11').css('zIndex', '10');
+  let start = Date.now();
+  let timer = setInterval(function() {
+    let timePassed = Date.now() - start;
+  
+    if (timePassed >= 300) {
+      clearInterval(timer);
+      $('#c11').css('zIndex', '-10');
+      context.clearRect(0, 0, canvas.width, canvas.height);
+
+      testOneColor(true);
+      $('#customRange').prop('disabled', false);
+
+      $('#s11, #s12, #s13, #s14').bind("click", getAnswer);
+      return;
+    }
+  
+    createDots();
+  }, 20);
 }
 
 page = new pageObj('srgb');
