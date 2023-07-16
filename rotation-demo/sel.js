@@ -2284,7 +2284,7 @@ var setter; // 0 for using color picker, 1 for using scale, 3 for using presets
 var color1, color2, color3;
 var name1, name2, name3;
 
-d3.csv('../ciexyzjv.csv').then(function(rows){
+d3.csv('/sel/ciexyzjv.csv').then(function(rows){
   function unpack(rows, key, toNum) {
     return rows.map(function(row) {
         if (toNum == false) return row[key];
