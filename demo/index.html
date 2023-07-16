@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
+    <meta name="generator" content="Hugo 0.88.1">
+    <title>Computational Trichromacy Reconstruction</title>
+
+    <link rel="canonical" href="https://getbootstrap.com/docs/5.1/examples/headers/">
+
+    <!-- Bootstrap core CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU" crossorigin="anonymous">
+
+
+    <style>
+      .bd-placeholder-img {
+        font-size: 1.125rem;
+        text-anchor: middle;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        user-select: none;
+      }
+
+      @media (min-width: 768px) {
+        .bd-placeholder-img-lg {
+          font-size: 3.5rem;
+        }
+      }
+
+      canvas {
+        position: absolute;
+      }
+
+      .square {
+        width: 100px;
+        height: 100px;
+      }
+    </style>
+
+    
+    <!-- JavaScript -->
+    <script src='https://cdn.plot.ly/plotly-2.4.2.min.js'></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.6.0/math.js" integrity="sha512-RefYJFvLbj6WnGkdf40i7tlnvORh5VhCXuyaYRrj0hu5y0aHMCO1ROPLnRfMzbZ7SJqCYaQ92EAsGf9OyY9BNQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.0.2/chart.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-zoom/1.1.1/chartjs-plugin-zoom.min.js"></script>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js'></script>
+    <script src="https://colorjs.io/dist/color.global.js"></script>
+
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+    <script type="text/x-mathjax-config">
+        MathJax.Hub.Config({
+          tex2jax: {
+            inlineMath: [['$','$'], ['\\(','\\)']],
+            displayMath: [ ['$$','$$'], ['\[','\]'] ]
+          }
+        });
+        MathJax.Hub.Register.StartupHook("End",function () {
+          //console.log("Mathjax loaded");
+          //console.log(typeof MathJax);
+          MathJax.Hub.Queue(["Typeset", MathJax.Hub, "TFS"]);
+        });
+    </script>
+  </head>
+  <body>
+
+<main>
+  <canvas id="c11" width="100%" height="100%"></canvas>
+  <div class="container">
+    <header class="d-flex flex-wrap justify-content-center pt-3 mb-4 border-bottom">
+      <a href="." class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-dark text-decoration-none">
+        <h2>Discrimination Test Demo</h2>
+      </a>
+    </header>
+
+    <div class="d-grid gap-3" style="grid-template-columns: 2fr 2fr;">
+      <div class="pt-3 mb-4 px-3 bg-light border rounded-3" id="patches">
+        <div class="row">
+          <div class="col-sm-12 d-flex justify-content-center align-items-center">
+            <div class="row">
+              <div class="btn-group mb-2" role="group" aria-label="Basic radio toggle button group">
+                <input type="radio" class="btn-check" name="pick" id="pickp" autocomplete="off">
+                <label class="btn btn-outline-primary" for="pickp">Protanopia</label>
+              
+                <input type="radio" class="btn-check" name="pick" id="pickd" autocomplete="off">
+                <label class="btn btn-outline-primary" for="pickd">Deuteranopia</label>
+              
+                <input type="radio" class="btn-check" name="pick" id="pickt" autocomplete="off">
+                <label class="btn btn-outline-primary" for="pickt">Tritanopia</label>
+              </div>
+              <div class="btn-group mb-2" role="group" aria-label="Basic radio toggle button group">
+                <input type="radio" class="btn-check" name="method" id="m1" autocomplete="off">
+                <label class="btn btn-outline-primary" for="m1">One Plane (Viénot et al. 1999)</label>
+              
+                <input type="radio" class="btn-check" name="method" id="m2" autocomplete="off">
+                <label class="btn btn-outline-primary" for="m2">Two Plane (Brettel et al. 1997)</label>
+              </div>
+              <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
+                <input type="radio" class="btn-check" name="sim" id="yes" autocomplete="off">
+                <label class="btn btn-outline-primary" for="yes">Show simulated colors</label>
+              
+                <input type="radio" class="btn-check" name="sim" id="no" autocomplete="off">
+                <label class="btn btn-outline-primary" for="no">Show actual colors</label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <hr style="margin-top: 2rem">
+
+        <div class="container text-center">
+          <div class="row justify-content-md-center mb-2">
+            <div class="col col-lg-2 mx-2 square" id="s11">
+            </div>
+            <div class="col col-lg-2 square" id="s12">
+            </div>
+          </div>
+          <div class="row justify-content-md-center">
+            <div class="col col-lg-2 mx-2 square" id="s13">
+            </div>
+            <div class="col col-lg-2 square" id="s14">
+            </div>
+          </div>
+        </div>
+
+        <div class="row mt-3">
+          <div class="col-sm-10">
+            <label for="customRange" class="rot-label" style="font-size:20px;">Rotation Angle (Degree): 0&#176;</label>
+            <input type="range" class="form-range" min="-3.14" max="3.14" step="0.02" id="customRange">
+          </div>
+          <div class="col-sm-2 d-flex align-items-center">
+            <button id="reset" class="btn btn-primary">Reset</button>
+          </div>
+        </div>
+
+        <div class="row my-1">
+          <h5>Instructions</h5>
+          <p>There are four color patches. Click on the one that appears to have a different colors than the other three. Scroll the slider to help you identify the one.</p>
+          <p>After each trial, the patches will briefly show random gray dots to reset your visual field, followed by the next trial. The patch with a different color is randomized across trials. Each trial is made to be more challenging if you keep identifying the correct patch, and vice versa. The experiment terminates when a threshold is found.</p>
+        </div>
+
+      </div>
+
+      <div class="pt-3 mb-4 px-4 bg-light border rounded-3">
+
+        <ul class="nav nav-tabs" id="myTab" role="tablist">
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="rgb-tab" data-bs-toggle="tab" data-bs-target="#rgb-tab-pane" type="button" role="tab" aria-controls="rgb-tab-pane" aria-selected="true">RGB</button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="lab-tab" data-bs-toggle="tab" data-bs-target="#lab-tab-pane" type="button" role="tab" aria-controls="lab-tab-pane" aria-selected="false">CIELAB</button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="xy-tab" data-bs-toggle="tab" data-bs-target="#xy-tab-pane" type="button" role="tab" aria-controls="xy-tab-pane" aria-selected="false">xy-chromaticity</button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="exp-tab" data-bs-toggle="tab" data-bs-target="#exp-tab-pane" type="button" role="tab" aria-controls="exp-tab-pane" aria-selected="false">Psychophysics</button>
+          </li>
+        </ul>
+        <div class="tab-content" id="myTabContent">
+          <div class="tab-pane fade" id="rgb-tab-pane" role="tabpanel" aria-labelledby="rgb-tab" tabindex="0">
+            <div id="rgbDiv"></div>
+          </div>
+          <div class="tab-pane fade" id="lab-tab-pane" role="tabpanel" aria-labelledby="lab-tab" tabindex="0">
+            <div id="labDiv"></div>
+          </div>
+          <div class="tab-pane fade" id="xy-tab-pane" role="tabpanel" aria-labelledby="xy-tab" tabindex="0">
+            <div id="xyDiv"></div>
+          </div>
+          <div class="tab-pane fade show active" id="exp-tab-pane" role="tabpanel" aria-labelledby="exp-tab" tabindex="0">
+            <div id="expDiv"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <div class="d-grid gap-3 pt-3 mb-4 px-4 bg-light border rounded-3">
+      <div class="row mb-2">
+        <div class="col-sm-6">
+          <table class="table text-center">
+            <thead>
+              <tr>
+                <th scope="col"></th>
+                <th scope="col">sRGB</th>
+                <th scope="col">Display P3</th>
+                <th scope="col">Rec2020</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th scope="row">Browser</th>
+                <td id="bsrgb"></td>
+                <td id="bp3"></td>
+                <td id="b2020"></td>
+              </tr>
+              <tr>
+                <th scope="row">Display</th>
+                <td id="dsrgb"></td>
+                <td id="dp3"></td>
+                <td id="d2020"></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="col-sm-6">
+          <table class="table text-left">
+            <tbody>
+              <tr>
+                <th scope="row">Used Color Space</th>
+                <td id="usedcs"></td>
+              </tr>
+              <tr>
+                <th scope="row">Used XYZ CMFs</th>
+                <td id="usedxyz"></td>
+              </tr>
+              <tr>
+                <th scope="row">Used Cone Fundamentals</th>
+                <td id="usedlms"></td>
+              </tr>
+              <tr>
+                <th scope="row">Used Bit Depth</th>
+                <td id="usedbd"></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="b-example-divider"></div>
+    </div>
+
+</main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-/bQdsTh/da6pkI1MST/rWKFNjaCP5gBSY4sEBT38Q/9RBh9AH40zEOg7Hlq2THRZ" crossorigin="anonymous"></script>
+
+    <script src="/libs/ntc.js"></script>
+    <script src="/libs/dots.js"></script>
+    <script src="/libs/const.js"></script>
+    <script src="/libs/color.js"></script>
+    <script src="/libs/state.js"></script>
+    <script src="/libs/plot.js"></script>
+    <script src="/libs/page.js"></script>
+    <script src="/demo/demo.js"></script>
+  </body>
+</html>
