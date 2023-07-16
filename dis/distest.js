@@ -622,29 +622,6 @@ function get_ans_cb(e) {
 function registerGetAns() {
 }
 
-function add_new_base_trace(plot) {
-  var new_trace = {
-    x: [state.baseColor.xy[0]],
-    y: [state.baseColor.xy[1]],
-    text: ['Base'],
-    mode: 'markers',
-    marker: {
-      size: [10],
-      opacity: 1,
-      color: [state.baseColor.legacy_rgb_css],
-    },
-    //line: {
-    //  width: 1,
-    //  color: '#000000',
-    //},
-    name: 'Thresholds',
-    hovertemplate: 'x: %{x}' +
-      '<br>y: %{y}<extra></extra>',
-  };
-  
-  Plotly.addTraces(plot, new_trace);
-}
-
 function setupNextColor() {
   // briefly blank the colors to reset the visual field
   var bg_color = $('#patches').css('background-color');
