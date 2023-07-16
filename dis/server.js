@@ -73,7 +73,10 @@ const server = http.createServer((req, res) => {
           }
           const resData = JSON.parse(results);
           // update the result obj
-          resData.fb = fb;
+          if ("fb" in resData)
+            resData.fb = resData.fb+" "+fb;
+          else
+            resData.fb = fb;
 
           // update the json file
           fs.writeFile('dashboard/'+uid+'.json', JSON.stringify(resData), err => {

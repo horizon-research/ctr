@@ -54,25 +54,6 @@ if (window.localStorage.getItem('results')) {
 }
 
 set_keyboard_cb(true, false, false, false);
-
-function fullscreenchanged() {
-  if (!document.fullscreenElement) {
-    $('#fsbox').css('visibility', 'visible');
-    set_keyboard_cb(false, false, false, false);
-
-    function goto_fs_cb(e) {
-      if (e.which == 70) { // F
-        $('#fsbox').css('visibility', 'hidden');
-        openFullScreen();
-        $("body").off('keydown', goto_fs_cb);
-        set_keyboard_cb(false, true, true, false);
-      }
-    }
-    $("body").on('keydown', goto_fs_cb);
-  } else if (document.exitFullscreen) {
-  }
-}
-
 $(document).on("fullscreenchange", fullscreenchanged);
 
 $('#alertbox').css('visibility', 'hidden');
@@ -101,6 +82,26 @@ function set_keyboard_cb(enter_evt, slider_evt, ans_evt, train_ans_evt) {
 
   if (train_ans_evt) $("body").on('keydown', get_train_ans_cb);
   else $("body").off('keydown', get_train_ans_cb);
+}
+
+function fullscreenchanged() {
+  if (!document.fullscreenElement) {
+    // when exiting from fs
+    $('#fsbox').css('visibility', 'visible');
+    set_keyboard_cb(false, false, false, false);
+
+    function goto_fs_cb(e) {
+      if (e.which == 70) { // F
+        $('#fsbox').css('visibility', 'hidden');
+        openFullScreen();
+        $("body").off('keydown', goto_fs_cb);
+        set_keyboard_cb(false, true, true, false);
+      }
+    }
+    $("body").on('keydown', goto_fs_cb);
+  } else if (document.exitFullscreen) {
+    // when entering fs
+  }
 }
 
 function set_age_cb() {
@@ -139,6 +140,7 @@ function get_fb_cb() {
   const feedbackData = {uid: dashboardName,
                         fb: $('#fbtext').val()};
 
+  //fetch('https://colorvision.cs.rochester.edu/upload-feedback', {
   fetch('http://localhost:9812/upload-feedback', {
     method: 'POST',
     mode: "cors", // no-cors, *cors, same-origin
@@ -802,11 +804,11 @@ function test_finish_cb() {
     $(page.s13).css('background-color', bg_color);
     $(page.s14).css('background-color', bg_color);
 
-    context.font = "bold 60px Arial";
+    context.font = "bold 50px Arial";
     context.textAlign = "center";
     context.fillStyle = "#eeeeee";
-    context.fillText("For the remaining tests,", canvas.width/2, canvas.height/2-80);
-    context.fillText("the slider will be disabled.", canvas.width/2, canvas.height/2);
+    context.fillText("For the remaining tests, there is no slider.", canvas.width/2, canvas.height/2-80);
+    context.fillText("The task remains the same: identify the differing patch.", canvas.width/2, canvas.height/2);
     context.fillText("Press Enter to continue.", canvas.width/2, canvas.height/2+80);
 
     function switch_test_cb(e) {
@@ -828,10 +830,11 @@ function test_finish_cb() {
               });
     window.localStorage.removeItem('results');
 
+    $(document).off("fullscreenchange", fullscreenchanged);
     closeFullScreen();
 
     $('#res-tab').trigger('click');
-    $('#title').text('Optinal Feedback');
+    $('#title').text('Optional Feedback');
     $('#feedback').on('click', get_fb_cb);
     $('#seeres').on('click', open_dashboard_cb);
     set_keyboard_cb(false, false, false, false); // equivalent to $("body").off('keydown');
