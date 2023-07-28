@@ -249,6 +249,13 @@ class colorObj {
         this.srgb[2].toString()+')';
   }
 
+  get v_rgb_text() {
+    return '('+
+        this.v_quan_rgb[0].toString()+', '+
+        this.v_quan_rgb[1].toString()+', '+
+        this.v_quan_rgb[2].toString()+')';
+  }
+
   get legacy_hex_css() {
     // It converts an array [255, 255, 255] to '#FFFFFF'
     function srgbToHex(c) {

@@ -1,20 +1,21 @@
-function add_new_base_trace(plot, baseColor) {
+function add_new_base_trace(plot, baseColor, traceName) {
   var new_trace = {
     x: [baseColor.xy[0]],
     y: [baseColor.xy[1]],
     text: ['Base'],
     mode: 'markers',
     marker: {
-      size: [15],
-      symbol: ['triangle-up'],
+      size: [10],
+      symbol: ['x'],
       opacity: 1,
-      color: [baseColor.legacy_rgb_css],
+      //color: [baseColor.legacy_rgb_css],
+      color: ['rgb(0, 0, 0)'],
     },
     line: {
       width: 0.5,
       color: '#000000',
     },
-    name: 'Thresholds',
+    name: traceName,
     hovertemplate: 'x: %{x}' +
       '<br>y: %{y}' +
       '<br>%{text}<extra></extra>',
@@ -23,18 +24,34 @@ function add_new_base_trace(plot, baseColor) {
   Plotly.addTraces(plot, new_trace);
 }
 
-var baseColorSets = {baseColor: [],
-                     traceId: [],
-                    };
+var baseColorSets_slider = {baseColor: [],
+                            traceId: [],
+                           };
+var baseColorSets_no = {baseColor: [],
+                        traceId: [],
+                       };
 
 const compareArrays = (a, b) => {
   return a.toString() === b.toString();
 };
 
 function update_dis_plot(res, testId) {
+  // |testId| starts from 1
   // add a new trace (because we have a new base color)
   var found = false;
-  var trade_id;
+  var trade_id, baseColorSets, traceName, symbol;
+  var base = new colorObj(res.base_rgb, 'v_rgb');
+
+  if (testId <= total_num_tests/2) {
+    baseColorSets = baseColorSets_slider;
+    traceName = base.v_rgb_text + ' w/ shifts';
+    symbol = 'circle-open';
+  } else {
+    baseColorSets = baseColorSets_no;
+    traceName = base.v_rgb_text + ' w/o shifts';
+    symbol = 'square';
+  }
+
   for (var i = 0; i < baseColorSets.baseColor.length; i++) {
     if (compareArrays(baseColorSets.baseColor[i], res.base_rgb)) {
       found = true;
@@ -44,8 +61,7 @@ function update_dis_plot(res, testId) {
   }
   if (!found) {
     baseColorSets.baseColor.push(res.base_rgb);
-    var base = new colorObj(res.base_rgb, 'v_rgb');
-    add_new_base_trace(dis_plot, base);
+    add_new_base_trace(dis_plot, base, traceName);
     trace_id = dis_plot.data.length - 1;
     baseColorSets.traceId.push(trace_id);
   }
@@ -53,11 +69,13 @@ function update_dis_plot(res, testId) {
   // add result for this test
   var thresholdColor = new colorObj(res.threshold_color, 'v_rgb');
 
-  dis_plot.data[trace_id].x.push(thresholdColor.xy[0]);
-  dis_plot.data[trace_id].y.push(thresholdColor.xy[1]);
-  dis_plot.data[trace_id].marker.size.push(7);
-  dis_plot.data[trace_id].marker.color.push(thresholdColor.legacy_rgb_css);
-  dis_plot.data[trace_id].text.push('Test'+testId.toString()+' threshold');
+  // use unshift so that the trace name is based on the threshold markers rather than the base color
+  dis_plot.data[trace_id].x.unshift(thresholdColor.xy[0]);
+  dis_plot.data[trace_id].y.unshift(thresholdColor.xy[1]);
+  dis_plot.data[trace_id].marker.size.unshift(7);
+  dis_plot.data[trace_id].marker.symbol.unshift(symbol);
+  dis_plot.data[trace_id].marker.color.unshift(thresholdColor.legacy_rgb_css);
+  dis_plot.data[trace_id].text.unshift('Test'+testId.toString()+' threshold');
   var data_update = {'x': [dis_plot.data[trace_id].x],
                      'y': [dis_plot.data[trace_id].y],
                      'marker.size': [dis_plot.data[trace_id].marker.size],
@@ -96,32 +114,11 @@ function register_update_exp_plot(data) {
     // restyle markers to better visualize results
     exp_plot.data[1].marker.color = [];
     exp_plot.data[1].marker.line.width = [];
-    if (res.corrects && res.revs) {
-      res.scales.forEach((element, index) => {
-        exp_plot.data[1].marker.color.push(res.corrects[index] ? '#63bf7d' : '#d61e49');
-        exp_plot.data[1].marker.line.width.push(res.revs[index]? 2 : 0);
-      });
-    } else {
-      // TODO: remove this at some point (if not, need to consider the fact that scale has an upper bound)
-      var cur_correct, prev_correct = true;
-      for (var i = 0; i < res.scales.length - 1; i++) {
-        var rev = false;
 
-        if (res.scales[i+1] > res.scales[i]) cur_correct = false;
-        else cur_correct = true;
-
-        if (cur_correct != prev_correct) rev = true;
-        prev_correct = cur_correct;
-
-        exp_plot.data[1].marker.color.push(cur_correct ? '#63bf7d' : '#d61e49');
-        exp_plot.data[1].marker.line.width.push(rev ? 2 : 0);
-      }
-      // deal with the last response, which is necessarily a reversal so we check if the previous response was correct
-      if (prev_correct == false) cur_correct = true;
-      else cur_correct = false;
-      exp_plot.data[1].marker.color.push(cur_correct ? '#63bf7d' : '#d61e49');
-      exp_plot.data[1].marker.line.width.push(2);
-    }
+    res.scales.forEach((element, index) => {
+      exp_plot.data[1].marker.color.push(res.corrects[index] ? '#63bf7d' : '#d61e49');
+      exp_plot.data[1].marker.line.width.push(res.revs[index]? 2 : 0);
+    });
 
     data_update = {'marker.color': [exp_plot.data[1].marker.color],
                    'marker.line.width': [exp_plot.data[1].marker.line.width]};
@@ -183,6 +180,7 @@ function displayFb(t, i) {
 }
 
 var page, dis_plot, exp_plot;
+var total_num_tests;
 
 var fileName = location.href.split("/").at(-1);
 var jsonFileName = fileName.split(".")[0];
@@ -194,6 +192,10 @@ fetch(jsonFileName+'.json')
   .then(function (data) {
     var cs = data.page_stats.cs;
     page = new pageObj((cs == 0) ? 'srgb' : 'p3');
+    Object.assign(page.color_supports, data.page_stats.color_supports); // so that page.bitdepth is correctly set
+
+    total_num_tests = Object.keys(data.all_test_stats).length;
+
     gen_plot(data.all_test_stats);
     displayConfig(data.page_stats);
     displayFb(data.fb, data.page_stats.info);
