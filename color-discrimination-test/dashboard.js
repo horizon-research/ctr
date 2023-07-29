@@ -24,12 +24,7 @@ function add_new_base_trace(plot, baseColor, traceName) {
   Plotly.addTraces(plot, new_trace);
 }
 
-var baseColorSets_slider = {baseColor: [],
-                            traceId: [],
-                           };
-var baseColorSets_no = {baseColor: [],
-                        traceId: [],
-                       };
+var baseColorSets = [];
 
 const compareArrays = (a, b) => {
   return a.toString() === b.toString();
@@ -39,35 +34,48 @@ function update_dis_plot(res, testId) {
   // |testId| starts from 1
   // add a new trace (because we have a new base color)
   var found = false;
-  var trade_id, baseColorSets, traceName, symbol;
+  var trade_id, traceName, symbol;
   var base = new colorObj(res.base_rgb, 'v_rgb');
+  var thresholdColor = new colorObj(res.threshold_color, 'v_rgb');
 
   if (testId <= total_num_tests/2) {
-    baseColorSets = baseColorSets_slider;
     traceName = base.v_rgb_text + ' w/ shifts';
     symbol = 'circle-open';
   } else {
-    baseColorSets = baseColorSets_no;
     traceName = base.v_rgb_text + ' w/o shifts';
     symbol = 'square';
   }
 
-  for (var i = 0; i < baseColorSets.baseColor.length; i++) {
-    if (compareArrays(baseColorSets.baseColor[i], res.base_rgb)) {
+  for (var i = 0; i < baseColorSets.length; i++) {
+    if (compareArrays(baseColorSets[i].baseColor, res.base_rgb)) {
       found = true;
-      trace_id = baseColorSets.traceId[i];
+      trace_id = baseColorSets[i].traceId;
+      if (testId <= total_num_tests/2)
+        baseColorSets[i].thresholdColors_yes.push(thresholdColor.v_rgb_css);
+      else
+        baseColorSets[i].thresholdColors_no.push(thresholdColor.v_rgb_css);
       break;
     }
   }
   if (!found) {
-    baseColorSets.baseColor.push(res.base_rgb);
     add_new_base_trace(dis_plot, base, traceName);
     trace_id = dis_plot.data.length - 1;
-    baseColorSets.traceId.push(trace_id);
+
+    var newBase = {baseColor: res.base_rgb,
+                   traceId: trace_id,
+                   // same id in the two arrays correspond to the same line and dir, because we shuffle once and use it twice
+                   thresholdColors_no: [],
+                   thresholdColors_yes: [],
+                   };
+    if (testId <= total_num_tests/2)
+      newBase.thresholdColors_yes.push(thresholdColor.v_rgb_css);
+    else
+      newBase.thresholdColors_no.push(thresholdColor.v_rgb_css);
+
+    baseColorSets.push(newBase);
   }
 
   // add result for this test
-  var thresholdColor = new colorObj(res.threshold_color, 'v_rgb');
 
   // use unshift so that the trace name is based on the threshold markers rather than the base color
   dis_plot.data[trace_id].x.unshift(thresholdColor.xy[0]);
@@ -155,6 +163,8 @@ function gen_plot(data) {
     genSelectBox(data, 'expId');
     register_update_exp_plot(data);
     $('#expId').val('test1').trigger('change');
+
+    displayColorRes();
   });
 }
 
@@ -184,6 +194,49 @@ var total_num_tests;
 
 var fileName = location.href.split("/").at(-1);
 var jsonFileName = fileName.split(".")[0];
+
+function displayColorRes() {
+  for (var i = 0; i < baseColorSets.length; i++) {
+    var base = new colorObj(baseColorSets[i].baseColor, 'v_rgb');
+
+    var string = "<div class=\"row d-flex justify-content-start\"> \
+                    <div class=\"col-sm-2 content_center fs-3\">Base Color</div> \
+                    <div class=\"col-sm-4 content_center\"></div> \
+                    <div class=\"col-sm-2 content_center\"> \
+                      <div class=\"square\" style=\"background-color: " + base.srgb_css + "\"></div> \
+                    </div>\
+                    <div class=\"col-sm-4 content_center\"></div> \
+                  </div>\
+                  <div class=\"row d-flex justify-content-start\"> \
+                    <div class=\"col-sm-2 content_center fs-4 text-center\">Indiscriminable colors w/o slider</div> \
+                    <div class=\"col-sm-10 content_center\"> \
+                      <div class=\"square mx-2\" style=\"background-color: " + baseColorSets[i].thresholdColors_no[0] + "\"></div> \
+                      <div class=\"square mx-2\" style=\"background-color: " + baseColorSets[i].thresholdColors_no[1] + "\"></div> \
+                      <div class=\"square mx-2\" style=\"background-color: " + baseColorSets[i].thresholdColors_no[2] + "\"></div> \
+                      <div class=\"square mx-2\" style=\"background-color: " + baseColorSets[i].thresholdColors_no[3] + "\"></div> \
+                      <div class=\"square mx-2\" style=\"background-color: " + baseColorSets[i].thresholdColors_no[4] + "\"></div> \
+                      <div class=\"square mx-2\" style=\"background-color: " + baseColorSets[i].thresholdColors_no[5] + "\"></div> \
+                      <div class=\"square mx-2\" style=\"background-color: " + baseColorSets[i].thresholdColors_no[6] + "\"></div> \
+                      <div class=\"square mx-2\" style=\"background-color: " + baseColorSets[i].thresholdColors_no[7] + "\"></div> \
+                    </div> \
+                  </div> \
+                  <div class=\"row d-flex justify-content-start\"> \
+                    <div class=\"col-sm-2 content_center fs-4 text-center\">Indiscriminable colors w slider</div> \
+                    <div class=\"col-sm-10 content_center\"> \
+                      <div class=\"square mx-2\" style=\"background-color: " + baseColorSets[i].thresholdColors_yes[0] + "\"></div> \
+                      <div class=\"square mx-2\" style=\"background-color: " + baseColorSets[i].thresholdColors_yes[1] + "\"></div> \
+                      <div class=\"square mx-2\" style=\"background-color: " + baseColorSets[i].thresholdColors_yes[2] + "\"></div> \
+                      <div class=\"square mx-2\" style=\"background-color: " + baseColorSets[i].thresholdColors_yes[3] + "\"></div> \
+                      <div class=\"square mx-2\" style=\"background-color: " + baseColorSets[i].thresholdColors_yes[4] + "\"></div> \
+                      <div class=\"square mx-2\" style=\"background-color: " + baseColorSets[i].thresholdColors_yes[5] + "\"></div> \
+                      <div class=\"square mx-2\" style=\"background-color: " + baseColorSets[i].thresholdColors_yes[6] + "\"></div> \
+                      <div class=\"square mx-2\" style=\"background-color: " + baseColorSets[i].thresholdColors_yes[7] + "\"></div> \
+                    </div> \
+                  </div> \
+                  <hr> "
+    $("#thd_table").append(string);
+  };
+}
 
 fetch(jsonFileName+'.json')
   .then(function (response) {
