@@ -308,7 +308,7 @@ function ans_finish_cb(correct, rev) {
   state.corrects.push(correct);
   state.revs.push(rev);
 
-  if (state.numRevs == 4) {
+  if (state.numRevs == 6) {
     // terminate
     state.test_finish_cb();
   } else {
@@ -364,7 +364,7 @@ function startNextTest() {
 
 // called after each test terminates
 function test_finish_cb() {
-  var threshold = math.mean(state.scalesAtRevs.slice(-2)); // TODO: average last 2 since we do only 4 reversals (more general)
+  var threshold = math.mean(state.scalesAtRevs.slice(-3)); // TODO: average last 2 since we do only 4 reversals (more general)
   var thresholdColor = new colorObj(
       math.add(state.baseColor.v_rgb, math.multiply(state.test_line_rgb, state.dir * threshold)), 'v_rgb');
 
