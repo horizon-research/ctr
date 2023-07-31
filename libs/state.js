@@ -19,6 +19,7 @@ class discTestState {
     this.scales = []; // a sequence of scales used in the current test
     this.corrects = [];
     this.revs = [];
+    this.end_ang = [];
 
     this.test_start_cb = test_start_cb; // called every page.submit
     this.test_finish_cb = test_finish_cb; // called every time a test terminates

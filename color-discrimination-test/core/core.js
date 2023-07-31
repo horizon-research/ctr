@@ -307,6 +307,7 @@ function ans_start_cb() {
 function ans_finish_cb(correct, rev) {
   state.corrects.push(correct);
   state.revs.push(rev);
+  state.end_ang.push($(page.slider).val());
 
   if (state.numRevs == 6) {
     // terminate
@@ -378,6 +379,7 @@ function test_finish_cb() {
     scales: state.scales,
     corrects: state.corrects,
     revs: state.revs,
+    end_ang: state.end_ang,
     num_incrs: prof.num_incrs,
     time_elapsed: prof.time_elapsed,
   };
