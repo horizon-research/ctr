@@ -172,10 +172,10 @@ function set_new_test() {
 
 // TODO: complete duck tapes
 function prepare_training() {
-  page.s11 = '#t_s11';
-  page.s12 = '#t_s12';
-  page.s13 = '#t_s13';
-  page.s14 = '#t_s14';
+  page.disColors[0] = '#t_s11'
+  page.disColors[1] = '#t_s12'
+  page.disColors[2] = '#t_s13'
+  page.disColors[3] = '#t_s14'
   page.slider = '#t_customRange';
   page.slider_reset = '#t_reset';
 
@@ -212,10 +212,10 @@ function prepare_training() {
 }
 
 function prepare_test(evt) {
-  page.s11 = '#s11';
-  page.s12 = '#s12';
-  page.s13 = '#s13';
-  page.s14 = '#s14';
+  page.disColors[0] = '#s11'
+  page.disColors[1] = '#s12'
+  page.disColors[2] = '#s13'
+  page.disColors[3] = '#s14'
   page.slider = '#customRange';
   page.slider_reset = '#reset';
 
@@ -266,10 +266,7 @@ function registerGetAns() {
 function setupNextColor() {
   // briefly blank the colors to reset the visual field
   var bg_color = $('#patches').css('background-color');
-  $(page.s11).css('background-color', bg_color);
-  $(page.s12).css('background-color', bg_color);
-  $(page.s13).css('background-color', bg_color);
-  $(page.s14).css('background-color', bg_color);
+  page.reset_disColors(bg_color);
 
   $(page.slider).val(0);
   $(page.slider).css('visibility', 'hidden');
@@ -323,10 +320,7 @@ function test_start_cb() {
 
   // display "Next Trial" in-between tests
   var bg_color = $('#patches').css('background-color');
-  $(page.s11).css('background-color', bg_color);
-  $(page.s12).css('background-color', bg_color);
-  $(page.s13).css('background-color', bg_color);
-  $(page.s14).css('background-color', bg_color);
+  page.reset_disColors(bg_color);
 
   context.font = "bold 60px Arial";
   context.textAlign = "center";
@@ -419,10 +413,7 @@ function test_finish_cb() {
     $(page.slider).css('visibility', 'hidden');
 
     var bg_color = $('#patches').css('background-color');
-    $(page.s11).css('background-color', bg_color);
-    $(page.s12).css('background-color', bg_color);
-    $(page.s13).css('background-color', bg_color);
-    $(page.s14).css('background-color', bg_color);
+    page.reset_disColors(bg_color);
 
     context.font = "bold 50px Arial";
     context.textAlign = "center";

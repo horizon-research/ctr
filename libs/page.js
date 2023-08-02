@@ -100,16 +100,24 @@ function updatePlot(theta, action) {
   if (page.sim) {
     /* update square colors */
     var temp = state.simColors.map(c => c.v_rgb_css);
-    $(page.s11).css('background-color', temp[0]);
-    $(page.s12).css('background-color', temp[1]);
-    $(page.s13).css('background-color', temp[2]);
-    $(page.s14).css('background-color', temp[3]);
+    for (var i = 0; i < page.disColors.length; i++) {
+      $(page.disColors[i]).css('background-color', temp[i]);
+    }
+
+    //$(page.s11).css('background-color', temp[0]);
+    //$(page.s12).css('background-color', temp[1]);
+    //$(page.s13).css('background-color', temp[2]);
+    //$(page.s14).css('background-color', temp[3]);
   } else {
     var temp = state.rotColorsMapped.map(c => c.v_rgb_css);
-    $(page.s11).css('background-color', temp[0]);
-    $(page.s12).css('background-color', temp[1]);
-    $(page.s13).css('background-color', temp[2]);
-    $(page.s14).css('background-color', temp[3]);
+    for (var i = 0; i < page.disColors.length; i++) {
+      $(page.disColors[i]).css('background-color', temp[i]);
+    }
+
+    //$(page.s11).css('background-color', temp[0]);
+    //$(page.s12).css('background-color', temp[1]);
+    //$(page.s13).css('background-color', temp[2]);
+    //$(page.s14).css('background-color', temp[3]);
   }
 
   // good for debugging
@@ -281,6 +289,8 @@ class pageObj {
                  sex: $('#sex').val(),
                  age: $('#age').val(),
     };
+
+    this.disColors = [];
   }
 
   // https://dotnettutorials.net/lesson/jquery-id-selector/#:~:text=getElementById()%20will%20throw%20an,document.
@@ -363,6 +373,12 @@ class pageObj {
     if ((this._cs == 1) && !this.hasP3)
       return 0;
     else return this._cs;
+  }
+
+  reset_disColors(newColor) {
+    for (var i = 0; i < this.disColors.length; i++) {
+      $(page.disColors[i]).css('background-color', newColor);
+    }
   }
 
   submit() {
