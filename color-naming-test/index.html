@@ -81,6 +81,16 @@
          line-height:100px;
       }
 
+      .bigcircle {
+         display:block;
+         width:200px;
+         height:200px;
+         background:red;
+         border-radius:51%;
+         text-align:center;
+         line-height:100px;
+      }
+
       .deg-0 {
          transform:translate(250px)
       }
@@ -135,6 +145,9 @@
             </li>
             <li class="nav-item" role="presentation">
               <button class="nav-link" id="train-tab" data-bs-toggle="tab" data-bs-target="#train-tab-pane" type="button" role="tab" aria-controls="train-tab-pane" aria-selected="true">training</button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button class="nav-link" id="test-tab" data-bs-toggle="tab" data-bs-target="#test-tab-pane" type="button" role="tab" aria-controls="test-tab-pane" aria-selected="true">test</button>
             </li>
           </ul>
 
@@ -316,6 +329,47 @@
                       <input type="range" class="form-range" min="-3.14" max="3.14" step="0.02" id="customRange">
                     </div>
                     <button id="reset" style="display: none">Reset</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="tab-pane" id="test-tab-pane" role="tabpanel" aria-labelledby="test-tab">
+              <div class="d-grid gap-3" style="grid-template-columns: 2fr 2fr;">
+                <div>
+                  <div class="col-sm-12">
+                    <div class="bigcircle" id="testcolor">
+                    </div> 
+                    <div class="row justify-content-md-center mt-4 opacity-25 nofocus">
+                      <div id="slider">
+                        <label for="customRange" class="rot-label" style="font-size:20px; display: none">Rotation Angle (Degree): 0&#176;</label>
+                        <input type="range" class="form-range" min="-3.14" max="3.14" step="0.02" id="customRange">
+                      </div>
+                      <button id="reset" style="display: none">Reset</button>
+                    </div>
+                  </div>
+                </div>
+                <div class="content_center">
+                  <div class="col-sm-12 content_center">
+                    <div class="btn-group-vertical" role="group" aria-label="Basic radio toggle button group">
+                      <input type="radio" class="btn-check" name="pick" id="ans1" autocomplete="off">
+                      <label class="btn btn-outline-primary" for="pickp">Red</label>
+                    
+                      <input type="radio" class="btn-check" name="pick" id="ans2" autocomplete="off">
+                      <label class="btn btn-outline-primary" for="pickd">Green</label>
+                    
+                      <input type="radio" class="btn-check" name="pick" id="ans3" autocomplete="off">
+                      <label class="btn btn-outline-primary" for="pickt">Blue</label>
+
+                      <input type="radio" class="btn-check" name="pick" id="and4" autocomplete="off">
+                      <label class="btn btn-outline-primary" for="pickp">Red</label>
+                    
+                      <input type="radio" class="btn-check" name="pick" id="and5" autocomplete="off">
+                      <label class="btn btn-outline-primary" for="pickd">Green</label>
+                    
+                      <input type="radio" class="btn-check" name="pick" id="and6" autocomplete="off">
+                      <label class="btn btn-outline-primary" for="pickt">Blue</label>
+                    </div>
                   </div>
                 </div>
               </div>

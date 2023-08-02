@@ -53,6 +53,11 @@ function prepare_training() {
 
   $('#train-tab').trigger('click');
   $('#title').text('Training');
-  set_keyboard_cb(false, true, false, false);
+  set_keyboard_cb(true, true, false, false);
 }
 
+function prepare_test() {
+  $('#test-tab').trigger('click');
+  $('#title').text('Test');
+  set_keyboard_cb(true, true, false, false);
+}
