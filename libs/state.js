@@ -161,10 +161,10 @@ class discTestState {
 
   // take in a set of colorObj (not a pure numerical array)
   geoTrans(transMat, fromColors) {
-    var colors_in_linear_rgb = [fromColors[0].v_rgb,
-                                fromColors[1].v_rgb,
-                                fromColors[2].v_rgb,
-                                fromColors[3].v_rgb]
+    var colors_in_linear_rgb = [];
+    for (var i = 0; i < fromColors.length; i++) {
+      colors_in_linear_rgb.push(fromColors[i].v_rgb);
+    }
     return math.multiply(transMat, math.transpose(colors_in_linear_rgb));
   }
 
