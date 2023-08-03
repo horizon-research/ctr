@@ -2,7 +2,7 @@ var p_line, d_line, t_line;
 var indices, testId;
 var prof, all_test_stats, dashboardName;
 var pageId = 0;
-var all_tests = {};
+var all_tests = [];
 var page_stats;
 
 class Profiler {
@@ -21,10 +21,6 @@ prof = new Profiler();
 page = new pageObj('srgb');
 page.slider = '#customRange';
 page.slider_reset = '#reset';
-page.s11 = '#color1'
-page.s12 = '#color2'
-page.s13 = '#color3'
-page.s14 = '#color4'
 page.type = 0;
 page.sim = false;
 page.simMethod = 0;

@@ -185,12 +185,12 @@ function prepare_training() {
   });
   $(page.slider).prop('disabled', false);
 
-  $(page.slider_reset).on('click', function(evt) {
-    $(page.slider).val(0);
-    // need to explicitly trigger input event
-    $(page.slider).trigger('input');
-  });
-  $(page.slider_reset).prop('disabled', false);
+  //$(page.slider_reset).on('click', function(evt) {
+  //  $(page.slider).val(0);
+  //  // need to explicitly trigger input event
+  //  $(page.slider).trigger('input');
+  //});
+  //$(page.slider_reset).prop('disabled', false);
 
   page.num_con_cors = 0;
 

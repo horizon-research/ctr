@@ -10,54 +10,85 @@ function hex_to_srgb(hex) {
 }
 
 function prepare_training() {
-  all_tests.base1 = $('#base1').val();
-  all_tests.match1 = $('#match1').val();
-  all_tests.base2 = $('#base2').val();
-  all_tests.match2 = $('#match2').val();
-  all_tests.base3 = $('#base3').val();
-  all_tests.match3 = $('#match3').val();
+  all_tests[0] = {
+    color: $('#base1').val(),
+    id: '#color1',
+  };
+  all_tests[1] = {
+    color: $('#match1').val(),
+    id: '#color2',
+  };
+  all_tests[2] = {
+    color: $('#base2').val(),
+    id: '#color3',
+  };
+  all_tests[3] = {
+    color: $('#match2').val(),
+    id: '#color4',
+  };
+  all_tests[4] = {
+    color: $('#base3').val(),
+    id: '#color5',
+  };
+  all_tests[5] = {
+    color: $('#match3').val(),
+    id: '#color6',
+  };
 
-  page.disColors[0] = '#color1';
-  page.disColors[1] = '#color2';
-  page.disColors[2] = '#color3';
-  page.disColors[3] = '#color4';
-  page.disColors[4] = '#color5';
-  page.disColors[5] = '#color6';
-
-  $('#color1').css('background-color', all_tests.base1);
-  $('#color2').css('background-color', all_tests.match1);
-  $('#color3').css('background-color', all_tests.base2);
-  $('#color4').css('background-color', all_tests.match2);
-  $('#color5').css('background-color', all_tests.base3);
-  $('#color6').css('background-color', all_tests.match3);
-
-  state.colors[0] = new colorObj(hex_to_srgb(all_tests.base1), 'srgb');
-  state.colors[1] = new colorObj(hex_to_srgb(all_tests.match1), 'srgb');
-  state.colors[2] = new colorObj(hex_to_srgb(all_tests.base2), 'srgb');
-  state.colors[3] = new colorObj(hex_to_srgb(all_tests.match2), 'srgb');
-  state.colors[4] = new colorObj(hex_to_srgb(all_tests.base3), 'srgb');
-  state.colors[5] = new colorObj(hex_to_srgb(all_tests.match3), 'srgb');
-
-  $('#color1').text(state.colors[0].srgb_name);
-  $('#color2').text(state.colors[1].srgb_name);
-  $('#color3').text(state.colors[2].srgb_name);
-  $('#color4').text(state.colors[3].srgb_name);
-  $('#color5').text(state.colors[4].srgb_name);
-  $('#color6').text(state.colors[5].srgb_name);
+  for (var i = 0; i < all_tests.length; i++) {
+    page.disColors[i] = all_tests[i].id;
+    $(all_tests[i].id).css('background-color', all_tests[i].color);
+    state.colors[i] = new colorObj(hex_to_srgb(all_tests[i].color), 'srgb');
+    all_tests[i].obj = state.colors[i];
+    $(all_tests[i].id).text(state.colors[i].srgb_name);
+  }
 
   $(page.slider).on('input', function() {
-    $('.rot-label').html('Rotation Angle (Degree): ' + (this.value/Math.PI*180).toFixed(2) + '&#176;')
     updatePlot(this.value, 0)
   });
-  $(page.slider).prop('disabled', false);
 
   $('#train-tab').trigger('click');
   $('#title').text('Training');
   set_keyboard_cb(true, true, false, false);
 }
 
+var all_answers = [];
+
 function prepare_test() {
+  page.slider = '#t_customRange';
+  page.slider_reset = '#t_reset';
+  page.disColors = ['#testcolor'];
+
+  state.colors = [all_tests[0].obj];
+  $('#testcolor').css('background-color', all_tests[0].color);
+
+  for (var i = 0; i < all_tests.length; i++) {
+    $('label[for=ans' + (i+1).toString() + ']').text(all_tests[i].obj.srgb_name);
+  }
+
+  $(page.slider).on('input', function() {
+    updatePlot(this.value, 0);
+  });
+
+  var colorId = 1;
+  $('input[type=radio][name=pick]').change(function() {
+    all_answers.push(this.id);
+
+    if (colorId == 6) {
+      show_results();
+    } else {
+      state.colors = [all_tests[colorId].obj];
+      $('#testcolor').css('background-color', all_tests[colorId++].color);
+      $('input[type=radio][id='+this.id+']').prop('checked',false);
+      $(page.slider).val(0);
+      $('body').focus();
+    }
+  });
+
   $('#test-tab').trigger('click');
   $('#title').text('Test');
-  set_keyboard_cb(true, true, false, false);
+  set_keyboard_cb(false, true, false, false);
+}
+
+function show_results() {
 }

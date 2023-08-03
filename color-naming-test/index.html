@@ -21,7 +21,7 @@
         height: 3.6cm;
       }
 
-      #slider{
+      .slider{
         width: 5.8cm;
       }
 
@@ -324,11 +324,9 @@
                     </div> 
                   </div>  
                   <div class="row justify-content-md-center mt-4 opacity-25 nofocus">
-                    <div id="slider">
-                      <label for="customRange" class="rot-label" style="font-size:20px; display: none">Rotation Angle (Degree): 0&#176;</label>
+                    <div class="slider">
                       <input type="range" class="form-range" min="-3.14" max="3.14" step="0.02" id="customRange">
                     </div>
-                    <button id="reset" style="display: none">Reset</button>
                   </div>
                 </div>
               </div>
@@ -341,34 +339,32 @@
                     <div class="bigcircle" id="testcolor">
                     </div> 
                     <div class="row justify-content-md-center mt-4 opacity-25 nofocus">
-                      <div id="slider">
-                        <label for="customRange" class="rot-label" style="font-size:20px; display: none">Rotation Angle (Degree): 0&#176;</label>
-                        <input type="range" class="form-range" min="-3.14" max="3.14" step="0.02" id="customRange">
+                      <div class="slider">
+                        <input type="range" class="form-range" min="-3.14" max="3.14" step="0.02" id="t_customRange" tabindex="-1">
                       </div>
-                      <button id="reset" style="display: none">Reset</button>
                     </div>
                   </div>
                 </div>
                 <div class="content_center">
                   <div class="col-sm-12 content_center">
                     <div class="btn-group-vertical" role="group" aria-label="Basic radio toggle button group">
-                      <input type="radio" class="btn-check" name="pick" id="ans1" autocomplete="off">
-                      <label class="btn btn-outline-primary" for="pickp">Red</label>
+                      <input type="radio" class="btn-check" name="pick" id="ans1" autocomplete="off" tabindex="-1">
+                      <label class="btn btn-outline-primary nofocus" for="ans1"></label>
                     
-                      <input type="radio" class="btn-check" name="pick" id="ans2" autocomplete="off">
-                      <label class="btn btn-outline-primary" for="pickd">Green</label>
+                      <input type="radio" class="btn-check" name="pick" id="ans2" autocomplete="off" tabindex="-1">
+                      <label class="btn btn-outline-primary nofocus" for="ans2"></label>
                     
-                      <input type="radio" class="btn-check" name="pick" id="ans3" autocomplete="off">
-                      <label class="btn btn-outline-primary" for="pickt">Blue</label>
+                      <input type="radio" class="btn-check" name="pick" id="ans3" autocomplete="off" tabindex="-1">
+                      <label class="btn btn-outline-primary nofocus" for="ans3"></label>
 
-                      <input type="radio" class="btn-check" name="pick" id="and4" autocomplete="off">
-                      <label class="btn btn-outline-primary" for="pickp">Red</label>
+                      <input type="radio" class="btn-check" name="pick" id="ans4" autocomplete="off" tabindex="-1">
+                      <label class="btn btn-outline-primary nofocus" for="ans4"></label>
                     
-                      <input type="radio" class="btn-check" name="pick" id="and5" autocomplete="off">
-                      <label class="btn btn-outline-primary" for="pickd">Green</label>
+                      <input type="radio" class="btn-check" name="pick" id="ans5" autocomplete="off" tabindex="-1">
+                      <label class="btn btn-outline-primary nofocus" for="ans5"></label>
                     
-                      <input type="radio" class="btn-check" name="pick" id="and6" autocomplete="off">
-                      <label class="btn btn-outline-primary" for="pickt">Blue</label>
+                      <input type="radio" class="btn-check" name="pick" id="ans6" autocomplete="off" tabindex="-1">
+                      <label class="btn btn-outline-primary nofocus" for="ans6"></label>
                     </div>
                   </div>
                 </div>
