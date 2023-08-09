@@ -43,6 +43,10 @@ function prepare_training() {
     $(all_tests[i].id).text(state.colors[i].srgb_name);
   }
 
+  // shuffle all_tests
+  indices = Array.from(Array(all_tests.length).keys());
+  shuffle(indices);
+
   $(page.slider).on('input', function() {
     updatePlot(this.value, 0)
   });
@@ -59,23 +63,48 @@ function prepare_test() {
   page.slider_reset = '#t_reset';
   page.disColors = ['#testcolor'];
 
-  state.colors = [all_tests[0].obj];
-  $('#testcolor').css('background-color', all_tests[0].color);
+  state.colors = [all_tests[indices[0]].obj];
+  $('#testcolor').css('background-color', all_tests[indices[0]].color);
 
+  // show a list of answers
+  ans_indices = Array.from(Array(all_tests.length).keys());
+  shuffle(ans_indices);
   for (var i = 0; i < all_tests.length; i++) {
-    $('label[for=ans' + (i+1).toString() + ']').text((i+1).toString() + ' ' +  all_tests[i].obj.srgb_name);
+    $('label[for=ans' + (i+1).toString() + ']').text((i+1).toString() + ' ' +  all_tests[ans_indices[i]].obj.srgb_name);
   }
 
+  // TODO: could move this into key_slider_cb, but then we can't use mouse (better)?
   $(page.slider).on('input', function() {
     updatePlot(this.value, 0);
   });
 
+  // update the next color
   $("body").on('keydown', get_ans_cb);
 
   $('#test-tab').trigger('click');
-  $('#title').text('Test');
+  $('#title').text('Which Color is This?');
   set_keyboard_cb(false, true, true, false);
 }
 
-function show_results() {
+function prepare_results() {
+  for (var i = 0; i < all_tests.length; i++) {
+    $('#res' + (i+1).toString() + '_color').css('background-color', all_tests[indices[i]].color);
+    $('#res' + (i+1).toString() + '_ans').text(all_tests[indices[i]].obj.srgb_name);
+    $('#res' + (i+1).toString() + '_your').text(all_answers[i]);
+    $('#res' + (i+1).toString() + '_sim').html((all_answers[i] == all_tests[indices[i]].obj.srgb_name) ? '&#10004;' : '&#10060;');
+  }
+
+  $('#res-tab').trigger('click');
+  $('#title').text('Results');
+  set_keyboard_cb(true, true, false, false);
 }
+
+
+
+
+
+
+
+
+
+

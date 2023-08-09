@@ -36,6 +36,8 @@ function advance_phase_cb(e){
     } else if (pageId == 3) {
       prepare_test();
       pageId = 4;
+    } else if (pageId == 4) {
+      prepare_results();
     }
   }
 }
@@ -110,20 +112,26 @@ function key_slider_cb(e) {
 
 var colorId = 1; // TODO: move to a global object
 function get_ans_cb(e) {
+
   if (e.which >= 49 && e.which <= 54) {
     var ans = e.which-48;
-    all_answers.push(ans);
     $('input[type=radio][id=ans'+ans+']').prop('checked',true);
+
+    var ans_name = $('label[for=ans' + ans.toString() + ']').text();
+    all_answers.push(ans_name.substring(2));
   }
   if (e.which == 13) {
-    var ans = all_answers.slice(-1);
-    $('input[type=radio][id=ans'+ans+']').prop('checked',false);
-    if (colorId == 6) {
-      show_results();
-    } else {
-      state.colors = [all_tests[colorId].obj];
-      $('#testcolor').css('background-color', all_tests[colorId++].color);
-      $(page.slider).val(0);
+    var t = $('input[type=radio][name="pick"]:checked').attr('id');
+    if (t) {
+      $('input[type=radio][id='+t+']').prop('checked',false);
+      if (colorId == 6) {
+        $('#resbox').css('visibility', 'visible');
+        set_keyboard_cb(true, false, false, false);
+      } else {
+        state.colors = [all_tests[indices[colorId]].obj];
+        $('#testcolor').css('background-color', all_tests[indices[colorId++]].color);
+        $(page.slider).val(0);
+      }
     }
   }
 }

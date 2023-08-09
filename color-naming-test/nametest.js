@@ -1,5 +1,5 @@
 var p_line, d_line, t_line;
-var indices, testId;
+var indices, ans_indices, testId;
 var prof, all_test_stats, dashboardName;
 var pageId = 0;
 var all_tests = [];
@@ -31,3 +31,4 @@ state = new discTestState(new colorObj([0, 0, 0], 'srgb'), 0.1,
 
 set_keyboard_cb(true, false, false, false);
 
+$('#resbox').css('visibility', 'hidden');
