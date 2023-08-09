@@ -1,8 +1,8 @@
-var p_line, d_line, t_line;
 var indices, ans_indices, testId;
 var prof, all_test_stats, dashboardName;
 var pageId = 0;
 var all_tests = [];
+var all_answers = [];
 var page_stats;
 
 class Profiler {

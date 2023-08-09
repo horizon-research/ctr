@@ -93,7 +93,7 @@ function key_slider_cb(e) {
     else if (ang > 3.14) ang -= 3.14*2;
 
     $(page.slider).val(ang);
-    $(page.slider).trigger('input');
+    updatePlot(ang, 0)
 
     prof.incs++;
   }

@@ -47,22 +47,16 @@ function prepare_training() {
   indices = Array.from(Array(all_tests.length).keys());
   shuffle(indices);
 
-  $(page.slider).on('input', function() {
-    updatePlot(this.value, 0)
-  });
-
   $('#train-tab').trigger('click');
   $('#title').text('Training');
   set_keyboard_cb(true, true, false, false);
 }
 
-var all_answers = [];
-
 function prepare_test() {
   page.slider = '#t_customRange';
-  page.slider_reset = '#t_reset';
-  page.disColors = ['#testcolor'];
 
+  // must set both page.disColors (for display) and state.colors (for computation)
+  page.disColors = ['#testcolor'];
   state.colors = [all_tests[indices[0]].obj];
   $('#testcolor').css('background-color', all_tests[indices[0]].color);
 
@@ -73,11 +67,6 @@ function prepare_test() {
     $('label[for=ans' + (i+1).toString() + ']').text((i+1).toString() + ' ' +  all_tests[ans_indices[i]].obj.srgb_name);
   }
 
-  // TODO: could move this into key_slider_cb, but then we can't use mouse (better)?
-  $(page.slider).on('input', function() {
-    updatePlot(this.value, 0);
-  });
-
   // update the next color
   $("body").on('keydown', get_ans_cb);
 
@@ -87,7 +76,12 @@ function prepare_test() {
 }
 
 function prepare_results() {
+  page.slider = '#r_customRange';
+
+  page.disColors = ['#res1_color', '#res2_color', '#res3_color', '#res4_color', '#res5_color', '#res6_color'];
+
   for (var i = 0; i < all_tests.length; i++) {
+    state.colors[i] = all_tests[indices[i]].obj;
     $('#res' + (i+1).toString() + '_color').css('background-color', all_tests[indices[i]].color);
     $('#res' + (i+1).toString() + '_ans').text(all_tests[indices[i]].obj.srgb_name);
     $('#res' + (i+1).toString() + '_your').text(all_answers[i]);
@@ -96,7 +90,7 @@ function prepare_results() {
 
   $('#res-tab').trigger('click');
   $('#title').text('Results');
-  set_keyboard_cb(true, true, false, false);
+  set_keyboard_cb(false, true, false, false);
 }
 
 
