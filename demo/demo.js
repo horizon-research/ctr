@@ -64,7 +64,7 @@ function registerGetAns() {
 }
 
 function test_start_cb() {
-  d3.csv('ciexyzjv.csv').then(function(rows){
+  d3.csv('/demo/ciexyzjv.csv').then(function(rows){
     state.xy_plot = plotXy('xyDiv', rows);
     updatePlot(0, 1);
   });
@@ -167,10 +167,14 @@ state = new discTestState(new colorObj([0.2, 0.15, 0.65], 'xyz'), 0.1,
     test_start_cb, test_finish_cb,
     ans_start_cb, ans_finish_cb);
 
-page.s11 = '#s11';
-page.s12 = '#s12';
-page.s13 = '#s13';
-page.s14 = '#s14';
+//page.s11 = '#s11';
+//page.s12 = '#s12';
+//page.s13 = '#s13';
+//page.s14 = '#s14';
+page.disColors[0] = '#s11'
+page.disColors[1] = '#s12'
+page.disColors[2] = '#s13'
+page.disColors[3] = '#s14'
 page.slider = '#customRange';
 page.slider_reset = '#reset';
 
