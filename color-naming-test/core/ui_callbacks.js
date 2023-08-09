@@ -35,6 +35,7 @@ function advance_phase_cb(e){
       pageId = 3;
     } else if (pageId == 3) {
       prepare_test();
+      pageId = 4;
     }
   }
 }
@@ -107,19 +108,23 @@ function key_slider_cb(e) {
   }
 }
 
+var colorId = 1; // TODO: move to a global object
 function get_ans_cb(e) {
-  var map = {81: 1,
-             87: 2,
-             65: 3,
-             83: 4,};
-
-  // https://stackoverflow.com/questions/4471582/keycode-vs-which
-  if (e.which == 81 || e.which == 87 || e.which == 65 || e.which == 83) {
-    prof.num_incrs.push(prof.incs);
-    prof.incs = 0;
-    prof.time_elapsed.push(Date.now() - prof.start);
-    getAnswer(map[e.which]);
-    prof.start = Date.now();
+  if (e.which >= 49 && e.which <= 54) {
+    var ans = e.which-48;
+    all_answers.push(ans);
+    $('input[type=radio][id=ans'+ans+']').prop('checked',true);
+  }
+  if (e.which == 13) {
+    var ans = all_answers.slice(-1);
+    $('input[type=radio][id=ans'+ans+']').prop('checked',false);
+    if (colorId == 6) {
+      show_results();
+    } else {
+      state.colors = [all_tests[colorId].obj];
+      $('#testcolor').css('background-color', all_tests[colorId++].color);
+      $(page.slider).val(0);
+    }
   }
 }
 

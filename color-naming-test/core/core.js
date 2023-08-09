@@ -63,31 +63,18 @@ function prepare_test() {
   $('#testcolor').css('background-color', all_tests[0].color);
 
   for (var i = 0; i < all_tests.length; i++) {
-    $('label[for=ans' + (i+1).toString() + ']').text(all_tests[i].obj.srgb_name);
+    $('label[for=ans' + (i+1).toString() + ']').text((i+1).toString() + ' ' +  all_tests[i].obj.srgb_name);
   }
 
   $(page.slider).on('input', function() {
     updatePlot(this.value, 0);
   });
 
-  var colorId = 1;
-  $('input[type=radio][name=pick]').change(function() {
-    all_answers.push(this.id);
-
-    if (colorId == 6) {
-      show_results();
-    } else {
-      state.colors = [all_tests[colorId].obj];
-      $('#testcolor').css('background-color', all_tests[colorId++].color);
-      $('input[type=radio][id='+this.id+']').prop('checked',false);
-      $(page.slider).val(0);
-      $('body').focus();
-    }
-  });
+  $("body").on('keydown', get_ans_cb);
 
   $('#test-tab').trigger('click');
   $('#title').text('Test');
-  set_keyboard_cb(false, true, false, false);
+  set_keyboard_cb(false, true, true, false);
 }
 
 function show_results() {
