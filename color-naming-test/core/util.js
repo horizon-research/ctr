@@ -70,7 +70,7 @@ function closeFullScreen() {
 function post_data(data) {
   const jsonData = JSON.stringify(data);
 
-  //fetch('https://colorvision.cs.rochester.edu/upload-disc-data', {
+  //fetch('https://colorvision.cs.rochester.edu/upload-naming-data', {
   fetch('http://localhost:9812/upload-naming-data', {
     method: 'POST',
     mode: "cors", // no-cors, *cors, same-origin
