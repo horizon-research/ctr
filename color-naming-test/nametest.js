@@ -18,11 +18,15 @@ class Profiler {
 
 prof = new Profiler();
 
+const queryString = window.location.search;
+const urlParams = new URLSearchParams(queryString);
+const para_sim = urlParams.get('sim')
+
 page = new pageObj('srgb');
 page.slider = '#customRange';
 page.slider_reset = '#reset';
 page.type = 0;
-page.sim = false;
+page.sim = (para_sim == "true") ? true : false;
 page.simMethod = 0;
 
 state = new discTestState(new colorObj([0, 0, 0], 'srgb'), 0.1,

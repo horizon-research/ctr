@@ -37,11 +37,13 @@ function prepare_training() {
 
   for (var i = 0; i < all_tests.length; i++) {
     page.disColors[i] = all_tests[i].id;
-    $(all_tests[i].id).css('background-color', all_tests[i].color);
     state.colors[i] = new colorObj(hex_to_srgb(all_tests[i].color), 'srgb');
     all_tests[i].obj = state.colors[i];
     $(all_tests[i].id).text(state.colors[i].srgb_name);
   }
+
+  // initial update of the patches
+  updatePlot(0, 3);
 
   // shuffle all_tests
   indices = Array.from(Array(all_tests.length).keys());

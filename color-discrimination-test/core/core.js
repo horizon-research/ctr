@@ -177,20 +177,12 @@ function prepare_training() {
   page.disColors[2] = '#t_s13'
   page.disColors[3] = '#t_s14'
   page.slider = '#t_customRange';
-  page.slider_reset = '#t_reset';
 
   $(page.slider).on('input', function() {
     $('.rot-label').html('Rotation Angle (Degree): ' + (this.value/Math.PI*180).toFixed(2) + '&#176;')
     updatePlot(this.value, 0)
   });
   $(page.slider).prop('disabled', false);
-
-  //$(page.slider_reset).on('click', function(evt) {
-  //  $(page.slider).val(0);
-  //  // need to explicitly trigger input event
-  //  $(page.slider).trigger('input');
-  //});
-  //$(page.slider_reset).prop('disabled', false);
 
   page.num_con_cors = 0;
 
@@ -204,6 +196,7 @@ function prepare_training() {
   state.colors[3] = new colorObj([255, 18, 18], 'srgb');
   page.train_id = 3;
 
+  // initial update of the patches
   updatePlot(0, 3);
 
   $('#train-tab').trigger('click');
@@ -217,7 +210,6 @@ function prepare_test(evt) {
   page.disColors[2] = '#s13'
   page.disColors[3] = '#s14'
   page.slider = '#customRange';
-  page.slider_reset = '#reset';
 
   openFullScreen();
 
