@@ -112,23 +112,29 @@ function key_slider_cb(e) {
 
 var colorId = 1; // TODO: move to a global object
 function get_ans_cb(e) {
-
   if (e.which >= 49 && e.which <= 54) {
     var ans = e.which-48;
     $('input[type=radio][id=ans'+ans+']').prop('checked',true);
-
-    var ans_name = $('label[for=ans' + ans.toString() + ']').text();
-    all_answers.push(ans_name.substring(2));
   }
+
   if (e.which == 13) {
     var t = $('input[type=radio][name="pick"]:checked').attr('id');
     if (t) {
+      var ans_name = $('label[for='+t+']').text();
+      all_answers.push(ans_name.substring(2));
+      prof.answer_color_id.push(ans_indices[ans_name.charAt(0) - 1]);
+
+      prof.time_in_test.push(Date.now() - prof.start);
+      prof.end_pos.push($(page.slider).val());
+      prof.start = Date.now();
+
       $('input[type=radio][id='+t+']').prop('checked',false);
       if (colorId == 6) {
         $('#resbox').css('visibility', 'visible');
         set_keyboard_cb(true, false, false, false);
       } else {
         state.colors = [all_tests[indices[colorId]].obj];
+        prof.test_color_id.push(indices[colorId]);
         $('#testcolor').css('background-color', all_tests[indices[colorId++]].color);
         $(page.slider).val(0);
       }

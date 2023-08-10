@@ -3,16 +3,16 @@ var prof, all_test_stats, dashboardName;
 var pageId = 0;
 var all_tests = [];
 var all_answers = [];
-var page_stats;
 
 class Profiler {
   constructor() {
-    // time used in each trial
     this.start = 0;
-    this.time_elapsed = [];
-    // number of rotations in each trial
-    this.incs = 0;
-    this.num_incrs = [];
+    this.time_in_training = 0;
+    this.time_in_test = [];
+    this.end_pos = [];
+    this.all_colors = [];
+    this.test_color_id = [];
+    this.answer_color_id = [];
   }
 }
 

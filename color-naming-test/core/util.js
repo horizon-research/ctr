@@ -71,7 +71,7 @@ function post_data(data) {
   const jsonData = JSON.stringify(data);
 
   //fetch('https://colorvision.cs.rochester.edu/upload-disc-data', {
-  fetch('http://localhost:9812/upload-disc-data', {
+  fetch('http://localhost:9812/upload-naming-data', {
     method: 'POST',
     mode: "cors", // no-cors, *cors, same-origin
     cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached

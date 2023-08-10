@@ -86,6 +86,34 @@ const server = http.createServer((req, res) => {
         console.error(error);
       }
     });
+  } else if (req.method === 'POST' && req.url === '/upload-naming-data') {
+    let data = '';
+    
+    req.on('data', chunk => {
+      data += chunk;
+    });
+
+    req.on('end', () => {
+      try {
+        const jsonData = JSON.parse(data);
+
+        if (!fs.existsSync('color-naming-test/dashboard'))
+          fs.mkdirSync('color-naming-test/dashboard');
+
+        var filename = uid();
+        fs.writeFile('color-naming-test/dashboard/'+filename+'.json', JSON.stringify(jsonData), err => {
+          if (err) {
+            res.writeHead(500, { 'Content-Type': 'text/plain' });
+            res.end('Internal Server Error');
+            console.error(err);
+          }
+        });
+      } catch (error) {
+        res.writeHead(400, { 'Content-Type': 'text/plain' });
+        res.end('Invalid JSON format');
+        console.error(error);
+      }
+    });
   } else if (req.method === 'GET') {
     // https://stackoverflow.com/questions/68177628/how-can-i-use-the-new-url-api-to-get-request-details
     // https://nodejs.org/api/url.html#urlpathname

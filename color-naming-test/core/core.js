@@ -40,27 +40,35 @@ function prepare_training() {
     state.colors[i] = new colorObj(hex_to_srgb(all_tests[i].color), 'srgb');
     all_tests[i].obj = state.colors[i];
     $(all_tests[i].id).text(state.colors[i].srgb_name);
+    prof.all_colors[i] = {name: all_tests[i].obj.srgb_name,
+                          rgb: all_tests[i].obj.v_rgb};
   }
 
   // initial update of the patches
   updatePlot(0, 3);
 
+  $('#train-tab').trigger('click');
+  $('#title').text('Training');
+  set_keyboard_cb(true, true, false, false);
+  prof.start = Date.now();
+}
+
+function prepare_test() {
+  prof.time_in_training = Date.now() - prof.start;
+  prof.start = Date.now();
+
+  page.slider = '#t_customRange';
+
   // shuffle all_tests
   indices = Array.from(Array(all_tests.length).keys());
   shuffle(indices);
 
-  $('#train-tab').trigger('click');
-  $('#title').text('Training');
-  set_keyboard_cb(true, true, false, false);
-}
-
-function prepare_test() {
-  page.slider = '#t_customRange';
-
   // must set both page.disColors (for display) and state.colors (for computation)
   page.disColors = ['#testcolor'];
   state.colors = [all_tests[indices[0]].obj];
+
   $('#testcolor').css('background-color', all_tests[indices[0]].color);
+  prof.test_color_id.push(indices[0]);
 
   // show a list of answers
   ans_indices = Array.from(Array(all_tests.length).keys());
@@ -90,11 +98,18 @@ function prepare_results() {
     $('#res' + (i+1).toString() + '_sim').html((all_answers[i] == all_tests[indices[i]].obj.srgb_name) ? '&#10004;' : '&#10060;');
   }
 
+  send_results();
+
   $('#res-tab').trigger('click');
   $('#title').text('Results');
   set_keyboard_cb(false, true, false, false);
 }
 
+function send_results() {
+  delete prof.incs;
+  delete prof.start;
+  post_data(prof);
+}
 
 
 
