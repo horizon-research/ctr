@@ -111,8 +111,10 @@ function register_update_exp_plot(data) {
     var xs = Array.from({length: res.scales.length}, (_, i) => i + 1)
     exp_plot.data[1].x = xs;
     exp_plot.data[1].y = res.scales;
-    var data_update = {'x': [exp_plot.data[1].x], 'y': [exp_plot.data[1].y]};
-    Plotly.update(exp_plot, data_update, {}, [1]);
+    exp_plot.data[5].x = xs;
+    exp_plot.data[5].y = res.time_elapsed.map((x) => x/1000);
+    var data_update = {'x': [exp_plot.data[1].x, exp_plot.data[1].x], 'y': [exp_plot.data[1].y, exp_plot.data[5].y]};
+    Plotly.update(exp_plot, data_update, {}, [1, 5]);
 
     // restyle markers to better visualize results
     exp_plot.data[1].marker.color = [];

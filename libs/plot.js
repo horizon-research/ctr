@@ -89,7 +89,30 @@ function plotExp(plotId) {
     },
   };
 
-  var data = [threshold, trace, rev, corRes, incorRes];
+  var time_trace = {
+    x: [],
+    y: [],
+    mode: 'lines+markers',
+    name: 'Time in trial',
+    line: {
+      width: 1,
+      color: 'rgb(0, 0, 0)',
+    },
+    marker: {
+      size: 5,
+      color: [],
+      line: {
+        color: '#000000',
+        width: []
+      }
+    },
+    yaxis: 'y2',
+    visible: 'legendonly',
+    hovertemplate: 'x: %{x}' +
+      '<br>y: %{y}<extra></extra>',
+  };
+
+  var data = [threshold, trace, rev, corRes, incorRes, time_trace];
 
   var layout = {
     height: 600,
@@ -111,7 +134,13 @@ function plotExp(plotId) {
     yaxis: {
       title: 'Scale',
       showline: true,
+      showgrid: false,
       range: [-0.02, 0.2],
+    },
+    yaxis2: {
+      title: 'Time',
+      overlaying: 'y',
+      side: 'right',
     },
     legend: {
       x: 1,
