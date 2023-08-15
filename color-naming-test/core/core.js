@@ -11,6 +11,17 @@ function hex_to_srgb(hex) {
 
 const rgb2hex = (rgb) => `#${rgb.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/).slice(1).map(n => parseInt(n, 10).toString(16).padStart(2, '0')).join('')}`
 
+function prepare_info() {
+  $('#cvdtype').on('change', set_cvdtype_cb);
+  $('#sex').on('change', set_sex_cb);
+  $('#eth').on('change', set_eth_cb);
+  $('#age').on('change', set_age_cb);
+
+  $('#setting-tab').trigger('click');
+  $('#title').text('Information About You');
+  set_keyboard_cb(true, false, false, false);
+}
+
 function prepare_matching() {
   $("#nextpair").on('click', next_pair);
 
@@ -95,14 +106,11 @@ function prepare_results() {
 function send_results() {
   delete prof.incs;
   delete prof.start;
-  post_data(prof);
+  post_data({prof: prof,
+             info: page.info,
+             color_supports: page.color_supports,
+             bitdepth: page.bitdepth,
+             cs: page.cs,
+  });
 }
-
-
-
-
-
-
-
-
 

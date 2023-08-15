@@ -21,9 +21,7 @@ function set_keyboard_cb(enter_evt, slider_evt, ans_evt, train_ans_evt) {
 function advance_phase_cb(e){
   if (e.which == 13) { // Enter key to advance to next phase
     if (pageId == 0) {
-      $('#setting-tab').trigger('click');
-      $('#title').text('Information About You');
-      set_keyboard_cb(true, false, false, false);
+      prepare_info();
       pageId = 1;
     } else if (pageId == 1) {
       prepare_matching();
