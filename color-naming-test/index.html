@@ -47,9 +47,21 @@
         padding-left: 0px;
       }
 
+      .content_left{
+        display: flex;
+        justify-content: start;
+        align-items: center; 
+      }
+
       .content_center {
         display: flex;
         justify-content: center;
+        align-items: center; 
+      }
+
+      .content_right{
+        display: flex;
+        justify-content: end;
         align-items: center; 
       }
 
@@ -123,7 +135,6 @@
       }
     </style>
 
-    
     <!-- JavaScript -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.6.0/math.js" integrity="sha512-RefYJFvLbj6WnGkdf40i7tlnvORh5VhCXuyaYRrj0hu5y0aHMCO1ROPLnRfMzbZ7SJqCYaQ92EAsGf9OyY9BNQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js'></script>
@@ -262,48 +273,41 @@
               <div class="row d-flex justify-content-center align-items-center nofocus" tabindex="-1">
                 <div class="col-sm-8">
                   <div class="row justify-content-center text-center mb-5">
-                    <span class="fs-2">Click on the right patch to adjust its color so that it matches the color on the left.</span>
+                    <span class="fs-2">Adjust the color on the right to match the color on the left.</span>
                   </div>
-                  <div class="row content_center my-4">
-                    <div class="col-sm-4 content_center">
-                      <span class="fs-3">Pair 1</span>
+                  <div class="row content_center my-2">
+                    <div class="col-sm-2 content_center">
+                      <span class="fs-3" id="pair">Pair 1/3</span>
                     </div>
-                    <div class="col-sm-4 content_center">
-                      <input type="color" class="colorpicker" id="base1" value="#E00201" disabled/>
+                    <div class="col-sm-2 px-0 content_right">
+                      <div class="colorpicker" id="base" style="background-color: #E00201"></div>
                     </div>
-                    <div class="col-sm-4 content_center">
-                      <input type="color" class="colorpicker" id="match1" value="#975B39"/>
+                    <div class="col-sm-2 px-0 content_left">
+                      <div class="colorpicker" id="match"></div>
                     </div>
-                  </div>
-                  <div class="row content_center my-4">
-                    <div class="col-sm-4 content_center">
-                      <span class="fs-3">Pair 2</span>
-                    </div>
-                    <div class="col-sm-4 content_center">
-                      <input type="color" class="colorpicker" id="base2" value="#3A3EE9" disabled/>
-                    </div>
-                    <div class="col-sm-4 content_center">
-                      <input type="color" class="colorpicker" id="match2" value="#9400D3"/>
+                    <div class="col-sm-2 content_center">
+                      <button type="button" id="nextpair" class="btn btn-dark btn-sm">Next Pair >></button>
                     </div>
                   </div>
-                  <div class="row content_center my-4">
-                    <div class="col-sm-4 content_center">
-                      <span class="fs-3">Pair 3</span>
+                  <div class="row content_center">
+                    <div class="col-sm-2 content_center">
                     </div>
-                    <div class="col-sm-4 content_center">
-                      <input type="color" class="colorpicker" id="base3" value="#EDEE33" disabled/>
+                    <div class="col-sm-2 px-0 content_right">
                     </div>
-                    <div class="col-sm-4 content_center">
-                      <input type="color" class="colorpicker" id="match3" value="#7FFF00"/>
+                    <div class="col-sm-2 px-0 content_left">
+                      <button id="picker" type="button" class="btn btn-secondary btn-sm" data-jscolor="{value:'#975B39', height:181, previewElement:'#match'}" style="width: 3.6cm">Pick color</button>
+                    </div>
+                    <div class="col-sm-2 content_center">
                     </div>
                   </div>
+
                 </div>
               </div>
 
               <div class="row d-flex justify-content-center align-items-center">
                 <div class="col-sm-6">
                   <div class="row mx-auto mt-4">
-                    <div class="alert alert-success text-center" role="alert">
+                    <div class="alert alert-success text-center" id="matchbox" role="alert">
                       When finish, press <b>Enter</b> to proceed.
                     </div>
                   </div>
@@ -488,6 +492,7 @@
     <script src="/libs/state.js"></script>
     <script src="/libs/plot.js"></script>
     <script src="/libs/page.js"></script>
+    <script src="/libs/jscolor.js"></script>
     <script src="/color-naming-test/core/core.js"></script>
     <script src="/color-naming-test/core/ui_callbacks.js"></script>
     <script src="/color-naming-test/core/util.js"></script>

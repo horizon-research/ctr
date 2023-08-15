@@ -26,9 +26,7 @@ function advance_phase_cb(e){
       set_keyboard_cb(true, false, false, false);
       pageId = 1;
     } else if (pageId == 1) {
-      $('#match-tab').trigger('click');
-      $('#title').text('Color Matching');
-      set_keyboard_cb(true, false, false, false);
+      prepare_matching();
       pageId = 2;
     } else if (pageId == 2) {
       prepare_training();
@@ -165,6 +163,44 @@ function fullscreenchanged() {
 /***************************
      click callbacks
 ***************************/
+function next_pair() {
+  // TODO: move to a global obj
+  var match_colors = ['#E00201', '#975B39', '#3A3EE9', '#9400D3', '#EDEE33', '#7FFF00'];
+
+  // log current pair
+  all_tests[cid] = {
+    color: rgb2hex($('#base').css('background-color')),
+    id: '#color'+(cid+1).toString(),
+  };
+  cid++;
+  all_tests[cid] = {
+    color: rgb2hex($('#picker')[0].jscolor.toRGBString()),
+    id: '#color'+(cid+1).toString(),
+  };
+  cid++;
+
+  if (cid == 6) {
+    // finish matching
+    //$('#matchbox').css('visibility', 'visible');
+    set_keyboard_cb(true, false, false, false);
+    $("#nextpair").off('click');
+
+    var e = jQuery.Event("keydown");
+    e.which = 13;
+    e.keyCode = 13;
+    $('body').trigger(e);
+    return;
+  } else if (cid <= 4) {
+    // set up next pair
+    $('#pair').text('Pair ' + (cid/2+1).toString() + '/3');
+    $('#base').css('background-color', match_colors[cid]);
+    $('#picker')[0].jscolor.fromString(match_colors[cid+1]);
+    if (cid == 4) {
+      $('#nextpair').text('Finish');
+    }
+  }
+}
+
 function set_age_cb() {
   var val = this.value;
   page.info.age = val;

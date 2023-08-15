@@ -9,32 +9,17 @@ function hex_to_srgb(hex) {
   return color;
 }
 
-function prepare_training() {
-  all_tests[0] = {
-    color: $('#base1').val(),
-    id: '#color1',
-  };
-  all_tests[1] = {
-    color: $('#match1').val(),
-    id: '#color2',
-  };
-  all_tests[2] = {
-    color: $('#base2').val(),
-    id: '#color3',
-  };
-  all_tests[3] = {
-    color: $('#match2').val(),
-    id: '#color4',
-  };
-  all_tests[4] = {
-    color: $('#base3').val(),
-    id: '#color5',
-  };
-  all_tests[5] = {
-    color: $('#match3').val(),
-    id: '#color6',
-  };
+const rgb2hex = (rgb) => `#${rgb.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/).slice(1).map(n => parseInt(n, 10).toString(16).padStart(2, '0')).join('')}`
 
+function prepare_matching() {
+  $("#nextpair").on('click', next_pair);
+
+  $('#match-tab').trigger('click');
+  $('#title').text('Color Matching');
+  set_keyboard_cb(false, false, false, false);
+}
+
+function prepare_training() {
   for (var i = 0; i < all_tests.length; i++) {
     page.disColors[i] = all_tests[i].id;
     state.colors[i] = new colorObj(hex_to_srgb(all_tests[i].color), 'srgb');

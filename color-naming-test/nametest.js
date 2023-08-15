@@ -1,6 +1,6 @@
 var indices, ans_indices, testId;
 var prof, all_test_stats, dashboardName;
-var pageId = 0;
+var pageId = 0, cid = 0;
 var all_tests = [];
 var all_answers = [];
 
@@ -35,4 +35,5 @@ state = new discTestState(new colorObj([0, 0, 0], 'srgb'), 0.1,
 
 set_keyboard_cb(true, false, false, false);
 
+$('#matchbox').css('visibility', 'hidden');
 $('#resbox').css('visibility', 'hidden');
