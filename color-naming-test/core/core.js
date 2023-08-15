@@ -23,7 +23,7 @@ function prepare_info() {
 }
 
 function prepare_matching() {
-  $("#nextpair").on('click', next_pair);
+  $("#nextpair").on('click', next_pair_cb);
 
   $('#match-tab').trigger('click');
   $('#title').text('Color Matching');
@@ -36,6 +36,7 @@ function prepare_training() {
     state.colors[i] = new colorObj(hex_to_srgb(all_tests[i].color), 'srgb');
     all_tests[i].obj = state.colors[i];
     $(all_tests[i].id).text(state.colors[i].srgb_name);
+    // colors in |all_colors| follow the color matching order
     prof.all_colors[i] = {name: all_tests[i].obj.srgb_name,
                           rgb: all_tests[i].obj.v_rgb};
   }
