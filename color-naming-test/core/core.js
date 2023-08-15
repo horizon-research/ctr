@@ -52,7 +52,8 @@ function prepare_test() {
   page.disColors = ['#testcolor'];
   state.colors = [all_tests[indices[0]].obj];
 
-  $('#testcolor').css('background-color', all_tests[indices[0]].color);
+  // update patch colors
+  updatePlot(0, 3);
   prof.test_color_id.push(indices[0]);
 
   // show a list of answers
@@ -77,11 +78,12 @@ function prepare_results() {
 
   for (var i = 0; i < all_tests.length; i++) {
     state.colors[i] = all_tests[indices[i]].obj;
-    $('#res' + (i+1).toString() + '_color').css('background-color', all_tests[indices[i]].color);
     $('#res' + (i+1).toString() + '_ans').text(all_tests[indices[i]].obj.srgb_name);
     $('#res' + (i+1).toString() + '_your').text(all_answers[i]);
     $('#res' + (i+1).toString() + '_sim').html((all_answers[i] == all_tests[indices[i]].obj.srgb_name) ? '&#10004;' : '&#10060;');
   }
+  // update patch colors
+  updatePlot(0, 3);
 
   send_results();
 

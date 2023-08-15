@@ -132,8 +132,8 @@ function get_ans_cb(e) {
         set_keyboard_cb(true, false, false, false);
       } else {
         state.colors = [all_tests[indices[colorId]].obj];
-        prof.test_color_id.push(indices[colorId]);
-        $('#testcolor').css('background-color', all_tests[indices[colorId++]].color);
+        updatePlot(0, 3);
+        prof.test_color_id.push(indices[colorId++]);
         $(page.slider).val(0);
       }
     }
@@ -174,7 +174,7 @@ function next_pair() {
   };
   cid++;
   all_tests[cid] = {
-    color: rgb2hex($('#picker')[0].jscolor.toRGBString()),
+    color: rgb2hex($('#picker')[0].jscolor.toRGBString()), // https://jscolor.com/
     id: '#color'+(cid+1).toString(),
   };
   cid++;
