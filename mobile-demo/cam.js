@@ -4,10 +4,30 @@ const ctx = canvas.getContext('2d');
 
 var current_ang = 0;
 
-// Request permission for iOS 13+ devices
-if (DeviceMotionEvent && typeof DeviceMotionEvent.requestPermission === "function") {
-  DeviceMotionEvent.requestPermission();
+// https://dev.to/li/how-to-requestpermission-for-devicemotion-and-deviceorientation-events-in-ios-13-46g2
+//if (typeof DeviceOrientationEvent.requestPermission === 'function') {
+//  DeviceOrientationEvent.requestPermission()
+//    .then(permissionState => {
+//      if (permissionState === 'granted') {
+//        window.addEventListener('deviceorientation', handleOrientation);
+//      }
+//    })
+//    .catch(console.error);
+//} else {
+//  window.addEventListener('deviceorientation', handleOrientation);
+//}
+
+function handleOrientation(event) {
+  const rotateDegrees = event.alpha; // alpha: about z-axis
+  const frontToBack = event.beta; // beta: about x-axis
+  const leftToRight = event.gamma; // gamma: about y-axis
+
+  handleOrientationEvent(frontToBack, leftToRight, rotateDegrees);
 }
+
+const handleOrientationEvent = (frontToBack, leftToRight, rotateDegrees) => {
+  current_ang = rotateDegrees / 180 * Math.PI;
+};
 
 // Request access to the user's camera
 navigator.mediaDevices.getUserMedia({ video: {facingMode: "environment"} })
@@ -26,7 +46,25 @@ navigator.mediaDevices.getUserMedia({ video: {facingMode: "environment"} })
 
 $('body').on('click', toggleVideo);
 
+let is_running = false;
 function toggleVideo() {
+  // Request permission for iOS 13+ devices
+  // This must be under an event handler
+  if (
+    DeviceMotionEvent &&
+    typeof DeviceMotionEvent.requestPermission === "function"
+  ) {
+    DeviceMotionEvent.requestPermission();
+  }
+
+  if (is_running){
+    window.removeEventListener("deviceorientation", handleOrientation);
+    is_running = false;
+  } else {
+    window.addEventListener("deviceorientation", handleOrientation);
+    is_running = true;
+  }
+
   if (video.paused) {
     video.play();
   } else {
@@ -50,7 +88,7 @@ function drawRotate() {
   ctx.fillStyle = "#ff0000";
   ctx.textBaseline = 'middle';
   ctx.textAlign = 'center';
-  ctx.fillText((current_ang / Math.PI * 180).toFixed(1).toString(), canvas.width/2, 10);
+  ctx.fillText((current_ang / Math.PI * 180).toFixed(1).toString(), canvas.width/2, 100);
 
   requestAnimationFrame(drawRotate);
 }
@@ -88,21 +126,6 @@ function rotate(imgData) {
   }
 }
 
-function handleOrientation(event) {
-  const rotateDegrees = event.alpha; // alpha: about z-axis
-  const frontToBack = event.beta; // beta: about x-axis
-  const leftToRight = event.gamma; // gamma: about y-axis
-
-  handleOrientationEvent(frontToBack, leftToRight, rotateDegrees);
-}
-
-if (window.DeviceOrientationEvent) {
-  window.addEventListener("deviceorientation", handleOrientation);
-}
-
-const handleOrientationEvent = (frontToBack, leftToRight, rotateDegrees) => {
-  current_ang = rotateDegrees / 180 * Math.PI;
-};
 //$("body").on('keydown', change_angle_cb);
 //function change_angle_cb(e) {
 //  function set_next(ang) {
@@ -127,3 +150,4 @@ const handleOrientationEvent = (frontToBack, leftToRight, rotateDegrees) => {
 //    set_next(0);
 //  }
 //}
+
