@@ -140,19 +140,19 @@ function rotate(imgData) {
       green = red * rotMat[0][1] + green * rotMat[1][1] + blue * rotMat[2][1];
       blue  = red * rotMat[0][2] + green * rotMat[1][2] + blue * rotMat[2][2];
     } else {
-      // using math.js is very slow
+      // using math.js is very slow presumably because of the long call stack, so manually construct the matrix.
       var transMat = [
-        [simMat[0][0] * rotMat[0][0] + simMat[0][1] * rotMat[1][0] + simMat[0][2] * rotMat[2][0],
-         simMat[0][0] * rotMat[0][1] + simMat[0][1] * rotMat[1][1] + simMat[0][2] * rotMat[2][1],
-         simMat[0][0] * rotMat[0][2] + simMat[0][1] * rotMat[1][2] + simMat[0][2] * rotMat[2][2],
+        [rotMat[0][0] * simMat[0][0] + rotMat[0][1] * simMat[1][0] + rotMat[0][2] * simMat[2][0],
+         rotMat[0][0] * simMat[0][1] + rotMat[0][1] * simMat[1][1] + rotMat[0][2] * simMat[2][1],
+         rotMat[0][0] * simMat[0][2] + rotMat[0][1] * simMat[1][2] + rotMat[0][2] * simMat[2][2],
         ],
-        [simMat[1][0] * rotMat[0][0] + simMat[1][1] * rotMat[1][0] + simMat[1][2] * rotMat[2][0],
-         simMat[1][0] * rotMat[0][1] + simMat[1][1] * rotMat[1][1] + simMat[1][2] * rotMat[2][1],
-         simMat[1][0] * rotMat[0][2] + simMat[1][1] * rotMat[1][2] + simMat[1][2] * rotMat[2][2],
+        [rotMat[1][0] * simMat[0][0] + rotMat[1][1] * simMat[1][0] + rotMat[1][2] * simMat[2][0],
+         rotMat[1][0] * simMat[0][1] + rotMat[1][1] * simMat[1][1] + rotMat[1][2] * simMat[2][1],
+         rotMat[1][0] * simMat[0][2] + rotMat[1][1] * simMat[1][2] + rotMat[1][2] * simMat[2][2],
         ],
-        [simMat[2][0] * rotMat[0][0] + simMat[2][1] * rotMat[1][0] + simMat[2][2] * rotMat[2][0],
-         simMat[2][0] * rotMat[0][1] + simMat[2][1] * rotMat[1][1] + simMat[2][2] * rotMat[2][1],
-         simMat[2][0] * rotMat[0][2] + simMat[2][1] * rotMat[1][2] + simMat[2][2] * rotMat[2][2],
+        [rotMat[2][0] * simMat[0][0] + rotMat[2][1] * simMat[1][0] + rotMat[2][2] * simMat[2][0],
+         rotMat[2][0] * simMat[0][1] + rotMat[2][1] * simMat[1][1] + rotMat[2][2] * simMat[2][1],
+         rotMat[2][0] * simMat[0][2] + rotMat[2][1] * simMat[1][2] + rotMat[2][2] * simMat[2][2],
         ],
       ];
 
