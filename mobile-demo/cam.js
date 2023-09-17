@@ -4,19 +4,6 @@ const ctx = canvas.getContext('2d');
 
 var current_ang = 0;
 
-// https://dev.to/li/how-to-requestpermission-for-devicemotion-and-deviceorientation-events-in-ios-13-46g2
-//if (typeof DeviceOrientationEvent.requestPermission === 'function') {
-//  DeviceOrientationEvent.requestPermission()
-//    .then(permissionState => {
-//      if (permissionState === 'granted') {
-//        window.addEventListener('deviceorientation', handleOrientation);
-//      }
-//    })
-//    .catch(console.error);
-//} else {
-//  window.addEventListener('deviceorientation', handleOrientation);
-//}
-
 function handleOrientation(event) {
   const rotateDegrees = event.alpha; // alpha: about z-axis
   const frontToBack = event.beta; // beta: about x-axis
@@ -50,20 +37,19 @@ let is_running = false;
 function toggleVideo() {
   // Request permission for iOS 13+ devices
   // This must be under an event handler
-  if (
-    DeviceMotionEvent &&
-    typeof DeviceMotionEvent.requestPermission === "function"
-  ) {
-    DeviceMotionEvent.requestPermission();
-  }
-
-  if (is_running){
-    window.removeEventListener("deviceorientation", handleOrientation);
-    is_running = false;
-  } else {
-    window.addEventListener("deviceorientation", handleOrientation);
-    is_running = true;
-  }
+  //if (
+  //  DeviceMotionEvent &&
+  //  typeof DeviceMotionEvent.requestPermission === "function"
+  //) {
+  //  DeviceMotionEvent.requestPermission();
+  //}
+  //if (is_running){
+  //  window.removeEventListener("deviceorientation", handleOrientation);
+  //  is_running = false;
+  //} else {
+  //  window.addEventListener("deviceorientation", handleOrientation);
+  //  is_running = true;
+  //}
 
   if (video.paused) {
     video.play();
@@ -71,6 +57,40 @@ function toggleVideo() {
     video.pause();
   }
 }
+
+let xPos, xDelta, cur_start_ang;
+const touchStart = (event) => {
+  var touchobj = event.changedTouches[0];
+  xPos = touchobj.pageX;
+  cur_start_ang = current_ang;
+};
+const touchMove = (event) => {
+  var touchobj = event.changedTouches[0];
+  xDelta = touchobj.pageX - xPos;
+  //console.log(xDelta);
+  current_ang = cur_start_ang + xDelta/4 * (Math.PI/180); // as if two pixels == one degree
+
+  // technically no need for this; do this just so we show angles between -PI and PI
+  if (current_ang < -Math.PI) current_ang += Math.PI*2;
+  else if (current_ang > Math.PI) current_ang -= Math.PI*2;
+};
+
+// TODO: conflicts with click to start/stop video; the idea is to use double tap to reset current_ang to 0.
+//var lastTouchEnd = 0;
+//var doubleTapThreshold = 200; // Adjust this value as needed
+//const touchEnd = (event) => {
+//  var now = new Date().getTime();
+//  if (now - lastTouchEnd <= doubleTapThreshold) {
+//    event.preventDefault();
+//    // Double tap detected, do something here
+//    current_ang = 0;
+//  }
+//  lastTouchEnd = now;
+//}
+
+window.addEventListener('touchstart', touchStart);
+window.addEventListener('touchmove', touchMove);
+//window.addEventListener("touchend", touchEnd);
 
 function drawRotate() {
   if (video.paused || video.ended) {
@@ -140,19 +160,19 @@ function rotate(imgData) {
       green = red * rotMat[0][1] + green * rotMat[1][1] + blue * rotMat[2][1];
       blue  = red * rotMat[0][2] + green * rotMat[1][2] + blue * rotMat[2][2];
     } else {
-      // using math.js is very slow
+      // using math.js is very slow presumably because of the long call stack, so manually construct the matrix.
       var transMat = [
-        [simMat[0][0] * rotMat[0][0] + simMat[0][1] * rotMat[1][0] + simMat[0][2] * rotMat[2][0],
-         simMat[0][0] * rotMat[0][1] + simMat[0][1] * rotMat[1][1] + simMat[0][2] * rotMat[2][1],
-         simMat[0][0] * rotMat[0][2] + simMat[0][1] * rotMat[1][2] + simMat[0][2] * rotMat[2][2],
+        [rotMat[0][0] * simMat[0][0] + rotMat[0][1] * simMat[1][0] + rotMat[0][2] * simMat[2][0],
+         rotMat[0][0] * simMat[0][1] + rotMat[0][1] * simMat[1][1] + rotMat[0][2] * simMat[2][1],
+         rotMat[0][0] * simMat[0][2] + rotMat[0][1] * simMat[1][2] + rotMat[0][2] * simMat[2][2],
         ],
-        [simMat[1][0] * rotMat[0][0] + simMat[1][1] * rotMat[1][0] + simMat[1][2] * rotMat[2][0],
-         simMat[1][0] * rotMat[0][1] + simMat[1][1] * rotMat[1][1] + simMat[1][2] * rotMat[2][1],
-         simMat[1][0] * rotMat[0][2] + simMat[1][1] * rotMat[1][2] + simMat[1][2] * rotMat[2][2],
+        [rotMat[1][0] * simMat[0][0] + rotMat[1][1] * simMat[1][0] + rotMat[1][2] * simMat[2][0],
+         rotMat[1][0] * simMat[0][1] + rotMat[1][1] * simMat[1][1] + rotMat[1][2] * simMat[2][1],
+         rotMat[1][0] * simMat[0][2] + rotMat[1][1] * simMat[1][2] + rotMat[1][2] * simMat[2][2],
         ],
-        [simMat[2][0] * rotMat[0][0] + simMat[2][1] * rotMat[1][0] + simMat[2][2] * rotMat[2][0],
-         simMat[2][0] * rotMat[0][1] + simMat[2][1] * rotMat[1][1] + simMat[2][2] * rotMat[2][1],
-         simMat[2][0] * rotMat[0][2] + simMat[2][1] * rotMat[1][2] + simMat[2][2] * rotMat[2][2],
+        [rotMat[2][0] * simMat[0][0] + rotMat[2][1] * simMat[1][0] + rotMat[2][2] * simMat[2][0],
+         rotMat[2][0] * simMat[0][1] + rotMat[2][1] * simMat[1][1] + rotMat[2][2] * simMat[2][1],
+         rotMat[2][0] * simMat[0][2] + rotMat[2][1] * simMat[1][2] + rotMat[2][2] * simMat[2][2],
         ],
       ];
 
