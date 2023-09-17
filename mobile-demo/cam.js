@@ -107,6 +107,16 @@ function getMat(theta) {
   return rotMat;
 }
 
+var one_plane_proj_mat = [[1, 0, 0], [0.9513091993895777, 0, 0.048669920911279516], [0, 0, 1]];
+var simMat = math.multiply(color_consts.LMS_to_lin_sRGB,
+    math.multiply(one_plane_proj_mat, color_consts.lin_sRGB_to_LMS));
+
+const queryString = window.location.search;
+const urlParams = new URLSearchParams(queryString);
+const para_sim = urlParams.get('sim')
+
+let is_sim = (para_sim == "true") ? true : false;
+
 function rotate(imgData) {
   var img = imgData.data;
   var rotMat = getMat(current_ang);
@@ -116,13 +126,49 @@ function rotate(imgData) {
     var green = img[i+1];
     var blue = img[i+2];
 
-    var new_red = red * rotMat[0][0] + green * rotMat[1][0] + blue * rotMat[2][0];
-    var new_green = red * rotMat[0][1] + green * rotMat[1][1] + blue * rotMat[2][1];
-    var new_blue = red * rotMat[0][2] + green * rotMat[1][2] + blue * rotMat[2][2];
+    if (!is_sim) {
+      //var red_lin   = removeGamma(red/255);
+      //var green_lin = removeGamma(green/255);
+      //var blue_lin  = removeGamma(blue/255);
 
-    img[i] = new_red;
-    img[i + 1] = new_green;
-    img[i + 2] = new_blue;
+      //red   = quantize(applyGamma(red_lin * rotMat[0][0] + green_lin * rotMat[1][0] + blue_lin * rotMat[2][0]));
+      //green = quantize(applyGamma(red_lin * rotMat[0][1] + green_lin * rotMat[1][1] + blue_lin * rotMat[2][1]));
+      //blue  = quantize(applyGamma(red_lin * rotMat[0][2] + green_lin * rotMat[1][2] + blue_lin * rotMat[2][2]));
+
+      // simply rotate in sRGB space
+      red   = red * rotMat[0][0] + green * rotMat[1][0] + blue * rotMat[2][0];
+      green = red * rotMat[0][1] + green * rotMat[1][1] + blue * rotMat[2][1];
+      blue  = red * rotMat[0][2] + green * rotMat[1][2] + blue * rotMat[2][2];
+    } else {
+      // using math.js is very slow
+      var transMat = [
+        [simMat[0][0] * rotMat[0][0] + simMat[0][1] * rotMat[1][0] + simMat[0][2] * rotMat[2][0],
+         simMat[0][0] * rotMat[0][1] + simMat[0][1] * rotMat[1][1] + simMat[0][2] * rotMat[2][1],
+         simMat[0][0] * rotMat[0][2] + simMat[0][1] * rotMat[1][2] + simMat[0][2] * rotMat[2][2],
+        ],
+        [simMat[1][0] * rotMat[0][0] + simMat[1][1] * rotMat[1][0] + simMat[1][2] * rotMat[2][0],
+         simMat[1][0] * rotMat[0][1] + simMat[1][1] * rotMat[1][1] + simMat[1][2] * rotMat[2][1],
+         simMat[1][0] * rotMat[0][2] + simMat[1][1] * rotMat[1][2] + simMat[1][2] * rotMat[2][2],
+        ],
+        [simMat[2][0] * rotMat[0][0] + simMat[2][1] * rotMat[1][0] + simMat[2][2] * rotMat[2][0],
+         simMat[2][0] * rotMat[0][1] + simMat[2][1] * rotMat[1][1] + simMat[2][2] * rotMat[2][1],
+         simMat[2][0] * rotMat[0][2] + simMat[2][1] * rotMat[1][2] + simMat[2][2] * rotMat[2][2],
+        ],
+      ];
+
+      var red_lin   = removeGamma(red/255);
+      var green_lin = removeGamma(green/255);
+      var blue_lin  = removeGamma(blue/255);
+
+      red   = quantize(applyGamma(red_lin * transMat[0][0] + green_lin * transMat[1][0] + blue_lin * transMat[2][0]));
+      green = quantize(applyGamma(red_lin * transMat[0][1] + green_lin * transMat[1][1] + blue_lin * transMat[2][1]));
+      blue  = quantize(applyGamma(red_lin * transMat[0][2] + green_lin * transMat[1][2] + blue_lin * transMat[2][2]));
+    }
+
+    // presumably clipping is done by canvas
+    img[i] = red;
+    img[i + 1] = green;
+    img[i + 2] = blue;
   }
 }
 
