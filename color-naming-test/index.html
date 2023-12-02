@@ -26,8 +26,8 @@
       }
 
       .colorpicker {
-        width: 3.6cm;
-        height: 3.6cm;
+        width: 3.9cm;
+        height: 3.9cm;
         padding-top: 0px;
         padding-right: 0px;
         padding-bottom: 0px;
@@ -283,7 +283,7 @@
                       <div class="colorpicker" id="base" style="background-color: #E00201"></div>
                     </div>
                     <div class="col-sm-2 px-0 content_left">
-                      <div class="colorpicker" id="match"></div>
+                      <div class="colorpicker" id="match" style="background-color: #975B39"></div>
                     </div>
                     <div class="col-sm-2 content_center">
                       <button type="button" id="nextpair" class="btn btn-secondary btn-sm">Next Pair >></button>
@@ -295,9 +295,35 @@
                     <div class="col-sm-2 px-0 content_right">
                     </div>
                     <div class="col-sm-2 px-0 content_left">
-                      <button id="picker" type="button" class="btn btn-outline-secondary btn-sm" data-jscolor="{value:'#975B39', height:181, previewElement:'#match'}" style="width: 3.6cm">Adjust color</button>
+                      <!--<button id="picker" type="button" class="btn btn-outline-secondary btn-sm" data-jscolor="{value:'#975B39', height:181, previewElement:'#match'}" style="width: 3.6cm">Adjust color</button>-->
+                      <input type="range" class="form-range" min="0" max="100" step="1" id="sat_customRange">
                     </div>
+                    <div class="col-sm-2 content_left">
+                      <span class="px-1">Saturation</span>
+                    </div>
+                  </div>
+                  <div class="row content_center">
                     <div class="col-sm-2 content_center">
+                    </div>
+                    <div class="col-sm-2 px-0 content_right">
+                    </div>
+                    <div class="col-sm-2 px-0 content_left">
+                      <input type="range" class="form-range" min="1" max="100" step="1" id="val_customRange">
+                    </div>
+                    <div class="col-sm-2 content_left">
+                      <span class="px-1">Value</span>
+                    </div>
+                  </div>
+                  <div class="row content_center">
+                    <div class="col-sm-2 content_center">
+                    </div>
+                    <div class="col-sm-2 px-0 content_right">
+                    </div>
+                    <div class="col-sm-2 px-0 content_left">
+                      <input type="range" class="form-range" min="1" max="360" step="1" id="hue_customRange" disabled>
+                    </div>
+                    <div class="col-sm-2 content_left">
+                      <span class="px-1">Hue</span>
                     </div>
                   </div>
 

@@ -25,6 +25,14 @@ function prepare_info() {
 function prepare_matching() {
   $("#nextpair").on('click', next_pair_cb);
 
+  $("#sat_customRange").on('input', change_sat_cb);
+  $("#val_customRange").on('input', change_sat_cb);
+  var rgb = ($('#match').css('background-color')).match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);
+  var match = new Color("srgb", [rgb[1]/255, rgb[2]/255, rgb[3]/255]);
+  $('#sat_customRange').val(match.hsv.s);
+  $('#val_customRange').val(match.hsv.v);
+  $('#hue_customRange').val(match.hsv.h);
+
   $('#match-tab').trigger('click');
   $('#title').text('Color Matching');
   set_keyboard_cb(false, false, false, false);
