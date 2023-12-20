@@ -64,6 +64,17 @@ function prepare_test() {
 
   page.slider = '#t_customRange';
 
+  // perturbe all tests (+/- 1 making sure it's less than one Delta E 2000)
+  // https://zschuessler.github.io/DeltaE/learn/
+  // TODO: make it more principled
+  for (var i = 0; i < all_tests.length; i++) {
+    //var c0 = new Color("srgb-linear", all_tests[i].obj.linear_srgb);
+    all_tests[i].obj = new colorObj(all_tests[i].obj.srgb.map(c => Math.max(0, c-1)), 'srgb');
+    //var c1 = new Color("srgb-linear", all_tests[i].obj.linear_srgb);
+    //var delta_e = Color.deltaE(c0, c1, "2000");
+    //console.log(delta_e);
+  }
+
   // shuffle all_tests
   indices = Array.from(Array(all_tests.length).keys());
   shuffle(indices);
