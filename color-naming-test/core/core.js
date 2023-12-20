@@ -46,7 +46,7 @@ function prepare_training() {
     $(all_tests[i].id).text(state.colors[i].srgb_name);
     // colors in |all_colors| follow the color matching order
     prof.all_colors[i] = {name: all_tests[i].obj.srgb_name,
-                          rgb: all_tests[i].obj.v_rgb};
+                          rgb: all_tests[i].obj.v_quan_rgb};
   }
 
   // initial update of the patches
@@ -66,6 +66,7 @@ function prepare_test() {
 
   // perturbe all tests (+/- 1 making sure it's less than one Delta E 2000)
   // https://zschuessler.github.io/DeltaE/learn/
+  // Note that the json file will still have the original colors
   // TODO: make it more principled
   for (var i = 0; i < all_tests.length; i++) {
     //var c0 = new Color("srgb-linear", all_tests[i].obj.linear_srgb);
