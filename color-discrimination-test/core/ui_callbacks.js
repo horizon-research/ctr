@@ -182,8 +182,8 @@ function get_fb_cb() {
   const feedbackData = {uid: dashboardName,
                         fb: $('#fbtext').val()};
 
-  //fetch('https://colorvision.cs.rochester.edu/upload-feedback', {
-  fetch('http://localhost:9812/upload-feedback', {
+  //fetch('https://colorvision.cs.rochester.edu/upload-disc-feedback', {
+  fetch('http://localhost:9812/upload-disc-feedback', {
     method: 'POST',
     mode: "cors", // no-cors, *cors, same-origin
     cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached

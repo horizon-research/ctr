@@ -48,7 +48,7 @@ const server = http.createServer((req, res) => {
         console.error(error);
       }
     });
-  } else if (req.method === 'POST' && ((req.url === '/upload-feedback') || (req.url === '/upload-naming-feedback'))) {
+  } else if (req.method === 'POST' && ((req.url === '/upload-disc-feedback') || (req.url === '/upload-naming-feedback'))) {
     let data = '';
     
     req.on('data', chunk => {
@@ -57,7 +57,7 @@ const server = http.createServer((req, res) => {
 
     req.on('end', () => {
       var folder_name;
-      if (req.url === '/upload-feedback')
+      if (req.url === '/upload-disc-feedback')
         folder_name = 'color-discrimination-test/dashboard/';
       else
         folder_name = 'color-naming-test/dashboard/';
