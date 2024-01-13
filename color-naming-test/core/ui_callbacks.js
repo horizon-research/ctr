@@ -34,9 +34,6 @@ function advance_phase_cb(e){
       pageId = 4;
     } else if (pageId == 4) {
       prepare_fb();
-      pageId = 5;
-    } else if (pageId == 5) {
-      prepare_results();
     }
   }
 }

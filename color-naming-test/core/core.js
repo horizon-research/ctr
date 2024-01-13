@@ -113,27 +113,6 @@ function prepare_fb() {
   set_keyboard_cb(false, false, false, false);
 }
 
-function prepare_results() {
-  page.slider = '#r_customRange';
-
-  page.disColors = ['#res1_color', '#res2_color', '#res3_color', '#res4_color', '#res5_color', '#res6_color'];
-
-  for (var i = 0; i < all_tests.length; i++) {
-    state.colors[i] = all_tests[indices[i]].obj;
-    $('#res' + (i+1).toString() + '_ans').text(all_tests[indices[i]].obj.srgb_name);
-    $('#res' + (i+1).toString() + '_your').text(all_answers[i]);
-    $('#res' + (i+1).toString() + '_sim').html((all_answers[i] == all_tests[indices[i]].obj.srgb_name) ? '&#10004;' : '&#10060;');
-  }
-  // update patch colors
-  updatePlot(0, 3);
-
-  send_results();
-
-  $('#res-tab').trigger('click');
-  $('#title').text('Results');
-  set_keyboard_cb(false, true, false, false);
-}
-
 function send_results() {
   delete prof.incs;
   delete prof.start;
@@ -149,10 +128,6 @@ function send_results() {
                bitdepth: page.bitdepth, // bitdepth is technically derived; save it for convenience
                cs: page.cs,
              },
-             //info: page.info,
-             //color_supports: page.color_supports,
-             //bitdepth: page.bitdepth,
-             //cs: page.cs,
   });
 }
 
