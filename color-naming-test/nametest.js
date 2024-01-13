@@ -3,6 +3,8 @@ var prof, all_test_stats, dashboardName;
 var pageId = 0, cid = 0;
 var all_tests = [];
 var all_answers = [];
+// TODO: change this based on cvd type
+var match_colors = ['#E00201', '#975B39', '#3A3EE9', '#9400D3', '#EDEE33', '#7FFF00'];
 
 class Profiler {
   constructor() {

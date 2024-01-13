@@ -25,6 +25,9 @@ function prepare_info() {
 function prepare_matching() {
   $("#nextpair").on('click', next_pair_cb);
 
+  $('#base').css('background-color', match_colors[0]);
+  $('#match').css('background-color', match_colors[1]);
+
   $("#sat_customRange").on('input', change_sat_cb);
   $("#val_customRange").on('input', change_sat_cb);
   var rgb = ($('#match').css('background-color')).match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);

@@ -162,9 +162,6 @@ function fullscreenchanged() {
      click callbacks
 ***************************/
 function next_pair_cb() {
-  // TODO: move to a global obj
-  var match_colors = ['#E00201', '#975B39', '#3A3EE9', '#9400D3', '#EDEE33', '#7FFF00'];
-
   // log current pair
   all_tests[cid] = {
     color: rgb2hex($('#base').css('background-color')),
