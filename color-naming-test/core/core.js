@@ -103,6 +103,16 @@ function prepare_test() {
   set_keyboard_cb(false, true, true, false);
 }
 
+function prepare_fb() {
+  send_results();
+
+  $('#fb-tab').trigger('click');
+  $('#title').text('Optional Feedback');
+  $('#feedback').on('click', get_fb_cb);
+  $('#seeres').on('click', open_dashboard_cb);
+  set_keyboard_cb(false, false, false, false);
+}
+
 function prepare_results() {
   page.slider = '#r_customRange';
 
@@ -128,10 +138,21 @@ function send_results() {
   delete prof.incs;
   delete prof.start;
   post_data({prof: prof,
-             info: page.info,
-             color_supports: page.color_supports,
-             bitdepth: page.bitdepth,
-             cs: page.cs,
+             page_stats: {
+               sim: page.sim,
+               type: page.type,
+               simMethod: page.simMethod,
+
+               info: page.info,
+
+               color_supports: page.color_supports,
+               bitdepth: page.bitdepth, // bitdepth is technically derived; save it for convenience
+               cs: page.cs,
+             },
+             //info: page.info,
+             //color_supports: page.color_supports,
+             //bitdepth: page.bitdepth,
+             //cs: page.cs,
   });
 }
 

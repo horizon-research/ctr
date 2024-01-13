@@ -33,6 +33,9 @@ function advance_phase_cb(e){
       prepare_test();
       pageId = 4;
     } else if (pageId == 4) {
+      prepare_fb();
+      pageId = 5;
+    } else if (pageId == 5) {
       prepare_results();
     }
   }
@@ -253,15 +256,15 @@ function set_cvdtype_cb() {
 
 function open_dashboard_cb() {
   // open the dashboard page
-  window.open('/color-discrimination-test/dashboard/'+dashboardName+'.html');
+  window.open('/color-naming-test/dashboard/'+dashboardName+'.html');
 }
 
 function get_fb_cb() {
   const feedbackData = {uid: dashboardName,
                         fb: $('#fbtext').val()};
 
-  //fetch('https://colorvision.cs.rochester.edu/upload-feedback', {
-  fetch('http://localhost:9812/upload-feedback', {
+  //fetch('https://colorvision.cs.rochester.edu/upload-naming-feedback', {
+  fetch('http://localhost:9812/upload-naming-feedback', {
     method: 'POST',
     mode: "cors", // no-cors, *cors, same-origin
     cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached

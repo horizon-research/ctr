@@ -9,7 +9,7 @@ const uid = function() {
 }
 
 const server = http.createServer((req, res) => {
-  if (req.method === 'POST' && req.url === '/upload-disc-data') {
+  if (req.method === 'POST' && ((req.url === '/upload-disc-data') || (req.url === '/upload-naming-data'))) {
     let data = '';
     
     req.on('data', chunk => {
@@ -17,20 +17,26 @@ const server = http.createServer((req, res) => {
     });
 
     req.on('end', () => {
+      var folder_name;
+      if (req.url === '/upload-disc-data')
+        folder_name = 'color-discrimination-test/';
+      else
+        folder_name = 'color-naming-test/';
+
       try {
         const jsonData = JSON.parse(data);
 
-        if (!fs.existsSync('color-discrimination-test/dashboard'))
-          fs.mkdirSync('color-discrimination-test/dashboard');
+        if (!fs.existsSync(folder_name+'dashboard/'))
+          fs.mkdirSync(folder_name+'dashboard/');
 
         var filename = uid();
-        fs.writeFile('color-discrimination-test/dashboard/'+filename+'.json', JSON.stringify(jsonData), err => {
+        fs.writeFile(folder_name+'dashboard/'+filename+'.json', JSON.stringify(jsonData), err => {
           if (err) {
             res.writeHead(500, { 'Content-Type': 'text/plain' });
             res.end('Internal Server Error');
             console.error(err);
           } else {
-            fs.copyFile('color-discrimination-test/dashboard.html', 'color-discrimination-test/dashboard/'+filename+'.html', (err) => {
+            fs.copyFile(folder_name+'dashboard.html', folder_name+'dashboard/'+filename+'.html', (err) => {
               res.writeHead(200, { 'Content-Type': 'text/plain' });
               res.end(filename);
             });
@@ -42,7 +48,7 @@ const server = http.createServer((req, res) => {
         console.error(error);
       }
     });
-  } else if (req.method === 'POST' && req.url === '/upload-feedback') {
+  } else if (req.method === 'POST' && ((req.url === '/upload-feedback') || (req.url === '/upload-naming-feedback'))) {
     let data = '';
     
     req.on('data', chunk => {
@@ -50,15 +56,21 @@ const server = http.createServer((req, res) => {
     });
 
     req.on('end', () => {
+      var folder_name;
+      if (req.url === '/upload-feedback')
+        folder_name = 'color-discrimination-test/dashboard/';
+      else
+        folder_name = 'color-naming-test/dashboard/';
+
       try {
         const jsonData = JSON.parse(data);
         var uid = jsonData.uid;
         var fb = jsonData.fb;
 
-        if (!fs.existsSync('color-discrimination-test/dashboard'))
-          fs.mkdirSync('color-discrimination-test/dashboard');
+        if (!fs.existsSync(folder_name))
+          fs.mkdirSync(folder_name);
 
-        fs.readFile('color-discrimination-test/dashboard/'+uid+'.json', 'utf8', (err, results) => {
+        fs.readFile(folder_name+uid+'.json', 'utf8', (err, results) => {
           if (err) {
             console.error(err);
             return;
@@ -71,7 +83,7 @@ const server = http.createServer((req, res) => {
             resData.fb = fb;
 
           // update the json file
-          fs.writeFile('color-discrimination-test/dashboard/'+uid+'.json', JSON.stringify(resData), err => {
+          fs.writeFile(folder_name+uid+'.json', JSON.stringify(resData), err => {
             if (err) {
               console.error(err);
             } else {
@@ -79,34 +91,6 @@ const server = http.createServer((req, res) => {
               res.end();
             }
           });
-        });
-      } catch (error) {
-        res.writeHead(400, { 'Content-Type': 'text/plain' });
-        res.end('Invalid JSON format');
-        console.error(error);
-      }
-    });
-  } else if (req.method === 'POST' && req.url === '/upload-naming-data') {
-    let data = '';
-    
-    req.on('data', chunk => {
-      data += chunk;
-    });
-
-    req.on('end', () => {
-      try {
-        const jsonData = JSON.parse(data);
-
-        if (!fs.existsSync('color-naming-test/dashboard'))
-          fs.mkdirSync('color-naming-test/dashboard');
-
-        var filename = uid();
-        fs.writeFile('color-naming-test/dashboard/'+filename+'.json', JSON.stringify(jsonData), err => {
-          if (err) {
-            res.writeHead(500, { 'Content-Type': 'text/plain' });
-            res.end('Internal Server Error');
-            console.error(err);
-          }
         });
       } catch (error) {
         res.writeHead(400, { 'Content-Type': 'text/plain' });
