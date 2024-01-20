@@ -18,6 +18,12 @@ srgb_to_xyz = np.asarray([
     [0.0193339,  0.1191920,  0.9503041],
 ])
 
+p3_to_xyz = srgb_to_xyz @ np.asarray([
+    [ 1.1573859234, -0.1549414014, -0.0026012394],
+    [-0.0413783090,  1.0455482025, -0.0040707446],
+    [-0.0180228775, -0.0785725929,  1.0966699081]
+])
+
 
 class SubjectTests:
     """
@@ -37,8 +43,8 @@ class SubjectTests:
         """
         raw_data = json.load(open(path))
         # Extract and initialize tests
-        treatment_tests = [Test(raw_test, treatment=True) for raw_test in list(raw_data["all_test_stats"].values())[:32]]
-        control_tests = [Test(raw_test, treatment=False) for raw_test in list(raw_data["all_test_stats"].values())[32:]]
+        treatment_tests = [Test(raw_test, treatment=True, p3=bool(raw_data["page_stats"]["cs"])) for raw_test in list(raw_data["all_test_stats"].values())[:32]]
+        control_tests = [Test(raw_test, treatment=False, p3=bool(raw_data["page_stats"]["cs"])) for raw_test in list(raw_data["all_test_stats"].values())[32:]]
         tests = treatment_tests + control_tests
 
         return SubjectTests(tests)
@@ -66,11 +72,11 @@ class Test:
     """
     Representation of a single test
     """
-    def __init__(self, raw_test: dict, treatment: bool):
+    def __init__(self, raw_test: dict, treatment: bool, p3: bool):
         # Base color encodings
         self.base_rgb = raw_test["base_rgb"]
         # self.base_xy = raw_test["base_xy"]
-        self.base_xyz = srgb_to_xyz @ self.base_rgb # colour.sRGB_to_XYZ(self.base_rgb)
+        self.base_xyz = p3_to_xyz @ self.base_rgb if p3 else srgb_to_xyz @ self.base_rgb
         self.base_xy = colour.XYZ_to_xy(self.base_xyz)
         self.base_lab = colour.XYZ_to_Lab(self.base_xyz)
         self.base_luv = colour.XYZ_to_Luv(self.base_xyz)
@@ -84,7 +90,7 @@ class Test:
 
         # Threshold encodings
         self.threshold_rgb = raw_test["threshold_color"]
-        self.threshold_xyz = srgb_to_xyz @ self.threshold_rgb  #colour.sRGB_to_XYZ(self.threshold_rgb)
+        self.threshold_xyz = p3_to_xyz @ self.threshold_rgb if p3 else srgb_to_xyz @ self.threshold_rgb
         self.threshold_xy = colour.XYZ_to_xy(self.threshold_xyz)
         self.threshold_lab = colour.XYZ_to_Lab(self.threshold_xyz)
         self.threshold_luv = colour.XYZ_to_Luv(self.threshold_xyz)
