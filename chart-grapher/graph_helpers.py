@@ -178,17 +178,11 @@ def collect_datasets(subject_tests_list: list[SubjectTests], join: bool):
         for trial_data_list in trial_data_lists:
             for trial_data in trial_data_list:
                 trial_data.sort(key=lambda data: data.dirhash)
-                # print("start")
-                # for trial_test in trial_data:
-                #     print(trial_test.dirhash)
-                # print("Fin")
+
             for i in range(len(trial_data_list[0])):
                 xyz = np.average([trial_data_item[i].threshold_xyz for trial_data_item in trial_data_list], axis=0)
                 luv = np.average([trial_data_item[i].threshold_luv for trial_data_item in trial_data_list], axis=0)
 
-                print("start")
-                print([trial_data_item[i].dirhash for trial_data_item in trial_data_list])
-                print("end")
 
                 trial_data_list[0][i].threshold_xyz = xyz
                 trial_data_list[0][i].treshold_luv = luv
