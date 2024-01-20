@@ -106,9 +106,6 @@ def graph_dataset(dataset: dict[str, dict], uv: bool, title: str, cvd: str, user
 
     ax.set_title(title)
 
-    fig.set_size_inches(9, 9, forward=True)
-    fig.set_dpi(100)
-
     plt.show()
 
 
