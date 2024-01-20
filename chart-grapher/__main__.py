@@ -39,7 +39,7 @@ def graph_file(test_file: str, color_space: str):
     graph_dataset(trial_dicts, uv, "Test file: {}; CVD: {}".format(
         os.path.basename(test_file),
         get_cvd_of_file(test_file)
-    ))
+    ), get_cvd_of_file(test_file))
 
 
 @command_group.command()
@@ -65,10 +65,41 @@ def graph_participant(participant_id: str, color_space: str, collection_strategy
     # Graph
     graph_dataset(trial_dicts, uv, "Participant: {}; CVD: {}".format(
         participant_id,
-        get_participant_cvd(participant_id)
-    ))
+        get_participant_cvd(participant_id),
+    ), get_participant_cvd(participant_id))
 
-    pass
+
+@command_group.command()
+@click.argument('cvd', type=str)
+@click.argument('color_space', type=click.Choice(['uv', 'xy'], case_sensitive=False))
+@click.argument('collection_strategy', type=click.Choice(['mean', 'join']))
+def graph_cvd(cvd: str, color_space: str, collection_strategy: str):
+    """
+    Graphs all tests belonging to participants with a specific CVD type
+    """
+
+    uv = color_space == "uv"
+    join = collection_strategy == "join"
+
+    # Scan through all test files
+    cvd_matched_tests = list()
+    for file in os.listdir(DATA_DIRECTORY):
+        # Filter out non-json files
+        if file.endswith(".json"):
+            json_file = json.load(open(os.path.join(DATA_DIRECTORY, file), "r"))
+            cvd_type = json_file["page_stats"]["info"]["cvdType"]
+            if cvd_type == cvd:
+                cvd_matched_tests.append(SubjectTests.from_json(os.path.join(DATA_DIRECTORY, file)))
+
+    # Join datasets
+    trial_dicts = collect_datasets(cvd_matched_tests, join)
+
+    # Regress ellipses
+    for trial_dict in trial_dicts.values():
+        trial_dict["ellipse"] = regress_ellipse(trial_dict["data"], uv)
+
+    # Graph
+    graph_dataset(trial_dicts, uv, "CVD: {}".format(cvd), cvd)
 
 
 @command_group.command()

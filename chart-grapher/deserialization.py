@@ -12,6 +12,12 @@ base_xy_to_colors = {
     (0.4959647353534689, 0.32957012102737054): "r"
 }
 
+srgb_to_xyz = np.asarray([
+    [0.4124564,  0.3575761,  0.1804375],
+    [0.2126729,  0.7151522,  0.0721750],
+    [0.0193339,  0.1191920,  0.9503041],
+])
+
 
 class SubjectTests:
     """
@@ -64,7 +70,7 @@ class Test:
         # Base color encodings
         self.base_rgb = raw_test["base_rgb"]
         # self.base_xy = raw_test["base_xy"]
-        self.base_xyz = colour.sRGB_to_XYZ(self.base_rgb)
+        self.base_xyz = srgb_to_xyz @ self.base_rgb # colour.sRGB_to_XYZ(self.base_rgb)
         self.base_xy = colour.XYZ_to_xy(self.base_xyz)
         self.base_lab = colour.XYZ_to_Lab(self.base_xyz)
         self.base_luv = colour.XYZ_to_Luv(self.base_xyz)
@@ -78,7 +84,7 @@ class Test:
 
         # Threshold encodings
         self.threshold_rgb = raw_test["threshold_color"]
-        self.threshold_xyz = colour.sRGB_to_XYZ(self.threshold_rgb)
+        self.threshold_xyz = srgb_to_xyz @ self.threshold_rgb  #colour.sRGB_to_XYZ(self.threshold_rgb)
         self.threshold_xy = colour.XYZ_to_xy(self.threshold_xyz)
         self.threshold_lab = colour.XYZ_to_Lab(self.threshold_xyz)
         self.threshold_luv = colour.XYZ_to_Luv(self.threshold_xyz)

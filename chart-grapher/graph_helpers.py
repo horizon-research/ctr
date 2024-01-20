@@ -9,8 +9,16 @@ from matplotlib.legend_handler import HandlerTuple
 from deserialization import SubjectTests
 
 
-def graph_scatter(ax, x_data, y_data, color, label):
-    ax.scatter(x_data, y_data, c=color, label=label)
+CONTROL_PLOTS = []
+TREATMENT_PLOTS = []
+
+
+def graph_scatter(ax, x_data, y_data, color, label, treatment):
+    plot = ax.scatter(x_data, y_data, c=color, label=label)
+    if treatment:
+        TREATMENT_PLOTS.append(plot)
+    else:
+        CONTROL_PLOTS.append(plot)
 
 
 def graph_ellipse(ax, ellipse_data: EllipseParameters, color):
@@ -26,11 +34,22 @@ def graph_ellipse(ax, ellipse_data: EllipseParameters, color):
     ax.add_patch(ellipse)
 
 
-def graph_spectral_locus():
-    colour.plotting.diagrams.plot_spectral_locus(spectral_locus_colours="RGB")
+def graph_confusion_lines(ax, cvd: str, centers: list[tuple[float, float]]):
+    if cvd not in ["Deuteranopia", "Protanopia", "Tritanopia"]:
+        return
+
+    if cvd == "Deuteranopia":
+        for center in centers:
+            ax.axline(xy1=center, xy2=(1.08, -0.8), color="grey", linestyle='dashed')
+    elif cvd == "Protanopia":
+        for center in centers:
+            ax.axline(xy1=center, xy2=(0.747, 0.253), color="grey", linestyle='dashed')
+    else:
+        for center in centers:
+            ax.axline(xy1=center, xy2=(0.171, 0), color="grey", linestyle='dashed')
 
 
-def graph_dataset(dataset: dict[str, dict], uv: bool, title: str):
+def graph_dataset(dataset: dict[str, dict], uv: bool, title: str, cvd: str):
 
     if uv:
         fig, ax = colour.plotting.diagrams.plot_spectral_locus(spectral_locus_colours="RGB", show=False, method='CIE 1976 UCS')
@@ -44,10 +63,12 @@ def graph_dataset(dataset: dict[str, dict], uv: bool, title: str):
         trial_data_y = trial_data_xy[:, 1]
 
         graph_scatter(ax, trial_data_x, trial_data_y, trial_dict["scatter_color"],
-                      label="treatment" if trial_dict["treatment"] else "control")
+                      label="treatment" if trial_dict["treatment"] else "control", treatment=trial_dict["treatment"])
         graph_ellipse(ax, trial_dict["ellipse"], trial_dict["scatter_color"])
 
-    ax.legend(handler_map={tuple: HandlerTuple(ndivide=None)})
+    ax.legend([tuple(CONTROL_PLOTS), tuple(TREATMENT_PLOTS)], ["control", "treatment"],
+        handler_map={tuple: HandlerTuple(ndivide=None)}
+    )
 
     if uv:
         ax.set_xlabel("u'")
@@ -59,6 +80,13 @@ def graph_dataset(dataset: dict[str, dict], uv: bool, title: str):
         ax.set_ylabel("y")
         ax.set_ylim(bottom=-0.025, top=0.875)
         ax.set_xlim(left=-0.1, right=0.8)
+
+        graph_confusion_lines(ax, cvd, [
+            (0.31272660439158345, 0.3290231524027522),  # w
+            (0.4959647353534689, 0.32957012102737054),  # r
+            (0.3041068028398634, 0.4871936939603871),   # g
+            (0.19958547204032873, 0.14937709890627032)  # b
+        ])
 
     ax.set_title(title)
 
