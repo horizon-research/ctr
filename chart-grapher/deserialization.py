@@ -90,3 +90,8 @@ class Test:
         self.threshold_luv = colour.XYZ_to_Luv(self.threshold_xyz)
         self.threshold_uv = colour.Luv_to_uv(self.threshold_luv)
 
+        # Directions
+        self.dir = raw_test["dir"]
+        self.line = raw_test["line"]
+        self.dirhash = hash((tuple(self.line), self.dir))
+
