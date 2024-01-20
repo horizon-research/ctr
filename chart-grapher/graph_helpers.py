@@ -104,10 +104,11 @@ def graph_dataset(dataset: dict[str, dict], uv: bool, title: str, cvd: str, user
         if user_cs is not None:
             graph_gamut(ax, user_cs)
 
-    fig.subplots_adjust(top=0.95)
+    fig.subplots_adjust(top=0.95, left=0.1, bottom=0.1)
     ax.set_title(title)
 
     plt.show()
+    #plt.savefig('your_figure.pdf')
 
 
 def collect_dataset(subject_tests: SubjectTests):
