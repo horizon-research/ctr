@@ -56,7 +56,7 @@ def graph_participant(participant_id: str, color_space: str, collection_strategy
     # Collate trials
     test_files = get_participant_tests(participant_id)
     test_datasets = [SubjectTests.from_json(test_file) for test_file in test_files]
-    trial_dicts = collect_datasets(test_datasets)
+    trial_dicts = collect_datasets(test_datasets, join)
 
     # Regress ellipses
     for trial_dict in trial_dicts.values():

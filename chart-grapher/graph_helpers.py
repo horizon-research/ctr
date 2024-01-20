@@ -2,6 +2,7 @@ import numpy as np
 import math
 import matplotlib.pyplot as plt
 import itertools
+import colour
 from ellipse import EllipseParameters
 from matplotlib.patches import Ellipse
 from deserialization import SubjectTests
@@ -71,37 +72,69 @@ def collect_dataset(subject_tests: SubjectTests):
     return test_trials
 
 
-def collect_datasets(subject_tests_list: list[SubjectTests]):
+def collect_datasets(subject_tests_list: list[SubjectTests], join: bool):
     """
     Collects multiple datasets in single dictionary
     """
     test_trial_dicts = [collect_dataset(subject_tests) for subject_tests in subject_tests_list]
 
     # TODO: rewrite horrible code
-    wc_trial_data = SubjectTests(list(itertools.chain.from_iterable(
-        [test_trial_data["wc"]["data"] for test_trial_data in test_trial_dicts])
-    ))
-    wt_trial_data = SubjectTests(list(itertools.chain.from_iterable(
-        [test_trial_data["wt"]["data"] for test_trial_data in test_trial_dicts])
-    ))
-    rc_trial_data = SubjectTests(list(itertools.chain.from_iterable(
-        [test_trial_data["rc"]["data"] for test_trial_data in test_trial_dicts])
-    ))
-    rt_trial_data = SubjectTests(list(itertools.chain.from_iterable(
-        [test_trial_data["rt"]["data"] for test_trial_data in test_trial_dicts])
-    ))
-    bc_trial_data = SubjectTests(list(itertools.chain.from_iterable(
-        [test_trial_data["bc"]["data"] for test_trial_data in test_trial_dicts])
-    ))
-    bt_trial_data = SubjectTests(list(itertools.chain.from_iterable(
-        [test_trial_data["bt"]["data"] for test_trial_data in test_trial_dicts])
-    ))
-    gc_trial_data = SubjectTests(list(itertools.chain.from_iterable(
-        [test_trial_data["gc"]["data"] for test_trial_data in test_trial_dicts])
-    ))
-    gt_trial_data = SubjectTests(list(itertools.chain.from_iterable(
-        [test_trial_data["gt"]["data"] for test_trial_data in test_trial_dicts])
-    ))
+    if join:
+        wc_trial_data = SubjectTests(list(itertools.chain.from_iterable(
+            [test_trial_data["wc"]["data"] for test_trial_data in test_trial_dicts])
+        ))
+        wt_trial_data = SubjectTests(list(itertools.chain.from_iterable(
+            [test_trial_data["wt"]["data"] for test_trial_data in test_trial_dicts])
+        ))
+        rc_trial_data = SubjectTests(list(itertools.chain.from_iterable(
+            [test_trial_data["rc"]["data"] for test_trial_data in test_trial_dicts])
+        ))
+        rt_trial_data = SubjectTests(list(itertools.chain.from_iterable(
+            [test_trial_data["rt"]["data"] for test_trial_data in test_trial_dicts])
+        ))
+        bc_trial_data = SubjectTests(list(itertools.chain.from_iterable(
+            [test_trial_data["bc"]["data"] for test_trial_data in test_trial_dicts])
+        ))
+        bt_trial_data = SubjectTests(list(itertools.chain.from_iterable(
+            [test_trial_data["bt"]["data"] for test_trial_data in test_trial_dicts])
+        ))
+        gc_trial_data = SubjectTests(list(itertools.chain.from_iterable(
+            [test_trial_data["gc"]["data"] for test_trial_data in test_trial_dicts])
+        ))
+        gt_trial_data = SubjectTests(list(itertools.chain.from_iterable(
+            [test_trial_data["gt"]["data"] for test_trial_data in test_trial_dicts])
+        ))
+    else:
+        wc_trial_data = [test_trial_data["wc"]["data"].tests for test_trial_data in test_trial_dicts]
+        wt_trial_data = [test_trial_data["wt"]["data"].tests for test_trial_data in test_trial_dicts]
+        rc_trial_data = [test_trial_data["rc"]["data"].tests for test_trial_data in test_trial_dicts]
+        rt_trial_data = [test_trial_data["rt"]["data"].tests for test_trial_data in test_trial_dicts]
+        bc_trial_data = [test_trial_data["bc"]["data"].tests for test_trial_data in test_trial_dicts]
+        bt_trial_data = [test_trial_data["bt"]["data"].tests for test_trial_data in test_trial_dicts]
+        gc_trial_data = [test_trial_data["gc"]["data"].tests for test_trial_data in test_trial_dicts]
+        gt_trial_data = [test_trial_data["gt"]["data"].tests for test_trial_data in test_trial_dicts]
+
+        trial_data_lists = [wc_trial_data, wt_trial_data, rc_trial_data, rt_trial_data, bc_trial_data, bt_trial_data, gc_trial_data, gt_trial_data]
+
+        for trial_data_list in trial_data_lists:
+            for i in range(len(trial_data_list[0])):
+                xyz = np.average([trial_data_item[i].threshold_xyz for trial_data_item in trial_data_list], axis=0)
+                luv = np.average([trial_data_item[i].threshold_luv for trial_data_item in trial_data_list], axis=0)
+
+                trial_data_list[0][i].threshold_xyz = xyz
+                trial_data_list[0][i].treshold_luv = luv
+
+                trial_data_list[0][i].threshold_xy = colour.XYZ_to_xy(xyz)
+                trial_data_list[0][i].threshold_uv = colour.Luv_to_uv(luv)
+
+        wc_trial_data = wc_trial_data[0]
+        wt_trial_data = wt_trial_data[0]
+        rc_trial_data = rc_trial_data[0]
+        rt_trial_data = rt_trial_data[0]
+        bc_trial_data = bc_trial_data[0]
+        bt_trial_data = bt_trial_data[0]
+        gc_trial_data = gc_trial_data[0]
+        gt_trial_data = gt_trial_data[0]
 
     test_trials = dict()
 
