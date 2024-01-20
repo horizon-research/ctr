@@ -31,6 +31,9 @@ def graph_file(test_file: str, color_space: str):
     subject_tests = SubjectTests.from_json(test_file)
     trial_dicts = collect_dataset(subject_tests)
 
+    # User color space
+    user_cs = get_file_user_cs(test_file)
+
     # Regress ellipses
     for trial_dict in trial_dicts.values():
         trial_dict["ellipse"] = regress_ellipse(trial_dict["data"], uv)
@@ -39,7 +42,7 @@ def graph_file(test_file: str, color_space: str):
     graph_dataset(trial_dicts, uv, "Test file: {}; CVD: {}".format(
         os.path.basename(test_file),
         get_cvd_of_file(test_file)
-    ), get_cvd_of_file(test_file))
+    ), get_cvd_of_file(test_file), user_cs)
 
 
 @command_group.command()
@@ -58,6 +61,9 @@ def graph_participant(participant_id: str, color_space: str, collection_strategy
     test_datasets = [SubjectTests.from_json(test_file) for test_file in test_files]
     trial_dicts = collect_datasets(test_datasets, join)
 
+    # User color space
+    user_cs = get_participant_tests(participant_id)
+
     # Regress ellipses
     for trial_dict in trial_dicts.values():
         trial_dict["ellipse"] = regress_ellipse(trial_dict["data"], uv)
@@ -66,7 +72,7 @@ def graph_participant(participant_id: str, color_space: str, collection_strategy
     graph_dataset(trial_dicts, uv, "Participant: {}; CVD: {}".format(
         participant_id,
         get_participant_cvd(participant_id),
-    ), get_participant_cvd(participant_id))
+    ), get_participant_cvd(participant_id), user_cs)
 
 
 @command_group.command()
@@ -99,7 +105,7 @@ def graph_cvd(cvd: str, color_space: str, collection_strategy: str):
         trial_dict["ellipse"] = regress_ellipse(trial_dict["data"], uv)
 
     # Graph
-    graph_dataset(trial_dicts, uv, "CVD: {}".format(cvd), cvd)
+    graph_dataset(trial_dicts, uv, "CVD: {}".format(cvd), cvd, user_cs=None)
 
 
 @command_group.command()
@@ -193,6 +199,34 @@ def get_participant_cvd(participant_id: str):
 
         # Dict mapping participant id to CVD type
         participant_id_to_cvd = dict(zip(participant_ids, participant_cvds))
+        return participant_id_to_cvd[participant_id]
+
+
+def get_file_user_cs(file_path: str):
+    json_file = json.load(open(file_path, "r"))
+    user_cs = json_file["page_stats"]["cs"]
+    return user_cs
+
+
+def get_participant_user_cs(participant_id: str):
+    # Open participants CSV
+    with open(PARTICIPANT_TABLE) as participants_csv:
+        participant_reader = csv.reader(participants_csv)
+
+        # Find individual tests from participant ID
+        participant_csv_rows = [row for row in participant_reader]
+        participant_ids = [row[0] for row in participant_csv_rows]
+        participant_sample_tests = [row[1].strip() + ".json" for row in participant_csv_rows]
+        participant_sample_test_files = [os.path.join(DATA_DIRECTORY, test_id) for test_id in participant_sample_tests]
+
+        # Get user cs of each participant
+        participant_user_cs = [
+            json.load(open(test_file, "r"))["page_stats"]["cs"]
+            for test_file in participant_sample_test_files
+        ]
+
+        # Dict mapping participant id to user cs
+        participant_id_to_cvd = dict(zip(participant_ids, participant_user_cs))
         return participant_id_to_cvd[participant_id]
 
 

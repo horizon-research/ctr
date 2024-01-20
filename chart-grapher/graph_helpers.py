@@ -34,6 +34,19 @@ def graph_ellipse(ax, ellipse_data: EllipseParameters, color):
     ax.add_patch(ellipse)
 
 
+def graph_gamut(ax, user_cs):
+    if user_cs == 0:
+        # sRGB
+        ax.plot([0.64, 0.3], [0.33, 0.6], color="pink")
+        ax.plot([0.3, 0.15], [0.6, 0.06], color="pink")
+        ax.plot([0.64, 0.15], [0.33, 0.06], color="pink")
+    else:
+        # P3
+        ax.plot([0.680, 0.265], [0.320, 0.690], color="pink")  # R-G
+        ax.plot([0.265, 0.150], [0.690, 0.060], color="pink")  # G-B
+        ax.plot([0.680, 0.150], [0.320, 0.060], color="pink")  # R-B
+
+
 def graph_confusion_lines(ax, cvd: str, centers: list[tuple[float, float]]):
     if cvd not in ["Deuteranopia", "Protanopia", "Tritanopia"]:
         return
@@ -49,7 +62,7 @@ def graph_confusion_lines(ax, cvd: str, centers: list[tuple[float, float]]):
             ax.axline(xy1=center, xy2=(0.171, 0), color="grey", linestyle='dashed')
 
 
-def graph_dataset(dataset: dict[str, dict], uv: bool, title: str, cvd: str):
+def graph_dataset(dataset: dict[str, dict], uv: bool, title: str, cvd: str, user_cs: int | None):
 
     if uv:
         fig, ax = colour.plotting.diagrams.plot_spectral_locus(spectral_locus_colours="RGB", show=False, method='CIE 1976 UCS')
@@ -87,6 +100,9 @@ def graph_dataset(dataset: dict[str, dict], uv: bool, title: str, cvd: str):
             (0.3041068028398634, 0.4871936939603871),   # g
             (0.19958547204032873, 0.14937709890627032)  # b
         ])
+
+        if user_cs is not None:
+            graph_gamut(ax, user_cs)
 
     ax.set_title(title)
 
