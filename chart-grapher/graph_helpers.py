@@ -104,6 +104,7 @@ def graph_dataset(dataset: dict[str, dict], uv: bool, title: str, cvd: str, user
         if user_cs is not None:
             graph_gamut(ax, user_cs)
 
+    fig.subplots_adjust(top=0.95)
     ax.set_title(title)
 
     plt.show()
