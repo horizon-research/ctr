@@ -114,7 +114,7 @@ def graph_cvd(cvd: str, color_space: str, collection_strategy: str):
         trial_dict["ellipse"] = regress_ellipse(trial_dict["data"], uv)
 
     # Graph
-    graph_dataset(trial_dicts, uv, "CVD: {}".format(cvd), cvd, user_cs=None)
+    graph_dataset(trial_dicts, uv, "CVD: {}. N={}".format(cvd, len(cvd_matched_tests)), cvd, user_cs=None)
 
 
 @command_group.command()
