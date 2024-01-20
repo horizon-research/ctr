@@ -5,6 +5,7 @@ import itertools
 import colour
 from ellipse import EllipseParameters
 from matplotlib.patches import Ellipse
+from matplotlib.legend_handler import HandlerTuple
 from deserialization import SubjectTests
 
 
@@ -25,9 +26,16 @@ def graph_ellipse(ax, ellipse_data: EllipseParameters, color):
     ax.add_patch(ellipse)
 
 
+def graph_spectral_locus():
+    colour.plotting.diagrams.plot_spectral_locus(spectral_locus_colours="RGB")
+
+
 def graph_dataset(dataset: dict[str, dict], uv: bool, title: str):
-    fig = plt.figure()
-    ax = fig.add_subplot()
+
+    if uv:
+        fig, ax = colour.plotting.diagrams.plot_spectral_locus(spectral_locus_colours="RGB", show=False, method='CIE 1976 UCS')
+    else:
+        fig, ax = colour.plotting.diagrams.plot_spectral_locus(spectral_locus_colours="RGB", show=False)
 
     for trial_id, trial_dict in dataset.items():
         trial_data = trial_dict["data"]
@@ -39,16 +47,21 @@ def graph_dataset(dataset: dict[str, dict], uv: bool, title: str):
                       label="treatment" if trial_dict["treatment"] else "control")
         graph_ellipse(ax, trial_dict["ellipse"], trial_dict["scatter_color"])
 
-    ax.legend()
+    ax.legend(handler_map={tuple: HandlerTuple(ndivide=None)})
 
     if uv:
         ax.set_xlabel("u'")
         ax.set_ylabel("v'")
+        ax.set_ylim(bottom=-0.1, top=0.7)
+        ax.set_xlim(left=-0.1, right=0.7)
     else:
         ax.set_xlabel("x")
         ax.set_ylabel("y")
+        ax.set_ylim(bottom=-0.025, top=0.875)
+        ax.set_xlim(left=-0.1, right=0.8)
 
     ax.set_title(title)
+
     plt.show()
 
 
