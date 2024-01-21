@@ -67,17 +67,26 @@ def graph_dataset(dataset: dict[str, dict], uv: bool, title: str, cvd: str, user
     if uv:
         #fig, ax = colour.plotting.diagrams.plot_spectral_locus(spectral_locus_colours="RGB", show=False, method='CIE 1976 UCS')
         fig, ax = colour.plotting.plot_RGB_colourspaces_in_chromaticity_diagram_CIE1976UCS(
-          ["sRGB"], diagram_opacity=0.75,
+          ["sRGB"],
+          #diagram_opacity=0.75,
           plot_kwargs={'linewidth': 1, "marker": None, 'color': 'white'},
-          spectral_locus_opacity=0.5,
+          #spectral_locus_opacity=0.75,
           show=False)
     else:
         #fig, ax = colour.plotting.diagrams.plot_spectral_locus(spectral_locus_colours="RGB", show=False)
         fig, ax = colour.plotting.plot_RGB_colourspaces_in_chromaticity_diagram_CIE1931(
-          ["sRGB"], diagram_opacity=0.75,
+          ["sRGB"],
+          #diagram_opacity=0.75,
           plot_kwargs={'linewidth': 1, "marker": None, 'color': 'white'},
-          spectral_locus_opacity=0.5,
+          #spectral_locus_opacity=0.75,
           show=False)
+
+    # set style of the locus
+    ax.collections[0].set_linewidth(1)
+    ax.collections[0].set_color('gray')
+    for line in ax.lines[:-2]: #last two are the gamut and white point
+        line.set_markersize(2)
+        #line.set_marker('_')
 
     for trial_id, trial_dict in dataset.items():
         trial_data = trial_dict["data"]
