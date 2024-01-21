@@ -76,7 +76,7 @@ def graph_participant(participant_id: str, color_space: str, collection_strategy
 
 
 @command_group.command()
-@click.argument('cvd', type=click.Choice(['p', 'd', 't', 'pa', 'da', 'ta']))
+@click.argument('cvd', type=click.Choice(['n', 'p', 'd', 't', 'pa', 'da', 'ta']))
 @click.argument('color_space', type=click.Choice(['uv', 'xy'], case_sensitive=False))
 @click.argument('collection_strategy', type=click.Choice(['mean', 'join']))
 def graph_cvd(cvd: str, color_space: str, collection_strategy: str):
@@ -87,8 +87,9 @@ def graph_cvd(cvd: str, color_space: str, collection_strategy: str):
     uv = color_space == "uv"
     join = collection_strategy == "join"
     cvd_lookup = {
-        "d": "Deuteranopia",
+        "n": "Normal",
         "p": "Protanopia",
+        "d": "Deuteranopia",
         "t": "Tritanopia",
         "pa": "Protanomaly",
         "da": "Deuteranomaly",
