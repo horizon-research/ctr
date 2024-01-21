@@ -42,7 +42,7 @@ def graph_file(test_file: str, color_space: str):
     graph_dataset(trial_dicts, uv, "Test file: {}; CVD: {}".format(
         os.path.basename(test_file),
         get_cvd_of_file(test_file)
-    ), get_cvd_of_file(test_file), user_cs)
+    ), get_cvd_of_file(test_file), None)
 
 
 @command_group.command()
@@ -62,7 +62,7 @@ def graph_participant(participant_id: str, color_space: str, collection_strategy
     trial_dicts = collect_datasets(test_datasets, join)
 
     # User color space
-    user_cs = get_participant_tests(participant_id)
+    user_cs = get_participant_user_cs(participant_id)
 
     # Regress ellipses
     for trial_dict in trial_dicts.values():
@@ -72,7 +72,7 @@ def graph_participant(participant_id: str, color_space: str, collection_strategy
     graph_dataset(trial_dicts, uv, "Participant: {}; CVD: {}".format(
         participant_id,
         get_participant_cvd(participant_id),
-    ), get_participant_cvd(participant_id), user_cs)
+    ), get_participant_cvd(participant_id), None)
 
 
 @command_group.command()

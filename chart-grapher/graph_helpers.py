@@ -65,9 +65,19 @@ def graph_confusion_lines(ax, cvd: str, centers: list[tuple[float, float]]):
 def graph_dataset(dataset: dict[str, dict], uv: bool, title: str, cvd: str, user_cs: int | None):
 
     if uv:
-        fig, ax = colour.plotting.diagrams.plot_spectral_locus(spectral_locus_colours="RGB", show=False, method='CIE 1976 UCS')
+        #fig, ax = colour.plotting.diagrams.plot_spectral_locus(spectral_locus_colours="RGB", show=False, method='CIE 1976 UCS')
+        fig, ax = colour.plotting.plot_RGB_colourspaces_in_chromaticity_diagram_CIE1976UCS(
+          ["sRGB"], diagram_opacity=0.75,
+          plot_kwargs={'linewidth': 1, "marker": None, 'color': 'white'},
+          spectral_locus_opacity=0.5,
+          show=False)
     else:
-        fig, ax = colour.plotting.diagrams.plot_spectral_locus(spectral_locus_colours="RGB", show=False)
+        #fig, ax = colour.plotting.diagrams.plot_spectral_locus(spectral_locus_colours="RGB", show=False)
+        fig, ax = colour.plotting.plot_RGB_colourspaces_in_chromaticity_diagram_CIE1931(
+          ["sRGB"], diagram_opacity=0.75,
+          plot_kwargs={'linewidth': 1, "marker": None, 'color': 'white'},
+          spectral_locus_opacity=0.5,
+          show=False)
 
     for trial_id, trial_dict in dataset.items():
         trial_data = trial_dict["data"]
@@ -79,7 +89,8 @@ def graph_dataset(dataset: dict[str, dict], uv: bool, title: str, cvd: str, user
                       label="treatment" if trial_dict["treatment"] else "control", treatment=trial_dict["treatment"])
         graph_ellipse(ax, trial_dict["ellipse"], trial_dict["scatter_color"])
 
-    ax.legend([tuple(CONTROL_PLOTS), tuple(TREATMENT_PLOTS)], ["control", "treatment"],
+    #ax.legend([tuple(CONTROL_PLOTS), tuple(TREATMENT_PLOTS)], ["control", "treatment"],
+    ax.legend([CONTROL_PLOTS[0], TREATMENT_PLOTS[0]], ["control", "treatment"], # need only the first marker since they are all the same
         handler_map={tuple: HandlerTuple(ndivide=None)}
     )
 
@@ -119,14 +130,14 @@ def collect_dataset(subject_tests: SubjectTests):
     # Dictionary of test trials
     test_trials = dict()
 
-    test_trials['wc'] = {"data": subject_tests.filter_primary('w').filter_control(), "scatter_color": "silver", "treatment": False}
-    test_trials['wt'] = {"data": subject_tests.filter_primary('w').filter_treatment(), "scatter_color": "black", "treatment": True}
-    test_trials['rc'] = {"data": subject_tests.filter_primary('r').filter_control(), "scatter_color": "red", "treatment": False}
-    test_trials['rt'] = {"data": subject_tests.filter_primary('r').filter_treatment(), "scatter_color": "maroon", "treatment": True}
-    test_trials['bc'] = {"data": subject_tests.filter_primary('b').filter_control(), "scatter_color": "blue", "treatment": False}
-    test_trials['bt'] = {"data": subject_tests.filter_primary('b').filter_treatment(), "scatter_color": "navy", "treatment": True}
-    test_trials['gc'] = {"data": subject_tests.filter_primary('g').filter_control(), "scatter_color": "lime", "treatment": False}
-    test_trials['gt'] = {"data": subject_tests.filter_primary('g').filter_treatment(), "scatter_color": "green", "treatment": True}
+    test_trials['wc'] = {"data": subject_tests.filter_primary('w').filter_control()}
+    test_trials['wt'] = {"data": subject_tests.filter_primary('w').filter_treatment()}
+    test_trials['rc'] = {"data": subject_tests.filter_primary('r').filter_control()}
+    test_trials['rt'] = {"data": subject_tests.filter_primary('r').filter_treatment()}
+    test_trials['bc'] = {"data": subject_tests.filter_primary('b').filter_control()}
+    test_trials['bt'] = {"data": subject_tests.filter_primary('b').filter_treatment()}
+    test_trials['gc'] = {"data": subject_tests.filter_primary('g').filter_control()}
+    test_trials['gt'] = {"data": subject_tests.filter_primary('g').filter_treatment()}
 
     return test_trials
 
@@ -205,17 +216,17 @@ def collect_datasets(subject_tests_list: list[SubjectTests], join: bool):
                          "treatment": False}
     test_trials['wt'] = {"data": wt_trial_data, "scatter_color": "black",
                          "treatment": True}
-    test_trials['rc'] = {"data": rc_trial_data, "scatter_color": "red",
+    test_trials['rc'] = {"data": rc_trial_data, "scatter_color": "silver",
                          "treatment": False}
-    test_trials['rt'] = {"data": rt_trial_data, "scatter_color": "maroon",
+    test_trials['rt'] = {"data": rt_trial_data, "scatter_color": "black",
                          "treatment": True}
-    test_trials['bc'] = {"data": bc_trial_data, "scatter_color": "blue",
+    test_trials['bc'] = {"data": bc_trial_data, "scatter_color": "silver",
                          "treatment": False}
-    test_trials['bt'] = {"data": bt_trial_data, "scatter_color": "navy",
+    test_trials['bt'] = {"data": bt_trial_data, "scatter_color": "black",
                          "treatment": True}
-    test_trials['gc'] = {"data": gc_trial_data, "scatter_color": "lime",
+    test_trials['gc'] = {"data": gc_trial_data, "scatter_color": "silver",
                          "treatment": False}
-    test_trials['gt'] = {"data": gt_trial_data, "scatter_color": "green",
+    test_trials['gt'] = {"data": gt_trial_data, "scatter_color": "black",
                          "treatment": True}
 
     return test_trials
