@@ -24,6 +24,15 @@ p3_to_xyz = np.asarray([
     [      0 /       1,  32229 / 714400, 5220557 / 5000800 ],
 ])
 
+unique_dirs = set()
+unique_srgb_dirs = set()
+unique_p3_dirs = set()
+
+p3_to_srgb_line = {
+    (-0.9, 0.5, -0.0): (-0.9, 0.4, -0.0),
+    (0.9, -0.5, 0.0): (0.9, -0.4, 0.0)
+}
+
 
 class SubjectTests:
     """
@@ -99,5 +108,19 @@ class Test:
         # Directions
         self.dir = raw_test["dir"]
         self.line = raw_test["line"]
-        self.dirhash = hash((tuple(self.line), self.dir))
 
+        # self.line_xyz = tuple((p3_to_xyz @ self.line if p3 else srgb_to_xyz @ self.line) * self.dir)
+        self.line_xyz = tuple(round(item, 1) for item in self.line)
+        if p3 and self.line_xyz in p3_to_srgb_line.keys():
+            self.line_xyz = p3_to_srgb_line[self.line_xyz]
+        self.dirhash = hash(self.line_xyz)
+
+        unique_dirs.add(self.line_xyz)
+        unique_p3_dirs.add(self.line_xyz) if p3 else unique_srgb_dirs.add(self.line_xyz)
+
+
+        print("Hello", len(unique_dirs))
+        print("p3", len(unique_p3_dirs))
+        print("sRGB", len(unique_srgb_dirs))
+
+        # print(sorted(unique_dirs))
