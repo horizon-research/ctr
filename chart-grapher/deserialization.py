@@ -109,8 +109,8 @@ class Test:
         self.dir = raw_test["dir"]
         self.line = raw_test["line"]
 
-        # self.line_xyz = tuple((p3_to_xyz @ self.line if p3 else srgb_to_xyz @ self.line) * self.dir)
-        self.line_xyz = tuple(round(item, 1) for item in self.line)
+        self.line_xyz = tuple(p3_to_xyz @ self.line if p3 else srgb_to_xyz @ self.line)
+        self.line_xyz = tuple(round(item, 1) * self.dir for item in self.line)
         if p3 and self.line_xyz in p3_to_srgb_line.keys():
             self.line_xyz = p3_to_srgb_line[self.line_xyz]
         self.dirhash = hash(self.line_xyz)
@@ -118,3 +118,6 @@ class Test:
         unique_dirs.add(self.line_xyz)
         unique_p3_dirs.add(self.line_xyz) if p3 else unique_srgb_dirs.add(self.line_xyz)
 
+        print("Total:", len(unique_dirs))
+        print("P3:", len(unique_p3_dirs))
+        print("sRGB:", len(unique_srgb_dirs))
