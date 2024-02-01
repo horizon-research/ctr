@@ -28,10 +28,6 @@ unique_dirs = set()
 unique_srgb_dirs = set()
 unique_p3_dirs = set()
 
-p3_to_srgb_line = {
-    (-0.9, 0.5, -0.0): (-0.9, 0.4, -0.0),
-    (0.9, -0.5, 0.0): (0.9, -0.4, 0.0)
-}
 
 
 class SubjectTests:
@@ -111,8 +107,6 @@ class Test:
 
         self.line_xyz = tuple(p3_to_xyz @ self.line if p3 else srgb_to_xyz @ self.line)
         self.line_xyz = tuple(round(item, 1) * self.dir for item in self.line)
-        if p3 and self.line_xyz in p3_to_srgb_line.keys():
-            self.line_xyz = p3_to_srgb_line[self.line_xyz]
         self.dirhash = hash(self.line_xyz)
 
         unique_dirs.add(self.line_xyz)
