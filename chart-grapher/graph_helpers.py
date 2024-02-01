@@ -53,13 +53,16 @@ def graph_confusion_lines(ax, cvd: str, centers: list[tuple[float, float]]):
 
     if cvd == "Deuteranopia":
         for center in centers:
-            ax.axline(xy1=center, xy2=(1.08, -0.8), color="grey", linestyle='dashed')
+            # ax.axline(xy1=center, xy2=(1.08, -0.8), color="grey", linestyle='dashed')
+            ax.axline(xy1=center, xy2=(2.301887, -1.301887), color="grey", linestyle='dashed')
     elif cvd == "Protanopia":
         for center in centers:
-            ax.axline(xy1=center, xy2=(0.747, 0.253), color="grey", linestyle='dashed')
+            # ax.axline(xy1=center, xy2=(0.747, 0.253), color="grey", linestyle='dashed')
+            ax.axline(xy1=center, xy2=(0.8373814, 0.1626186), color="grey", linestyle='dashed')
     else:
         for center in centers:
-            ax.axline(xy1=center, xy2=(0.171, 0), color="grey", linestyle='dashed')
+            # ax.axline(xy1=center, xy2=(0.171, 0), color="grey", linestyle='dashed')
+            ax.axline(xy1=center, xy2=(0.1679923, 0), color="grey", linestyle='dashed')
 
 
 def graph_dataset(dataset: dict[str, dict], uv: bool, title: str, cvd: str, user_cs: int | None):
