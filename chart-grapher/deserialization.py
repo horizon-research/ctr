@@ -117,7 +117,3 @@ class Test:
 
         unique_dirs.add(self.line_xyz)
         unique_p3_dirs.add(self.line_xyz) if p3 else unique_srgb_dirs.add(self.line_xyz)
-
-        print("Total:", len(unique_dirs))
-        print("P3:", len(unique_p3_dirs))
-        print("sRGB:", len(unique_srgb_dirs))
