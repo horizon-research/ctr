@@ -1,3 +1,4 @@
+// TODO: move the two below to color.js
 function hex_to_srgb(hex) {
   var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
   var color = [
