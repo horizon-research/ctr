@@ -1,5 +1,15 @@
 function gen_plot(colors, tests, answers) {
   for (var i = 0; i < tests.length; i++) {
+    var string = "<div class=\"row d-flex justify-content-center nofocus my-4\" tabindex=\"-1\"> \
+                    <div class=\"col-sm-3 content_center fs-4\"> \
+                      <div class=\"res_circle\" id=\"res" + (i+1).toString() + "_color\"></div> \
+                    </div> \
+                    <div class=\"col-sm-4 content_center fs-4\" id=\"res" + (i+1).toString() + "_ans\"></div> \
+                    <div class=\"col-sm-4 content_center fs-4\" id=\"res" + (i+1).toString() + "_your\"></div> \
+                    <div class=\"col-sm-1 content_center fs-4\" id=\"res" + (i+1).toString() + "_sim\">&#10004;</div> \
+                  </div>"
+    $("#res_table").append(string);
+
     var color = new colorObj(colors[tests[i]].rgb, 'srgb');
     $('#res' + (i+1).toString() + '_color').css('background-color', color.srgb_css);
     $('#res' + (i+1).toString() + '_ans').text(colors[tests[i]].name);

@@ -43,14 +43,14 @@ function prepare_matching() {
 }
 
 function prepare_training() {
-  for (var i = 0; i < all_tests.length; i++) {
-    page.disColors[i] = all_tests[i].id;
-    state.colors[i] = new colorObj(hex_to_srgb(all_tests[i].color), 'srgb');
-    all_tests[i].obj = state.colors[i];
-    $(all_tests[i].id).text(state.colors[i].srgb_name);
+  for (var i = 0; i < training_colors.length; i++) {
+    page.disColors[i] = training_colors[i].id;
+    state.colors[i] = new colorObj(hex_to_srgb(training_colors[i].color), 'srgb');
+    training_colors[i].obj = state.colors[i];
+    $(training_colors[i].id).text(state.colors[i].srgb_name);
     // colors in |all_colors| follow the color matching order
-    prof.all_colors[i] = {name: all_tests[i].obj.srgb_name,
-                          rgb: all_tests[i].obj.v_quan_rgb};
+    prof.all_colors[i] = {name: training_colors[i].obj.srgb_name,
+                          rgb: training_colors[i].obj.v_quan_rgb};
   }
 
   // initial update of the patches
@@ -62,42 +62,53 @@ function prepare_training() {
   prof.start = Date.now();
 }
 
+function gen_test_colors() {
+  function sampleFromArray(a) {
+    var randomIndex = Math.floor(Math.random() * a.length);
+    return a[randomIndex];
+  }
+
+  // duplicate the indices so that we test twice as many colors
+  // TODO: many ways to do this (e.g., completely randomly draw colors so that
+  //   subjects don't know if a color will be tested at all)
+  indices = Array.from(Array(training_colors.length).keys());
+  indices = indices.concat([...indices]);
+  shuffle(indices);
+
+  // generate test colors (randomly +/- 1 so that test colors are
+  // different from training colors but are still within one Delta E 2000).
+  // https://zschuessler.github.io/DeltaE/learn/
+  // Note that the json file will still have the original colors
+  // TODO: a more principled to perturbe colors
+  for (var i = 0; i < indices.length; i++) {
+    test_colors[i] = new colorObj(training_colors[indices[i]].obj.srgb.map(
+        c => Math.max(0, Math.min(255, c+sampleFromArray([-1, 0, 1])))), 'srgb');
+  }
+}
+
 function prepare_test() {
   prof.time_in_training = Date.now() - prof.start;
   prof.start = Date.now();
 
   page.slider = '#t_customRange';
 
-  // perturbe all tests (+/- 1 making sure it's less than one Delta E 2000)
-  // https://zschuessler.github.io/DeltaE/learn/
-  // Note that the json file will still have the original colors
-  // TODO: make it more principled
-  for (var i = 0; i < all_tests.length; i++) {
-    //var c0 = new Color("srgb-linear", all_tests[i].obj.linear_srgb);
-    all_tests[i].obj = new colorObj(all_tests[i].obj.srgb.map(c => Math.max(0, c-1)), 'srgb');
-    //var c1 = new Color("srgb-linear", all_tests[i].obj.linear_srgb);
-    //var delta_e = Color.deltaE(c0, c1, "2000");
-    //console.log(delta_e);
-  }
+  gen_test_colors();
 
-  // shuffle all_tests
-  indices = Array.from(Array(all_tests.length).keys());
-  shuffle(indices);
+  // show a list of answers
+  ans_indices = Array.from(Array(training_colors.length).keys());
+  //shuffle(ans_indices);
+  for (var i = 0; i < training_colors.length; i++) {
+    $('label[for=ans' + (i+1).toString() + ']').text(
+        (i+1).toString() + ' ' +  training_colors[ans_indices[i]].obj.srgb_name);
+  }
 
   // must set both page.disColors (for display) and state.colors (for computation)
   page.disColors = ['#testcolor'];
-  state.colors = [all_tests[indices[0]].obj];
+  state.colors = [test_colors[0]];
 
   // update patch colors
   updatePlot(0, 3);
   prof.test_color_id.push(indices[0]);
-
-  // show a list of answers
-  ans_indices = Array.from(Array(all_tests.length).keys());
-  shuffle(ans_indices);
-  for (var i = 0; i < all_tests.length; i++) {
-    $('label[for=ans' + (i+1).toString() + ']').text((i+1).toString() + ' ' +  all_tests[ans_indices[i]].obj.srgb_name);
-  }
 
   // update the next color
   $("body").on('keydown', get_ans_cb);

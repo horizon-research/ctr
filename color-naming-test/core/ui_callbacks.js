@@ -125,11 +125,11 @@ function get_ans_cb(e) {
       prof.start = Date.now();
 
       $('input[type=radio][id='+t+']').prop('checked',false);
-      if (colorId == 6) {
+      if (colorId == 12) {
         $('#resbox').css('visibility', 'visible');
         set_keyboard_cb(true, false, false, false);
       } else {
-        state.colors = [all_tests[indices[colorId]].obj];
+        state.colors = [test_colors[colorId]];
         updatePlot(0, 3);
         prof.test_color_id.push(indices[colorId++]);
         $(page.slider).val(0);
@@ -163,12 +163,12 @@ function fullscreenchanged() {
 ***************************/
 function next_pair_cb() {
   // log current pair
-  all_tests[cid] = {
+  training_colors[cid] = {
     color: rgb2hex($('#base').css('background-color')),
     id: '#color'+(cid+1).toString(),
   };
   cid++;
-  all_tests[cid] = {
+  training_colors[cid] = {
     color: rgb2hex($('#match').css('background-color')),
     id: '#color'+(cid+1).toString(),
   };
