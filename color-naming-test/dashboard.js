@@ -1,21 +1,60 @@
-function gen_plot(colors, tests, answers) {
-  for (var i = 0; i < tests.length; i++) {
-    var string = "<div class=\"row d-flex justify-content-center nofocus my-4\" tabindex=\"-1\"> \
-                    <div class=\"col-sm-3 content_center fs-4\"> \
-                      <div class=\"res_circle\" id=\"res" + (i+1).toString() + "_color\"></div> \
-                    </div> \
-                    <div class=\"col-sm-4 content_center fs-4\" id=\"res" + (i+1).toString() + "_ans\"></div> \
-                    <div class=\"col-sm-4 content_center fs-4\" id=\"res" + (i+1).toString() + "_your\"></div> \
-                    <div class=\"col-sm-1 content_center fs-4\" id=\"res" + (i+1).toString() + "_sim\">&#10004;</div> \
-                  </div>"
-    $("#res_table").append(string);
+function add_new_color(plot, color) {
+  var new_trace = {
+    x: [color.xy[0]],
+    y: [color.xy[1]],
+    text: [color.srgb_name],
+    mode: 'markers',
+    marker: {
+      size: [10],
+      symbol: ['square'],
+      opacity: 1,
+      color: [color.legacy_rgb_css],
+    },
+    line: {
+      width: 0.5,
+      color: '#000000',
+    },
+    name: color.srgb_name,
+    srgb: [color.srgb.toString()],
+    hovertemplate: 'x: %{x}' +
+      '<br>y: %{y}' +
+      '<br>sRGB: [' + color.srgb.toString() + ']' +
+      '<br>%{text}<extra></extra>',
+  };
+  
+  Plotly.addTraces(plot, new_trace);
+}
 
-    var color = new colorObj(colors[tests[i]].rgb, 'srgb');
-    $('#res' + (i+1).toString() + '_color').css('background-color', color.srgb_css);
-    $('#res' + (i+1).toString() + '_ans').text(colors[tests[i]].name);
-    $('#res' + (i+1).toString() + '_your').text(colors[answers[i]].name);
-    $('#res' + (i+1).toString() + '_sim').html((tests[i] == answers[i]) ? '&#10004;' : '&#10060;');
-  }
+function gen_plot(colors, tests, answers) {
+  d3.csv('../ciexyzjv.csv').then(function(rows){
+    dis_plot = plotDis('disDiv', rows);
+
+    for (var i = 0; i < tests.length; i++) {
+      // add a row to the result table
+      var string = "<div class=\"row d-flex justify-content-center nofocus my-4\" tabindex=\"-1\"> \
+                      <div class=\"col-sm-3 content_center fs-4\"> \
+                        <div class=\"res_circle\" id=\"res" + (i+1).toString() + "_color\"></div> \
+                      </div> \
+                      <div class=\"col-sm-4 content_center fs-4\" id=\"res" + (i+1).toString() + "_ans\"></div> \
+                      <div class=\"col-sm-4 content_center fs-4\" id=\"res" + (i+1).toString() + "_your\"></div> \
+                      <div class=\"col-sm-1 content_center fs-4\" id=\"res" + (i+1).toString() + "_sim\">&#10004;</div> \
+                    </div>"
+      $("#res_table").append(string);
+
+      // put the right information in the newly added row
+      var color = new colorObj(colors[tests[i]].rgb, 'srgb');
+      $('#res' + (i+1).toString() + '_color').css('background-color', color.srgb_css);
+      $('#res' + (i+1).toString() + '_ans').text(colors[tests[i]].name);
+      $('#res' + (i+1).toString() + '_your').text(colors[answers[i]].name);
+      $('#res' + (i+1).toString() + '_sim').html((tests[i] == answers[i]) ? '&#10004;' : '&#10060;');
+    }
+
+    // add the colors to the plot
+    for (var i = 0; i < colors.length; i++) {
+      var color = new colorObj(colors[i].rgb, 'srgb');
+      add_new_color(dis_plot, color);
+    }
+  });
 }
 
 function displayConfig(page_stats) {
