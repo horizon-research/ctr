@@ -93,7 +93,8 @@ window.addEventListener('touchmove', touchMove);
 //window.addEventListener("touchend", touchEnd);
 
 function drawRotate() {
-  if (video.paused || video.ended) {
+  // still allow rotation even when video is paused
+  if (video.ended) {
     return;
   }
 
