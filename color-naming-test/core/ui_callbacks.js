@@ -129,6 +129,7 @@ function get_ans_cb(e) {
         $('#resbox').css('visibility', 'visible');
         set_keyboard_cb(true, false, false, false);
       } else {
+        $('#title').text('Which Color is This? (' + (colorId+1).toString() + '/12)');
         state.colors = [test_colors[colorId]];
         updatePlot(0, 3);
         prof.test_color_id.push(indices[colorId++]);

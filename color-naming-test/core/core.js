@@ -114,7 +114,7 @@ function prepare_test() {
   $("body").on('keydown', get_ans_cb);
 
   $('#test-tab').trigger('click');
-  $('#title').text('Which Color is This?');
+  $('#title').text('Which Color is This? (1/12)');
   set_keyboard_cb(false, true, true, false);
 }
 
