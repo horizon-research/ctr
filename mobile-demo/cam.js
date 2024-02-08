@@ -148,18 +148,18 @@ function rotate(imgData) {
     var blue = img[i+2];
 
     if (!is_sim) {
-      //var red_lin   = removeGamma(red/255);
-      //var green_lin = removeGamma(green/255);
-      //var blue_lin  = removeGamma(blue/255);
-
-      //red   = quantize(applyGamma(red_lin * rotMat[0][0] + green_lin * rotMat[1][0] + blue_lin * rotMat[2][0]));
-      //green = quantize(applyGamma(red_lin * rotMat[0][1] + green_lin * rotMat[1][1] + blue_lin * rotMat[2][1]));
-      //blue  = quantize(applyGamma(red_lin * rotMat[0][2] + green_lin * rotMat[1][2] + blue_lin * rotMat[2][2]));
+      // rotate in linear sRGB space
+      var red_lin   = removeGamma(red/255);
+      var green_lin = removeGamma(green/255);
+      var blue_lin  = removeGamma(blue/255);
+      red   = quantize(applyGamma(red_lin * rotMat[0][0] + green_lin * rotMat[1][0] + blue_lin * rotMat[2][0]));
+      green = quantize(applyGamma(red_lin * rotMat[0][1] + green_lin * rotMat[1][1] + blue_lin * rotMat[2][1]));
+      blue  = quantize(applyGamma(red_lin * rotMat[0][2] + green_lin * rotMat[1][2] + blue_lin * rotMat[2][2]));
 
       // simply rotate in sRGB space
-      red   = red * rotMat[0][0] + green * rotMat[1][0] + blue * rotMat[2][0];
-      green = red * rotMat[0][1] + green * rotMat[1][1] + blue * rotMat[2][1];
-      blue  = red * rotMat[0][2] + green * rotMat[1][2] + blue * rotMat[2][2];
+      //red   = red * rotMat[0][0] + green * rotMat[1][0] + blue * rotMat[2][0];
+      //green = red * rotMat[0][1] + green * rotMat[1][1] + blue * rotMat[2][1];
+      //blue  = red * rotMat[0][2] + green * rotMat[1][2] + blue * rotMat[2][2];
     } else {
       // using math.js is very slow presumably because of the long call stack, so manually construct the matrix.
       var transMat = [
@@ -186,7 +186,7 @@ function rotate(imgData) {
       blue  = quantize(applyGamma(red_lin * transMat[0][2] + green_lin * transMat[1][2] + blue_lin * transMat[2][2]));
     }
 
-    // presumably clipping is done by canvas
+    // presumably canvas does the clamping
     img[i] = red;
     img[i + 1] = green;
     img[i + 2] = blue;
