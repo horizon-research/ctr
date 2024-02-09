@@ -20,6 +20,8 @@ class Profiler {
 }
 
 prof = new Profiler();
+const currentDate = new Date();
+prof.time = currentDate.toLocaleString('en-US', {timeZone: 'America/New_York'});
 
 var item = window.localStorage.getItem('dashboardName');
 if (item) {
