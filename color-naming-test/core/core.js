@@ -128,11 +128,14 @@ function prepare_fb() {
   set_keyboard_cb(false, false, false, false);
 }
 
+// the idea is that each subject's entire data across tests is stored in a single file on the server. the file is given by |dashboardName|, which is assigned upon the transmission of the first test data.
 function send_results() {
   delete prof.incs;
   delete prof.start;
-  post_data({prof: prof,
-             page_stats: {
+  post_data({
+             // if a property is undefined it will be omitted (won't be written to the json obj)
+             uid: dashboardName, // send only when it's not the first test so that the server can find which file to append new data
+             page_stats: (dashboardName == undefined) ? {
                sim: page.sim,
                type: page.type,
                simMethod: page.simMethod,
@@ -142,7 +145,8 @@ function send_results() {
                color_supports: page.color_supports,
                bitdepth: page.bitdepth, // bitdepth is technically derived; save it for convenience
                cs: page.cs,
-             },
+             } : undefined,
+             prof: [prof],
   });
 }
 

@@ -92,8 +92,8 @@ fetch(jsonFileName+'.json')
     page = new pageObj((cs == 0) ? 'srgb' : 'p3');
     Object.assign(page.color_supports, data.page_stats.color_supports); // so that page.bitdepth is correctly set
 
-    gen_plot(data.prof.all_colors, data.prof.test_color_id, data.prof.answer_color_id);
+    gen_plot(data.prof[0].all_colors, data.prof[0].test_color_id, data.prof[0].answer_color_id);
     displayConfig(data.page_stats);
-    displayFb(data.fb, data.page_stats.info);
+    displayFb(data.prof[0].fb, data.page_stats.info);
   })
 

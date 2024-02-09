@@ -21,6 +21,11 @@ class Profiler {
 
 prof = new Profiler();
 
+var item = window.localStorage.getItem('dashboardName');
+if (item) {
+  dashboardName = item;
+}
+
 const queryString = window.location.search;
 const urlParams = new URLSearchParams(queryString);
 const para_sim = urlParams.get('sim')

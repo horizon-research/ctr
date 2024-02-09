@@ -157,6 +157,9 @@
               <button class="nav-link active" id="faq-tab" data-bs-toggle="tab" data-bs-target="#faq-tab-pane" type="button" role="tab" aria-controls="faq-tab-pane" aria-selected="true">faqs</button>
             </li>
             <li class="nav-item" role="presentation">
+              <button class="nav-link" id="choice-tab" data-bs-toggle="tab" data-bs-target="#choice-tab-pane" type="button" role="tab" aria-controls="choice-tab-pane" aria-selected="true">choice</button>
+            </li>
+            <li class="nav-item" role="presentation">
               <button class="nav-link" id="setting-tab" data-bs-toggle="tab" data-bs-target="#setting-tab-pane" type="button" role="tab" aria-controls="setting-tab-pane" aria-selected="true">settings</button>
             </li>
             <li class="nav-item" role="presentation">
@@ -216,6 +219,15 @@
               </div>
             </div>
     
+            <div class="tab-pane" id="choice-tab-pane" role="tabpanel" aria-labelledby="choice-tab">
+              <div class="row d-flex justify-content-center align-items-center nofocus" tabindex="-1">
+                <div class="d-grid gap-2 col-4 mx-auto">
+                  <button type="button" id="godotest" class="btn btn-warning">Take the Test Directly (if you are doing a longitudinal study)</button>
+                  <button type="button" id="restart" class="btn btn-primary">Start a New Study</button>
+                </div>
+              </div>
+            </div>
+
             <div class="tab-pane" id="setting-tab-pane" role="tabpanel" aria-labelledby="setting-tab">
               <div class="row d-flex justify-content-center align-items-center nofocus" tabindex="-1">
                 <div class="col-sm-6">
@@ -439,7 +451,7 @@
               <div class="row d-flex justify-content-center nofocus" tabindex="-1">
                 <div class="col-sm-8">
                 <div class="mb-3">
-                  <label for="fbtext" class="form-label fs-5">Do you have any comments/feedback that you'd like to share with us? Things we are interested in (and if you are willing to share) are: your overall experience with the tasks, the lighting condition of the environment in which you took the test, or your color experience in your day to day life, etc. </label>
+                  <label for="fbtext" class="form-label fs-5">What's your learning strategy?  Also, could you tell us a bit about your color experience in your day to day life?</label>
                   <textarea class="form-control" id="fbtext" rows="3"></textarea>
                 </div>
                 <div class="d-flex">

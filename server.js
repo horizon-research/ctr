@@ -4,7 +4,7 @@ const path = require('path');
 const url = require('url');
 
 // https://stackoverflow.com/questions/3231459/how-can-i-create-unique-ids-with-javascript
-const uid = function() {
+const gen_uid = function() {
   return Date.now().toString(36) + Math.floor(Math.pow(10, 12) + Math.random()*9*Math.pow(10, 12)).toString(36);
 }
 
@@ -25,23 +25,50 @@ const server = http.createServer((req, res) => {
 
       try {
         const jsonData = JSON.parse(data);
+        var uid = jsonData.uid;
+        var firstTime = (uid == undefined);
 
         if (!fs.existsSync(folder_name+'dashboard/'))
           fs.mkdirSync(folder_name+'dashboard/');
 
-        var filename = uid();
-        fs.writeFile(folder_name+'dashboard/'+filename+'.json', JSON.stringify(jsonData), err => {
-          if (err) {
-            res.writeHead(500, { 'Content-Type': 'text/plain' });
-            res.end('Internal Server Error');
-            console.error(err);
-          } else {
-            fs.copyFile(folder_name+'dashboard.html', folder_name+'dashboard/'+filename+'.html', (err) => {
-              res.writeHead(200, { 'Content-Type': 'text/plain' });
-              res.end(filename);
+        var filename = firstTime ? gen_uid() : uid;
+        if (firstTime) {
+          fs.writeFile(folder_name+'dashboard/'+filename+'.json', JSON.stringify(jsonData), err => {
+            if (err) {
+              res.writeHead(500, { 'Content-Type': 'text/plain' });
+              res.end('Can\'t Write JSON File');
+              console.error(err);
+            } else {
+              fs.copyFile(folder_name+'dashboard.html', folder_name+'dashboard/'+filename+'.html', (err) => {
+                res.writeHead(200, { 'Content-Type': 'text/plain' });
+                res.end(filename);
+              });
+            }
+          });
+        } else {
+          fs.readFile(folder_name+'dashboard/'+filename+'.json', 'utf8', (err, results) => {
+            if (err) {
+              res.writeHead(500, { 'Content-Type': 'text/plain' });
+              res.end('Can\'t Read JSON File');
+              console.error(err);
+              return;
+            }
+            var resData = JSON.parse(results);
+            resData.prof.push(jsonData.prof[0]);
+
+            // update the json file
+            fs.writeFile(folder_name+'dashboard/'+filename+'.json', JSON.stringify(resData), err => {
+              if (err) {
+                res.writeHead(500, { 'Content-Type': 'text/plain' });
+                res.end('Can\'t Update JSON File');
+                console.error(err);
+              } else {
+                res.writeHead(200, { 'Content-Type': 'text/plain' });
+                res.end(filename);
+              }
             });
-          }
-        });
+          });
+        }
       } catch (error) {
         res.writeHead(400, { 'Content-Type': 'text/plain' });
         res.end('Invalid JSON format');
@@ -66,25 +93,31 @@ const server = http.createServer((req, res) => {
         const jsonData = JSON.parse(data);
         var uid = jsonData.uid;
         var fb = jsonData.fb;
+        //console.log(uid)
 
         if (!fs.existsSync(folder_name))
           fs.mkdirSync(folder_name);
 
         fs.readFile(folder_name+uid+'.json', 'utf8', (err, results) => {
           if (err) {
+            res.writeHead(500, { 'Content-Type': 'text/plain' });
+            res.end('Can\'t Read JSON File');
             console.error(err);
             return;
           }
           const resData = JSON.parse(results);
           // update the result obj
-          if ("fb" in resData)
-            resData.fb = resData.fb+" "+fb;
+          var lastProf = resData.prof[resData.prof.length - 1];
+          if ("fb" in lastProf)
+            lastProf.fb = lastProf.fb+" "+fb;
           else
-            resData.fb = fb;
+            lastProf.fb = fb;
 
           // update the json file
           fs.writeFile(folder_name+uid+'.json', JSON.stringify(resData), err => {
             if (err) {
+              res.writeHead(500, { 'Content-Type': 'text/plain' });
+              res.end('Can\'t Update JSON File');
               console.error(err);
             } else {
               res.writeHead(200, { 'Content-Type': 'text/plain' });
