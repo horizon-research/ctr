@@ -24,6 +24,9 @@ function prepare_info() {
 }
 
 function prepare_matching() {
+  // log demo info first
+  window.localStorage.setItem('info', JSON.stringify(page.info));
+
   $("#nextpair").on('click', next_pair_cb);
 
   $('#base').css('background-color', match_colors[0]);

@@ -33,6 +33,14 @@ var matched_res = window.localStorage.getItem('matchedResults');
 if (matched_res) {
   match_colors = JSON.parse(matched_res);
 }
+var info = window.localStorage.getItem('info');
+if (info) {
+  info = JSON.parse(info);
+  $("#cvdtype").val(info.cvdType); 
+  $("#sex").val(info.sex); 
+  $("#eth").val(info.ethnicity); 
+  $("#age").val(info.age); 
+}
 
 const queryString = window.location.search;
 const urlParams = new URLSearchParams(queryString);
