@@ -185,7 +185,7 @@ function next_pair_cb() {
     e.which = 13;
     e.keyCode = 13;
     $('body').trigger(e);
-    return;
+    window.localStorage.setItem('matchedResults', JSON.stringify(training_colors.map(c => c.color)));
   } else if (cid <= 4) {
     // set up next pair
     $('#pair').text('Pair ' + (cid/2+1).toString() + '/3');

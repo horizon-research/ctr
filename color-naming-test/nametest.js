@@ -23,9 +23,15 @@ prof = new Profiler();
 const currentDate = new Date();
 prof.time = currentDate.toLocaleString('en-US', {timeZone: 'America/New_York'});
 
+// reload memorized data
 var item = window.localStorage.getItem('dashboardName');
 if (item) {
   dashboardName = item;
+}
+//window.localStorage.removeItem('matchedResults'); // uncomment this for debugging
+var matched_res = window.localStorage.getItem('matchedResults');
+if (matched_res) {
+  match_colors = JSON.parse(matched_res);
 }
 
 const queryString = window.location.search;
