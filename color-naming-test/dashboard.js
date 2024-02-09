@@ -25,36 +25,64 @@ function add_new_color(plot, color) {
   Plotly.addTraces(plot, new_trace);
 }
 
-function gen_plot(colors, tests, answers) {
+function add_one_test(time, colors, tests, answers, index) {
+
+  var string = "\
+        <div class=\"col-sm-10\" id=\"table_" + index.toString() + "\"></div>\
+        ";
+  $("#results").append(string);
+
+  // add time
+  string = "<div class=\"row d-flex justify-content-center nofocus my-4 fs-3 fw-bold\" tabindex=\"-1\" id=\"time\">" + time.toString() + "</div>";
+  $("#table_" + index.toString()).append(string);
+
+  // add table header
+  string = "\
+        <div class=\"row d-flex justify-content-center nofocus my-4\" tabindex=\"-1\"> \
+          <div class=\"col-sm-4 content_center fs-4\">Color</div> \
+          <div class=\"col-sm-4 content_center fs-4\">Correct Answer</div> \
+          <div class=\"col-sm-4 content_center fs-4\">Your Answer</div> \
+        </div>";
+  $("#table_" + index.toString()).append(string);
+
+  for (var i = 0; i < tests.length; i++) {
+    var tid = "res_" + index.toString() + "_" + (i+1).toString(); 
+
+    // add a row to the result table
+    string = "\
+        <div class=\"row d-flex justify-content-center nofocus my-4\" tabindex=\"-1\"> \
+          <div class=\"col-sm-4 content_center fs-4\"> \
+            <div class=\"res_circle\" id=\"" + tid + "_color\"></div> \
+          </div> \
+          <div class=\"col-sm-4 content_center fs-4\" id=\"" + tid + "_ans\"></div> \
+          <div class=\"col-sm-4 content_center fs-4\" id=\"" + tid + "_your\"></div> \
+        </div>";
+    $("#table_" + index.toString()).append(string);
+
+    // put the right information in the newly added row
+    var color = new colorObj(colors[tests[i]].rgb, 'srgb');
+    $("#" + tid + '_color').css('background-color', color.srgb_css);
+    $("#" + tid + '_ans').text(colors[tests[i]].name);
+    $("#" + tid + '_your').html(colors[answers[i]].name + ((tests[i] == answers[i]) ? "&#20; &#10004;" : "&#20; &#10060;"));
+  }
+}
+
+function gen_plot(results) {
   d3.csv('../ciexyzjv.csv').then(function(rows){
     dis_plot = plotDis('disDiv', rows);
 
-    for (var i = 0; i < tests.length; i++) {
-      // add a row to the result table
-      var string = "<div class=\"row d-flex justify-content-center nofocus my-4\" tabindex=\"-1\"> \
-                      <div class=\"col-sm-3 content_center fs-4\"> \
-                        <div class=\"res_circle\" id=\"res" + (i+1).toString() + "_color\"></div> \
-                      </div> \
-                      <div class=\"col-sm-4 content_center fs-4\" id=\"res" + (i+1).toString() + "_ans\"></div> \
-                      <div class=\"col-sm-4 content_center fs-4\" id=\"res" + (i+1).toString() + "_your\"></div> \
-                      <div class=\"col-sm-1 content_center fs-4\" id=\"res" + (i+1).toString() + "_sim\">&#10004;</div> \
-                    </div>"
-      $("#res_table").append(string);
-
-      // put the right information in the newly added row
-      var color = new colorObj(colors[tests[i]].rgb, 'srgb');
-      $('#res' + (i+1).toString() + '_color').css('background-color', color.srgb_css);
-      $('#res' + (i+1).toString() + '_ans').text(colors[tests[i]].name);
-      $('#res' + (i+1).toString() + '_your').text(colors[answers[i]].name);
-      $('#res' + (i+1).toString() + '_sim').html((tests[i] == answers[i]) ? '&#10004;' : '&#10060;');
-    }
-
-    // add the colors to the plot
+    // add the test colors to the xy chromaticity diagram
+    var colors = results[0].all_colors;
     for (var i = 0; i < colors.length; i++) {
       var color = new colorObj(colors[i].rgb, 'srgb');
       add_new_color(dis_plot, color);
     }
   });
+
+  for (var i = 0; i < results.length; i++) {
+    var prof = results[i];
+    add_one_test(prof.time, prof.all_colors, prof.test_color_id, prof.answer_color_id, i);
+  }
 }
 
 function displayConfig(page_stats) {
@@ -92,8 +120,8 @@ fetch(jsonFileName+'.json')
     page = new pageObj((cs == 0) ? 'srgb' : 'p3');
     Object.assign(page.color_supports, data.page_stats.color_supports); // so that page.bitdepth is correctly set
 
-    gen_plot(data.prof[0].all_colors, data.prof[0].test_color_id, data.prof[0].answer_color_id);
+    gen_plot(data.prof);
     displayConfig(data.page_stats);
-    displayFb(data.prof[0].fb, data.page_stats.info);
+    displayFb(data.prof[0].fb, data.page_stats.info); // TODO: show all the matching results
   })
 
