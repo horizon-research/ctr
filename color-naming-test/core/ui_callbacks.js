@@ -24,15 +24,17 @@ function advance_phase_cb(e){
       prepare_info();
       pageId = 1;
     } else if (pageId == 1) {
-      prepare_matching();
-      pageId = 2;
+      prepare_choice(); // it will set pageId depending on choice
     } else if (pageId == 2) {
-      prepare_training();
+      prepare_matching();
       pageId = 3;
     } else if (pageId == 3) {
-      prepare_test();
+      prepare_training();
       pageId = 4;
     } else if (pageId == 4) {
+      prepare_test();
+      pageId = 5;
+    } else if (pageId == 5) {
       prepare_fb();
     }
   }
@@ -106,28 +108,27 @@ function key_slider_cb(e) {
   }
 }
 
-var colorId = 1; // TODO: move to a global object
 function get_ans_cb(e) {
-  if (e.which >= 49 && e.which <= 54) {
+  if (e.which >= 49 && e.which <= 54) { // 1 -- 6
     var ans = e.which-48;
     $('input[type=radio][id=ans'+ans+']').prop('checked',true);
   }
 
-  if (e.which == 13) {
+  if (e.which == 13) { // Enter
     var t = $('input[type=radio][name="pick"]:checked').attr('id');
     if (t) {
+      prof.time_in_test.push(Date.now() - prof.start);
+      prof.end_pos.push($(page.slider).val());
+
       var ans_name = $('label[for='+t+']').text();
       all_answers.push(ans_name.substring(2));
       prof.answer_color_id.push(ans_indices[ans_name.charAt(0) - 1]);
-
-      prof.time_in_test.push(Date.now() - prof.start);
-      prof.end_pos.push($(page.slider).val());
-      prof.start = Date.now();
 
       $('input[type=radio][id='+t+']').prop('checked',false);
       if (colorId == 12) {
         $('#resbox').css('visibility', 'visible');
         set_keyboard_cb(true, false, false, false);
+        colorId = 1; // reset in case we have to re-take the test
       } else {
         $('#title').text('Which Color is This? (' + (colorId+1).toString() + '/12)');
         state.colors = [test_colors[colorId]];
@@ -135,6 +136,8 @@ function get_ans_cb(e) {
         prof.test_color_id.push(indices[colorId++]);
         $(page.slider).val(0);
       }
+
+      prof.start = Date.now();
     }
   }
 }

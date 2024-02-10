@@ -133,6 +133,14 @@
       .deg-300 {
          transform:rotate(300deg) translate(250px) rotate(-300deg);
       }
+
+      .clickable-row {
+        cursor: pointer;
+      }
+      
+      .clickable-row:hover {
+        background-color: #f5f5f5; /* Change background color on hover if desired */
+      }
     </style>
 
     <!-- JavaScript -->
@@ -157,10 +165,10 @@
               <button class="nav-link active" id="faq-tab" data-bs-toggle="tab" data-bs-target="#faq-tab-pane" type="button" role="tab" aria-controls="faq-tab-pane" aria-selected="true">faqs</button>
             </li>
             <li class="nav-item" role="presentation">
-              <button class="nav-link" id="choice-tab" data-bs-toggle="tab" data-bs-target="#choice-tab-pane" type="button" role="tab" aria-controls="choice-tab-pane" aria-selected="true">choice</button>
+              <button class="nav-link" id="setting-tab" data-bs-toggle="tab" data-bs-target="#setting-tab-pane" type="button" role="tab" aria-controls="setting-tab-pane" aria-selected="true">settings</button>
             </li>
             <li class="nav-item" role="presentation">
-              <button class="nav-link" id="setting-tab" data-bs-toggle="tab" data-bs-target="#setting-tab-pane" type="button" role="tab" aria-controls="setting-tab-pane" aria-selected="true">settings</button>
+              <button class="nav-link" id="choice-tab" data-bs-toggle="tab" data-bs-target="#choice-tab-pane" type="button" role="tab" aria-controls="choice-tab-pane" aria-selected="true">choice</button>
             </li>
             <li class="nav-item" role="presentation">
               <button class="nav-link" id="match-tab" data-bs-toggle="tab" data-bs-target="#match-tab-pane" type="button" role="tab" aria-controls="match-tab-pane" aria-selected="true">matching</button>
@@ -196,41 +204,10 @@
                     </div>
                   </div>
                   
-                  <div class="card border-success mt-3">
+                  <div class="card mt-3">
                     <div class="card-body">
-                      <h5 class="card-title text-success">How does the study work and how long will it take?</h5>
-                      <p class="card-text">This is a longitudinal study that will span 9 days.  Each day you will spend about 15 minutes. The study consists of three steps: Color Matching, Training, and Test.  Depending on the day of the study, you will go through some or all of the steps, as described below.</p>
-                      <table class="table text-left align-middle">
-                        <thead>
-                          <tr>
-                            <th scope="col" class="col-2 text-center">Day of the Study</th>
-                            <th scope="col" class="col-4 text-center">Procedure</th>
-                            <th scope="col" class="col-6">Notes</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <tr>
-                            <th scope="row" class="text-center">1</th>
-                            <td class="text-center">Color Matching &#x2192; Training &#x2192; Test</td>
-                            <td>If your test score is not perfect (i.e., incorrect answer to any question), you will have to go through training again and re-take the test until the test score is perfect.</td>
-                          </tr>
-                          <tr>
-                            <th scope="row" class="text-center">2 &#8212; 3</th>
-                            <td class="text-center">Training &#x2192; Test</td>
-                            <td>You will skip the Color Matching step, using the matching results obtained on the first day. Again, if your test score is not perfect, you will have to go through training again and re-take the test until you get a perfect test score.</td>
-                          </tr>
-                          <tr>
-                            <th scope="row" class="text-center">4 &#8212; 8</th>
-                            <td class="text-center">Test</td>
-                            <td>You will directly go to the test without training.  You won't have to get a perfect score on these days.</td>
-                          </tr>
-                          <tr>
-                            <th scope="row" class="text-center">9</th>
-                            <td class="text-center">Training &#x2192; Test</td>
-                            <td>Go through training again and take the test.  You won't have to get a perfect score on these days.</td>
-                          </tr>
-                        </tbody>
-                      </table>
+                      <h5 class="card-title">How long will this study take?</h5>
+                      <p class="card-text">This is a longitudinal study that will span 9 days.  The activity of each day varies, which we will describe in detail later.  On average you should expect to spend about 15 minutes each day.</p>
                     </div>
                   </div>
                   
@@ -250,16 +227,6 @@
               </div>
             </div>
     
-            <div class="tab-pane" id="choice-tab-pane" role="tabpanel" aria-labelledby="choice-tab">
-              <div class="row d-flex justify-content-center align-items-center nofocus" tabindex="-1">
-                <div class="d-grid gap-2 col-4 mx-auto">
-                  <button type="button" id="goto_training" class="btn btn-warning">Train Again and Re-Take the Test</button>
-                  <button type="button" id="goto_test" class="btn btn-info">Take the Test Directly (if you are in the process of a longitudinal study)</button>
-                  <button type="button" id="goto_start" class="btn btn-primary">Start a New Study</button>
-                </div>
-              </div>
-            </div>
-
             <div class="tab-pane" id="setting-tab-pane" role="tabpanel" aria-labelledby="setting-tab">
               <div class="row d-flex justify-content-center align-items-center nofocus" tabindex="-1">
                 <div class="col-sm-6">
@@ -312,11 +279,53 @@
               </div>
             </div>
 
+            <div class="tab-pane" id="choice-tab-pane" role="tabpanel" aria-labelledby="choice-tab">
+              <div class="row d-flex justify-content-center align-items-center nofocus" tabindex="-1">
+                <div class="d-grid gap-2 col-10 mx-auto">
+                  <p class="fs-5">This is a longitudinal study that will span 9 days.  Each day you should expect to spend roughly 15 minutes (with the first three days consuming more time than others).</p>
+                  <p class="fs-5">The goal of this study is to help you <b>name</b> colors (e.g., red, green, etc.) that you usually find confusing.  It's <b>not</b> just about telling the difference between two otherwise confusing colors.  Rather, we want to help you name common colors so that you can communicate in color vocabulary with color normal individuals.</p>
+                  <p class="fs-5">To that end, this study has three modules: Color Matching, Training, and Test.  Depending on which day you are on during the study, you will go through some, or all, of the modules, as described below.</p>
+                  <p class="fs-5">Read the description carefully and <b>click</b> the row that corresponds to your current day of the study.</p>
+                  <table class="table text-left align-middle">
+                    <thead>
+                      <tr>
+                        <th scope="col" class="col-2 text-center">Day of the Study</th>
+                        <th scope="col" class="col-4 text-center">Procedure</th>
+                        <th scope="col" class="col-6">Notes</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr class="clickable-row" id="phase1">
+                        <th scope="row" class="text-center">1</th>
+                        <td class="text-center">Color Matching &#x2192; Training &#x2192; Test</td>
+                        <td>If your test score is not perfect (i.e., incorrect answer to any question), you will have to go through training again and re-take the test until the test score is perfect.</td>
+                      </tr>
+                      <tr class="clickable-row" id="phase2">
+                        <th scope="row" class="text-center">2 &#8212; 3</th>
+                        <td class="text-center">Training &#x2192; Test</td>
+                        <td>You will skip the Color Matching step.  Again, if your test score is not perfect, you will have to go through training again and re-take the test until you get a perfect test score.</td>
+                      </tr>
+                      <tr class="clickable-row" id="phase3">
+                        <th scope="row" class="text-center">4 &#8212; 8</th>
+                        <td class="text-center">Test</td>
+                        <td>You will directly go to the test without training.  You won't have to get a perfect score on these days.</td>
+                      </tr>
+                      <tr class="clickable-row" id="phase4">
+                        <th scope="row" class="text-center">9</th>
+                        <td class="text-center">Training &#x2192; Test</td>
+                        <td>Go through training again and take the test.  You won't have to get a perfect score.</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
             <div class="tab-pane" id="match-tab-pane" role="tabpanel" aria-labelledby="match-tab">
               <div class="row d-flex justify-content-center align-items-center nofocus" tabindex="-1">
                 <div class="col-sm-8">
                   <div class="row justify-content-center text-center mb-5">
-                    <span class="fs-2">Adjust the color on the right (using the two sliders) to match the color on the left. Don't worry if you can't find a perfect match, but try your best.</span>
+                    <span class="fs-5">Adjust the color on the right (using the two sliders) to match the color on the left. Don't worry if you can't find a perfect match, but try your best.</span>
                   </div>
                   <div class="row content_center my-2">
                     <div class="col-sm-2 content_center">
@@ -338,8 +347,7 @@
                     <div class="col-sm-2 px-0 content_right">
                     </div>
                     <div class="col-sm-2 px-0 content_left">
-                      <!--<button id="picker" type="button" class="btn btn-outline-secondary btn-sm" data-jscolor="{value:'#975B39', height:181, previewElement:'#match'}" style="width: 3.6cm">Adjust color</button>-->
-                      <input type="range" class="form-range" min="0" max="100" step="1" id="sat_customRange">
+                      <input type="range" class="form-range" min="1" max="100" step="1" id="sat_customRange">
                     </div>
                     <div class="col-sm-2 content_left">
                       <span class="px-1">Saturation</span>
@@ -413,9 +421,9 @@
                     </div>
                   </div>  
                   <div>
-                    <p class="fs-5">These six colors are what you saw in the previous matching phase.  You should see three color pairs, each with two colors that look the same to you, but they are actually different colors, as indicated by the names over the color patches!</p>
-                    <p class="fs-5">Now, try pressing <b>Left Arrow</b> and <b>Right Arrow</b> keys.  You will see the color of each patch changes with each press.  Importantly, initially confusing colors will have different color shifts, which will help you discriminate colors that initially appear the same/close.  Press the <b>Space</b> key to reset the change.</p>
-                    <p class="fs-5">Your <b>goal</b> here is learn to associate the color name with the shift of the color.  Later in the testing phase, you will be asked to name the colors using shifts.</p>
+                    <p class="fs-5">These six colors are what you matched in the matching phase before.  You should see that the six colors fall into three pairs, each with two colors that look the same to you.  But they are actually different colors, as indicated by the names over the color patches!</p>
+                    <p class="fs-5">Now, try pressing <b>Left Arrow</b> and <b>Right Arrow</b> keys.  The color of each patch will keep changing as you press.  Importantly, initially confusing colors will have different color shifts.  Press the <b>Space</b> key to reset the change.</p>
+                    <p class="fs-5">Your <b>goal</b> here is to learn to associate the color name with the shift of the color.  Later in the testing phase, you will be asked to name the colors using shifts.</p>
                     <div class="row d-flex justify-content-center align-items-center nofocus" id="trainbox" tabindex="-1">
                       <div class="alert alert-success text-center mt-5" role="alert">
                         When finish, press <b>Enter</b> to proceed to the testing phase.
@@ -483,16 +491,20 @@
               <div class="row d-flex justify-content-center nofocus" tabindex="-1">
                 <div class="col-sm-8">
                 <div class="mb-3">
-                  <label for="fbtext" class="form-label fs-5">What's your learning strategy?  Also, could you tell us a bit about your color experience in your day to day life?</label>
+                  <p class="fs-5">You have finished the test, and you got <span id="counter" class="fw-bold text-success">0</span>/12 questions correctly. <a id="seeres" href="">Check your results here</a>.</p>
+                  <p class="fs-5" id="next_step"></p>
+                  <label for="fbtext" class="form-label fs-5">Do you have any feedback?  We are particularly interested in your learning strategy and how your tests went. Also, could you tell us a bit about your color experience in your day to day life?</label>
                   <textarea class="form-control" id="fbtext" rows="3"></textarea>
                 </div>
                 <div class="d-flex">
                   <div>
                     <button type="button" id="feedback" class="btn btn-primary">Submit Feedback</button>
                   </div>
+<!--
                   <div class="ms-auto">
                     <button type="button" id="seeres" class="btn btn-success">See Results</button>
                   </div>
+-->
                 </div>
                 <div class="toast-container position-fixed bottom-0 end-0 p-3">
                   <div id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">

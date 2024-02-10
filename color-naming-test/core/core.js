@@ -23,10 +23,45 @@ function prepare_info() {
   set_keyboard_cb(true, false, false, false);
 }
 
-function prepare_matching() {
+function trigger_enter_onbody() {
+  // enable enter only right before click rather than when entering the page
+  set_keyboard_cb(true, false, false, false);
+  var event = $.Event("keydown");
+  event.which = 13; // Key code for the Enter key
+  $("body").trigger(event); 
+}
+
+function prepare_choice() {
   // log demo info first
   window.localStorage.setItem('info', JSON.stringify(page.info));
 
+  $('#phase1').on('click', function(){
+    phaseId = 1;
+    pageId = 2;
+    trigger_enter_onbody();
+  });
+  $('#phase2').on('click', function(){
+    phaseId = 2;
+    pageId = 3;
+    trigger_enter_onbody();
+  });
+  $('#phase3').on('click', function(){
+    phaseId = 3;
+    pageId = 4;
+    trigger_enter_onbody();
+  });
+  $('#phase4').on('click', function(){
+    phaseId = 4;
+    pageId = 2;
+    trigger_enter_onbody();
+  });
+
+  $('#choice-tab').trigger('click');
+  $('#title').text('How Does the Study Work?');
+  set_keyboard_cb(false, false, false, false); // disable enter event, which will be reenabled upon click
+}
+
+function prepare_matching() {
   $("#nextpair").on('click', next_pair_cb);
 
   $('#base').css('background-color', match_colors[0]);
@@ -46,6 +81,8 @@ function prepare_matching() {
 }
 
 function prepare_training() {
+  page.slider = '#customRange';
+
   for (var i = 0; i < training_colors.length; i++) {
     page.disColors[i] = training_colors[i].id;
     state.colors[i] = new colorObj(hex_to_srgb(training_colors[i].color), 'srgb');
@@ -90,8 +127,8 @@ function gen_test_colors() {
 }
 
 function prepare_test() {
-  prof.time_in_training = Date.now() - prof.start;
-  prof.start = Date.now();
+  // if prof.start is 0 then we have skipped training
+  prof.time_in_training = (prof.start != 0) ? (Date.now() - prof.start) : 0;
 
   page.slider = '#t_customRange';
 
@@ -119,15 +156,37 @@ function prepare_test() {
   $('#test-tab').trigger('click');
   $('#title').text('Which Color is This? (1/12)');
   set_keyboard_cb(false, true, true, false);
+  prof.start = Date.now();
 }
 
 function prepare_fb() {
+  $('#resbox').css('visibility', 'hidden');
   send_results();
 
+  var num_corrects = 0;
+  prof.answer_color_id.forEach(function(ans, idx) {
+    if (ans == prof.test_color_id[idx]) num_corrects++;
+  });
+  $('#counter').text(num_corrects.toString());
+  //$('#').attr('href', '/color-naming-test/dashboard/'+dashboardName+'.html');
+  $('#seeres').on('click', function(ev) {
+    ev.preventDefault();
+    open_dashboard_cb();
+  });
+
+  if (phaseId <= 2) $('#next_step').html('Since you are on Day 1 &#8212; 3 and you didn\'t get a perfect score, you <b>must</b> go through the training again and re-take the test until you get a perfect score. <a id="goto_training" href="">Click here</a> to go back to training.');
+  $('#goto_training').on('click', function(ev) {
+    ev.preventDefault();
+    prof = new Profiler(new Date());
+    page.slider = '#customRange';
+    pageId = 3;
+    trigger_enter_onbody();
+  });
+
   $('#fb-tab').trigger('click');
-  $('#title').text('Optional Feedback');
+  $('#title').text('Results and (Optional) Feedback');
   $('#feedback').on('click', get_fb_cb);
-  $('#seeres').on('click', open_dashboard_cb);
+  //$('#seeres').on('click', open_dashboard_cb);
   set_keyboard_cb(false, false, false, false);
 }
 
