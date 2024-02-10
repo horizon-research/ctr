@@ -23,25 +23,6 @@ prof = new Profiler();
 const currentDate = new Date();
 prof.time = currentDate.toLocaleString('en-US', {timeZone: 'America/New_York'});
 
-// reload memorized data
-var item = window.localStorage.getItem('dashboardName');
-if (item) {
-  dashboardName = item;
-}
-//window.localStorage.removeItem('matchedResults'); // uncomment this for debugging
-var matched_res = window.localStorage.getItem('matchedResults');
-if (matched_res) {
-  match_colors = JSON.parse(matched_res);
-}
-var info = window.localStorage.getItem('info');
-if (info) {
-  info = JSON.parse(info);
-  $("#cvdtype").val(info.cvdType); 
-  $("#sex").val(info.sex); 
-  $("#eth").val(info.ethnicity); 
-  $("#age").val(info.age); 
-}
-
 const queryString = window.location.search;
 const urlParams = new URLSearchParams(queryString);
 const para_sim = urlParams.get('sim')
@@ -61,3 +42,39 @@ set_keyboard_cb(true, false, false, false);
 
 $('#matchbox').css('visibility', 'hidden');
 $('#resbox').css('visibility', 'hidden');
+
+// reload memorized data; uncomment below for debugging
+//window.localStorage.removeItem('dashboardName');
+//window.localStorage.removeItem('matchedResults');
+//window.localStorage.removeItem('info');
+
+var item = window.localStorage.getItem('dashboardName');
+if (item) {
+  dashboardName = item;
+}
+var matched_res = window.localStorage.getItem('matchedResults');
+if (matched_res) {
+  match_colors = JSON.parse(matched_res);
+  // setting |training_colors| so that we could skip matching
+  for (var id = 0; id < 6; id++) {
+    training_colors[id] = {
+      color: match_colors[id],
+      id: '#color'+(id+1).toString(),
+    };
+
+    // these are part of prepare_training. we do them here so that we can skip training
+    training_colors[id].obj = new colorObj(hex_to_srgb(training_colors[id].color), 'srgb');
+    prof.all_colors[id] = {name: training_colors[id].obj.srgb_name,
+                            rgb: training_colors[id].obj.v_quan_rgb};
+  }
+}
+var info = window.localStorage.getItem('info');
+if (info) {
+  info = JSON.parse(info);
+  page.info = info; // page.info will later be used in |prepare_choice| to set localStorage
+  $("#cvdtype").val(info.cvdType); 
+  $("#sex").val(info.sex); 
+  $("#eth").val(info.ethnicity); 
+  $("#age").val(info.age); 
+}
+

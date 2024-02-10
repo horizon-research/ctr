@@ -24,15 +24,17 @@ function advance_phase_cb(e){
       prepare_info();
       pageId = 1;
     } else if (pageId == 1) {
-      prepare_matching();
-      pageId = 2;
+      prepare_choice(); // it will set pageId depending on choice
     } else if (pageId == 2) {
-      prepare_training();
+      prepare_matching();
       pageId = 3;
     } else if (pageId == 3) {
-      prepare_test();
+      prepare_training();
       pageId = 4;
     } else if (pageId == 4) {
+      prepare_test();
+      pageId = 5;
+    } else if (pageId == 5) {
       prepare_fb();
     }
   }

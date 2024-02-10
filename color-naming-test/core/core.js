@@ -23,10 +23,36 @@ function prepare_info() {
   set_keyboard_cb(true, false, false, false);
 }
 
-function prepare_matching() {
+function prepare_choice() {
+  function trigger_enter_onbody() {
+    // enable enter only right before click rather than when entering the page
+    set_keyboard_cb(true, false, false, false);
+    var event = $.Event("keydown");
+    event.which = 13; // Key code for the Enter key
+    $("body").trigger(event); 
+  }
+
   // log demo info first
   window.localStorage.setItem('info', JSON.stringify(page.info));
 
+  $('.ctt').on('click', function(){
+    pageId = 2;
+    trigger_enter_onbody();
+  });
+  $('.tt').on('click', function(){
+    pageId = 3;
+    trigger_enter_onbody();
+  });
+  $('.t').on('click', function(){
+    pageId = 4;
+    trigger_enter_onbody();
+  });
+
+  $('#choice-tab').trigger('click');
+  $('#title').text('How Does the Study Work?');
+}
+
+function prepare_matching() {
   $("#nextpair").on('click', next_pair_cb);
 
   $('#base').css('background-color', match_colors[0]);
