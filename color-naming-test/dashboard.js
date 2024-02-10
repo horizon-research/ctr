@@ -25,7 +25,7 @@ function add_new_color(plot, color) {
   Plotly.addTraces(plot, new_trace);
 }
 
-function add_one_test(time, colors, tests, answers, index) {
+function add_one_test(time_in_training, time_in_test, time, colors, tests, answers, index) {
 
   var string = "\
         <div class=\"col-sm-10\" id=\"table_" + index.toString() + "\"></div>\
@@ -33,15 +33,16 @@ function add_one_test(time, colors, tests, answers, index) {
   $("#results").append(string);
 
   // add time
-  string = "<div class=\"row d-flex justify-content-center nofocus my-4 fs-3 fw-bold\" tabindex=\"-1\" id=\"time\">" + time.toString() + "</div>";
+  string = "<div class=\"row d-flex justify-content-center nofocus my-4 fs-2\" tabindex=\"-1\" id=\"time\">Test Time: " + time.toString() + ". Time in Training: " + (time_in_training/1000).toString() + "s</div>";
   $("#table_" + index.toString()).append(string);
 
   // add table header
   string = "\
         <div class=\"row d-flex justify-content-center nofocus my-4\" tabindex=\"-1\"> \
-          <div class=\"col-sm-4 content_center fs-4\">Color</div> \
-          <div class=\"col-sm-4 content_center fs-4\">Correct Answer</div> \
-          <div class=\"col-sm-4 content_center fs-4\">Your Answer</div> \
+          <div class=\"col-sm-3 content_center fs-4\">Color</div> \
+          <div class=\"col-sm-3 content_center fs-4\">Correct Answer</div> \
+          <div class=\"col-sm-3 content_center fs-4\">Your Answer</div> \
+          <div class=\"col-sm-3 content_center fs-4\">Time in Test (s)</div> \
         </div>";
   $("#table_" + index.toString()).append(string);
 
@@ -51,11 +52,12 @@ function add_one_test(time, colors, tests, answers, index) {
     // add a row to the result table
     string = "\
         <div class=\"row d-flex justify-content-center nofocus my-4\" tabindex=\"-1\"> \
-          <div class=\"col-sm-4 content_center fs-4\"> \
+          <div class=\"col-sm-3 content_center fs-4\"> \
             <div class=\"res_circle\" id=\"" + tid + "_color\"></div> \
           </div> \
-          <div class=\"col-sm-4 content_center fs-4\" id=\"" + tid + "_ans\"></div> \
-          <div class=\"col-sm-4 content_center fs-4\" id=\"" + tid + "_your\"></div> \
+          <div class=\"col-sm-3 content_center fs-4\" id=\"" + tid + "_ans\"></div> \
+          <div class=\"col-sm-3 content_center fs-4\" id=\"" + tid + "_your\"></div> \
+          <div class=\"col-sm-3 content_center fs-4\" id=\"" + tid + "_time\">" + (time_in_test[i]/1000).toString() + "</div> \
         </div>";
     $("#table_" + index.toString()).append(string);
 
@@ -79,9 +81,9 @@ function gen_plot(results) {
     }
   });
 
-  for (var i = 0; i < results.length; i++) {
+  for (var i = results.length - 1; i >= 0; i--) {
     var prof = results[i];
-    add_one_test(prof.time, prof.all_colors, prof.test_color_id, prof.answer_color_id, i);
+    add_one_test(prof.time_in_training, prof.time_in_test, prof.time, prof.all_colors, prof.test_color_id, prof.answer_color_id, i);
   }
 }
 
