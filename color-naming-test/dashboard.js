@@ -25,7 +25,7 @@ function add_new_color(plot, color) {
   Plotly.addTraces(plot, new_trace);
 }
 
-function add_one_test(time_in_training, time_in_test, time, colors, tests, answers, index) {
+function add_one_test(time_in_training, time_in_test, time, colors, tests, answers, fb, index) {
 
   var string = "\
         <div class=\"col-sm-10\" id=\"table_" + index.toString() + "\"></div>\
@@ -67,6 +67,14 @@ function add_one_test(time_in_training, time_in_test, time, colors, tests, answe
     $("#" + tid + '_ans').text(colors[tests[i]].name);
     $("#" + tid + '_your').html(colors[answers[i]].name + ((tests[i] == answers[i]) ? "&#20; &#10004;" : "&#20; &#10060;"));
   }
+
+  if (fb != undefined) {
+    string = "\
+        <div class=\"row d-flex justify-content-center nofocus my-4\" tabindex=\"-1\"> \
+          <div class=\"col-sm-12 content_center fs-4\">Feedback: " + fb + "</div> \
+        </div>";
+    $("#results").append(string);
+  }
 }
 
 function gen_plot(results) {
@@ -83,7 +91,7 @@ function gen_plot(results) {
 
   for (var i = results.length - 1; i >= 0; i--) {
     var prof = results[i];
-    add_one_test(prof.time_in_training, prof.time_in_test, prof.time, prof.all_colors, prof.test_color_id, prof.answer_color_id, i);
+    add_one_test(prof.time_in_training, prof.time_in_test, prof.time, prof.all_colors, prof.test_color_id, prof.answer_color_id, prof.fb, i);
   }
 }
 
@@ -91,7 +99,7 @@ function displayConfig(page_stats) {
   $('#usedcs').html(page_stats.cs ? 'Display P3' : 'sRGB');
   $('#usedbd').html(page_stats.bitdepth);
   $('#usedxyz').html('CIE 1931 XYZ'); // TODO: add these two to page_stats?
-  $('#usedlms').html('Hunt-Pointer-Estevez D65-adapted');
+  $('#usedlms').html('<a href="https://en.wikipedia.org/wiki/LMS_color_space#Hunt,_RLAB">HPE D65-adapted</a>');
   $('#bsrgb').html(page_stats.color_supports.srgb_b ? '&#10003;' : '');
   $('#bp3').html(page_stats.color_supports.p3_b ? '&#10003;' : '');
   $('#b2020').html(page_stats.color_supports.rec2020_b ? '&#10003;' : '');
@@ -100,8 +108,7 @@ function displayConfig(page_stats) {
   $('#d2020').html(page_stats.color_supports.rec2020_d ? '&#10003;' : '');
 }
 
-function displayFb(t, i) {
-  $('#fbtext').text(t);
+function displayFb(i) {
   $('#cvdtype').html(i.cvdType);
   $('#sex').html(i.sex);
   $('#eth').html(i.ethnicity);
@@ -124,6 +131,6 @@ fetch(jsonFileName+'.json')
 
     gen_plot(data.prof);
     displayConfig(data.page_stats);
-    displayFb(data.prof[0].fb, data.page_stats.info); // TODO: show all the matching results
+    displayFb(data.page_stats.info); // TODO: show all the matching results
   })
 
