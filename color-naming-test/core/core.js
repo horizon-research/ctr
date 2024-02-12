@@ -174,7 +174,10 @@ function prepare_fb() {
     open_dashboard_cb();
   });
 
-  if (phaseId <= 2) $('#next_step').html('Since you are on Day 1 &#8212; 3 and you didn\'t get a perfect score, you <b>must</b> go through the training again and re-take the test until you get a perfect score. <a id="goto_training" href="">Click here</a> to go back to training.');
+  if ((phaseId == 1) && (phaseId == 2)) {
+    assert(!para_single);
+    $('#next_step').html('Since you are on Day 1 &#8212; 3 and you didn\'t get a perfect score, you <b>must</b> go through the training again and re-take the test until you get a perfect score. <a id="goto_training" href="">Click here</a> to go back to training.');
+  }
   $('#goto_training').on('click', function(ev) {
     ev.preventDefault();
     prof = new Profiler(new Date());

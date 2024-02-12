@@ -22,7 +22,8 @@ function advance_phase_cb(e){
   if (e.which == 13) { // Enter key to advance to next phase
     if (pageId == 0) {
       prepare_info();
-      pageId = 1;
+      if (para_single) pageId = 2;
+      else pageId = 1;
     } else if (pageId == 1) {
       prepare_choice(); // it will set pageId depending on choice
     } else if (pageId == 2) {

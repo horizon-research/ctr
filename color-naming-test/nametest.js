@@ -1,4 +1,4 @@
-var indices, ans_indices, testId, phaseId;
+var indices, ans_indices, testId, phaseId = 0;
 var prof, dashboardName;
 var pageId = 0, cid = 0, colorId = 1;
 var training_colors = [];
@@ -24,7 +24,8 @@ prof = new Profiler(new Date());
 
 const queryString = window.location.search;
 const urlParams = new URLSearchParams(queryString);
-const para_sim = urlParams.get('sim')
+const para_sim = urlParams.get('sim');
+const para_single = (urlParams.get('single')) == "true"; 
 
 page = new pageObj('srgb');
 page.type = 0;
@@ -41,9 +42,11 @@ $('#matchbox').css('visibility', 'hidden');
 $('#resbox').css('visibility', 'hidden');
 
 // reload memorized data; uncomment below for debugging
-//window.localStorage.removeItem('dashboardName');
-//window.localStorage.removeItem('matchedResults');
-//window.localStorage.removeItem('info');
+if (para_single) {
+  window.localStorage.removeItem('dashboardName');
+  //window.localStorage.removeItem('matchedResults');
+  //window.localStorage.removeItem('info');
+}
 
 var item = window.localStorage.getItem('dashboardName');
 if (item) {
