@@ -249,10 +249,11 @@ function set_cvdtype_cb() {
 
   // page.type is used for actual simulation.
   // TODO: best effort simulation. right now supports only three strong CVD
-  // types. mono, unknown, normal are simulated incorrectly
-  if (val == 'prot' || val == 'proa') page.type = 0;
-  else if (val == 'deut' || val == 'deua') page.type = 1;
-  else if (val == 'trit' || val == 'tria') page.type = 2;
+  // types. anomalous trichromacy is simulated the same as dichromacy; mono,
+  // unknown, normal are simulated incorrectly
+  if (val == 'Protanopia' || val == 'Protanomaly') page.type = 0;
+  else if (val == 'Deuteranopia' || val == 'Deuteranomaly') page.type = 1;
+  else if (val == 'Tritanopia' || val == 'Tritanomaly') page.type = 2;
 }
 
 function open_dashboard_cb() {
