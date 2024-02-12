@@ -1,8 +1,0 @@
-chart-grapher/.idea
-chart-grapher/venv
-chart-grapher/notebooks
-chart-grapher/processed/*.png
-chart-grapher/data/*.html
-chart-grapher/data/*.json
-.idea/
-chart-grapher/__pycache__
