@@ -1920,6 +1920,28 @@ function updatePlot(theta, plotId_rgb, plotId_lab, plotId_xy, action) {
     var rotPoints_RGB_mapped = rotPoints_RGB;
     if (mapping) {
       rotColors_RGB = dichromatic_gamut_mapping(rotColors_RGB, 0);
+
+      // preserve luminance
+      if (preserveLum) {
+        var rotColors_LMS = math.transpose(math.multiply(RGB2lms, math.transpose(rotColors_RGB)));
+        var orig_colors = [color1, color2, color3];
+        var origColors_LMS = math.transpose(math.multiply(RGB2lms, math.transpose(orig_colors)));
+        for (var i = 0; i < 3; i++) {
+          var rot_color = rotColors_LMS[i];
+          var orig_color = origColors_LMS[i];
+          var sf;
+          if (type == 0) {
+            sf = rot_color[1] / orig_color[1];
+          } else if (type == 1) {
+            sf = rot_color[0] / orig_color[0];
+          } else { // use L+M for tritanopia
+            sf = (rot_color[0] + rot_color[1]) / (orig_color[0] + orig_color[1]);
+          }
+          rot_color = math.divide(rot_color, sf);
+          rotColors_RGB[i] = math.multiply(lms2RGB, rot_color);
+        }
+      }
+
       // this is the position of the mapped colors
       rotPoints_RGB_mapped = math.transpose(rotColors_RGB);
     }
@@ -2283,6 +2305,7 @@ var sim;
 var setter; // 0 for using color picker, 1 for using scale, 3 for using presets
 var color1, color2, color3;
 var name1, name2, name3;
+var preserveLum = true;
 
 d3.csv('/rotation-demo/ciexyzjv.csv').then(function(rows){
   function unpack(rows, key, toNum) {

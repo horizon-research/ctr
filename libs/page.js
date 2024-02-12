@@ -275,6 +275,7 @@ class pageObj {
     this.simMethod = null; // 0 for Brettel 1997 (two planes) and 1 for Viénot 1999 (one plane)
     this.type = null; // 0 for P, 1 for D, 2 for T
     this.sim = null;
+    this.preserveLum = false;
 
     if (color_space == 'srgb')
       this._cs = 0;

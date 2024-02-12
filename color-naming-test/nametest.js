@@ -31,6 +31,7 @@ page = new pageObj('srgb');
 page.type = 0;
 page.sim = (para_sim == "true") ? true : false;
 page.simMethod = 0;
+page.preserveLum = false;
 
 state = new discTestState(new colorObj([0, 0, 0], 'srgb'), 0.1,
     ()=>{}, ()=>{},

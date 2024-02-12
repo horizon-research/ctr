@@ -175,6 +175,25 @@ class discTestState {
     var mapped_colors_value = dichromatic_gamut_mapping(colors_value, this.confusion_line_rgb, mode);
 
     this.rotColorsMapped = mapped_colors_value.map(c => new colorObj(c, 'v_rgb'));
+
+    // preserve luminance
+    if (page.preserveLum) {
+      var orig_colors = this.colors;
+      this.rotColorsMapped.map(function(rot_c, idx){
+        if (page.info.cvdType == 'Protanopia') {
+          return new colorObj(math.divide(mapped_colors_value[idx],
+              (rot_c.lum_p / orig_colors[idx].lum_p)), 'v_rgb');
+        } else if (page.info.cvdType == 'Deuteranopia') {
+          return new colorObj(math.divide(mapped_colors_value[idx],
+              (rot_c.lum_d / orig_colors[idx].lum_d)), 'v_rgb');
+        } else {
+		  // If normal vision or anomalous trichromacy or tritanopia we use l+m
+		  // (of course not true for anomalous vision)
+          return new colorObj(math.divide(mapped_colors_value[idx],
+              (rot_c.lum_tri / orig_colors[idx].lum_tri)), 'v_rgb');
+        }
+      });
+    }
   }
 
   rotate_colors(theta) {

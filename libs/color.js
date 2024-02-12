@@ -168,6 +168,9 @@ class colorObj {
     this.xy = null;
     this.lms = null;
     this.lab = null;
+    this.lum_tri = null;
+    this.lum_p = null;
+    this.lum_d = null;
     this.p3 = null;
     this.norm_p3 = null;
     this.linear_p3 = null;
@@ -206,6 +209,9 @@ class colorObj {
     // also we don't allow create colorObj in Lab
     var c = new Color("srgb-linear", this.linear_srgb);
     this.lab = c.lab_d65;
+    this.lum_tri = this.lms[0] + this.lms[1]; // L+M
+    this.lum_p = this.lms[1]; // M
+    this.lum_d = this.lms[0]; // L
   }
 
   get v_rgb() {
