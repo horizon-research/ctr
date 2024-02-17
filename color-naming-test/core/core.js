@@ -103,9 +103,8 @@ function prepare_training() {
 }
 
 function gen_test_colors() {
-  function sampleFromArray(a) {
-    var randomIndex = Math.floor(Math.random() * a.length);
-    return a[randomIndex];
+  function clip(c) {
+    return c.map(color => Math.max(0, Math.min(1, color)));
   }
 
   // duplicate the indices so that we test twice as many colors
@@ -115,14 +114,28 @@ function gen_test_colors() {
   indices = indices.concat([...indices]);
   shuffle(indices);
 
-  // generate test colors (randomly +/- 1 so that test colors are
-  // different from training colors but are still within one Delta E 2000).
+  // perturb so that the test colors are one JND away from training colors
+  // we define JND in lab_d65, but color.js calculates DeltaE using lab with
+  // D50 as the white point:
+  // https://github.com/color-js/color.js/blob/main/src/distance.js
   // https://zschuessler.github.io/DeltaE/learn/
   // Note that the json file will still have the original colors
-  // TODO: a more principled to perturbe colors
+  var jnd = 2.3;
   for (var i = 0; i < indices.length; i++) {
-    test_colors[i] = new colorObj(training_colors[indices[i]].obj.srgb.map(
-        c => Math.max(0, Math.min(255, c+sampleFromArray([-1, 0, 1])))), 'srgb');
+    var c0 = new Color("srgb-linear", training_colors[indices[i]].obj.linear_srgb);
+    var theta = Math.floor(Math.random() *  Math.PI);
+    var phi = Math.floor(Math.random() * 2 * Math.PI);
+    var l = Math.max(0, Math.min(100, c0.lab_d65.l + jnd * Math.cos(theta)));
+    var a = Math.max(-125, Math.min(125, c0.lab_d65.a + jnd * Math.sin(theta) * Math.cos(phi)));
+    var b = Math.max(-125, Math.min(125, c0.lab_d65.b + jnd * Math.sin(theta) * Math.sin(phi)));
+    var c1 = new Color("lab-d65", [l, a, b]); 
+    //console.log(Color.deltaE(c0, c1, "76"), Math.sqrt(Math.pow(c1.lab_d65.l - c0.lab_d65.l, 2) + Math.pow(c1.lab_d65.a - c0.lab_d65.a, 2) + Math.pow(c1.lab_d65.b - c0.lab_d65.b, 2)), c0.srgb, c1.srgb);
+
+	// still has to clip in srgb_linear even though we have clipped in lab:
+	// clipping in lab makes sure the color is not imaginary and clipping in
+	// srgb makes sure it's displayable
+    test_colors[i] = new colorObj(clip([c1.srgb_linear.r, c1.srgb_linear.g, c1.srgb_linear.b]), 'linear_srgb');
+    console.log(training_colors[indices[i]].obj.srgb, test_colors[i].srgb);
   }
 }
 
