@@ -202,6 +202,10 @@ function next_pair_cb() {
     var match = new Color("srgb", [rgb[1]/255, rgb[2]/255, rgb[3]/255]);
     $('#sat_customRange').val(match.hsv.s);
     $('#val_customRange').val(match.hsv.v);
+    $("#hue_customRange").attr({
+       "max" : (match.hsv.h + 3) % 360,
+       "min" : (match.hsv.h + 357) % 360,
+    })
     $('#hue_customRange').val(match.hsv.h);
 
     if (cid == match_colors.length - 2) {
@@ -213,19 +217,19 @@ function next_pair_cb() {
 function change_sat_cb() {
   var sat = $('#sat_customRange').val();
   var val = $('#val_customRange').val();
+  var hue = $('#hue_customRange').val();
 
   // https://stackoverflow.com/questions/1740700/how-to-get-hex-color-value-rather-than-rgb-value
   var rgb = ($('#match').css('background-color')).match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);
   var match = new Color("srgb", [rgb[1]/255, rgb[2]/255, rgb[3]/255]);
   match.hsv.s = sat;
   match.hsv.v = val;
-  match.hsv.h = $('#hue_customRange').val();
+  match.hsv.h = hue;
+  //match.hsv.h = $('#hue_customRange').val();
 
   $('#match').css('background-color', 'rgb(' + (match.srgb.r*255).toString() + ', ' 
       + (match.srgb.g*255).toString() + ', '
       + (match.srgb.b*255).toString() + ')');
-
-  //$('#hue_customRange').val(match.hsv.h); // Show this to see that H will change by colorjs; its bug?
 }
 
 function set_age_cb() {
