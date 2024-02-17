@@ -126,12 +126,12 @@ function get_ans_cb(e) {
       prof.answer_color_id.push(ans_indices[ans_name.charAt(0) - 1]);
 
       $('input[type=radio][id='+t+']').prop('checked',false);
-      if (colorId == 12) {
+      if (colorId == test_colors.length) {
         $('#resbox').css('visibility', 'visible');
         set_keyboard_cb(true, false, false, false);
         colorId = 1; // reset in case we have to re-take the test
       } else {
-        $('#title').text('Which Color is This? (' + (colorId+1).toString() + '/12)');
+        $('#title').text('Which Color is This? (' + (colorId+1).toString() + '/' + test_colors.length.toString() + ')');
         state.colors = [test_colors[colorId]];
         updatePlot(0, 3);
         prof.test_color_id.push(indices[colorId++]);

@@ -107,11 +107,16 @@ function gen_test_colors() {
     return c.map(color => Math.max(0, Math.min(1, color)));
   }
 
+  function getRandBin() {
+    return Math.floor(Math.random() * 2);
+  }
+
   // duplicate the indices so that we test twice as many colors
   // TODO: many ways to do this (e.g., completely randomly draw colors so that
   //   subjects don't know if a color will be tested at all)
   indices = Array.from(Array(training_colors.length).keys());
   indices = indices.concat([...indices]);
+  indices = indices.concat([getRandBin(), getRandBin() +2, getRandBin() + 4]);
   shuffle(indices);
 
   // perturb so that the test colors are one JND away from training colors
@@ -167,7 +172,7 @@ function prepare_test() {
   $("body").on('keydown', get_ans_cb);
 
   $('#test-tab').trigger('click');
-  $('#title').text('Which Color is This? (1/12)');
+  $('#title').text('Which Color is This? (1/' + test_colors.length.toString() + ')');
   set_keyboard_cb(false, true, true, false);
   prof.start = Date.now();
 }
