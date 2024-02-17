@@ -132,14 +132,19 @@ function gen_test_colors() {
   // here whether cvd individuals can generalize what they've learned to other
   // colors that look different *for trichromats* but still share the same
   // color name as the training colors.
-  var delta = 5; // one JND is roughly about DeltaE 2.3 (defined in CIELAB)
+  var delta = 4; // one JND is roughly about DeltaE 2.3 (defined in CIELAB)
   for (var i = 0; i < indices.length; i++) {
     var c0 = new Color("srgb-linear", training_colors[indices[i]].obj.linear_srgb);
     var theta = Math.floor(Math.random() *  Math.PI);
     var phi = Math.floor(Math.random() * 2 * Math.PI);
-    var l = Math.max(0, Math.min(100, c0.lab_d65.l + delta * Math.cos(theta)));
-    var a = Math.max(-125, Math.min(125, c0.lab_d65.a + delta * Math.sin(theta) * Math.cos(phi)));
-    var b = Math.max(-125, Math.min(125, c0.lab_d65.b + delta * Math.sin(theta) * Math.sin(phi)));
+
+    //var l = Math.max(0, Math.min(100, c0.lab_d65.l + delta * Math.cos(theta)));
+    //var a = Math.max(-125, Math.min(125, c0.lab_d65.a + delta * Math.sin(theta) * Math.cos(phi)));
+    //var b = Math.max(-125, Math.min(125, c0.lab_d65.b + delta * Math.sin(theta) * Math.sin(phi)));
+    var l = c0.lab_d65.l;
+    var a = Math.max(-125, Math.min(125, c0.lab_d65.a + delta * Math.cos(phi)));
+    var b = Math.max(-125, Math.min(125, c0.lab_d65.b + delta * Math.sin(phi)));
+
     var c1 = new Color("lab-d65", [l, a, b]); 
     //console.log(Color.deltaE(c0, c1, "76"), Math.sqrt(Math.pow(c1.lab_d65.l - c0.lab_d65.l, 2) + Math.pow(c1.lab_d65.a - c0.lab_d65.a, 2) + Math.pow(c1.lab_d65.b - c0.lab_d65.b, 2)), c0.srgb, c1.srgb);
     //var c1p = new Color("srgb-linear", clip([c1.srgb_linear.r, c1.srgb_linear.g, c1.srgb_linear.b])); 
