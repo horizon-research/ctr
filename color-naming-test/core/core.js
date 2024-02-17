@@ -111,15 +111,25 @@ function gen_test_colors() {
     return Math.floor(Math.random() * 2);
   }
 
-  // duplicate the indices so that we test twice as many colors
+  function swap(array, idx) {
+    var t = array[idx];
+    array[idx] = array[idx+1];
+    array[idx+1] = t;
+  }
+
+  // five colors from each pair (always 2+3) so that a subject can't rely on
+  // excluded middle to guess the color.
   // TODO: many ways to do this (e.g., completely randomly draw colors so that
-  //   subjects don't know if a color will be tested at all)
+  // subjects don't know if a color will be tested *at all*, but then we can't
+  // guarantee that each color will be tested).
   indices = Array.from(Array(training_colors.length).keys());
-  indices = indices.concat([...indices]);
+  shuffle(indices);
+  // shuffle before concat to minimize the change of consecutive colors having the same name
+  indices = indices.concat([...shuffle([...indices])]);
   for (var i = 0; i < match_colors.length / 2; i++) {
     indices.push(getRandBin() + i * 2);
   }
-  shuffle(indices);
+  console.log(indices);
 
   // perturb so that the test colors are one JND away from training colors
   // we define JND in lab_d65, but color.js calculates DeltaE using lab with
