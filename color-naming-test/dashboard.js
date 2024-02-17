@@ -65,7 +65,7 @@ function add_one_test(time_in_training, time_in_test, time, colors, tests, answe
     var color = new colorObj(colors[tests[i]].rgb, 'srgb');
     $("#" + tid + '_color').css('background-color', color.srgb_css);
     $("#" + tid + '_ans').text(colors[tests[i]].name);
-    $("#" + tid + '_your').html(colors[answers[i]].name + ((tests[i] == answers[i]) ? "&#20; &#10004;" : "&#20; &#10060;"));
+    $("#" + tid + '_your').html(colors[answers[i]].name + ((tests[i] == answers[i]) ? " &#9989;" : " &#10060;"));
   }
 
   if (fb != undefined) {
@@ -117,7 +117,7 @@ function displayFb(i) {
 
 var page;
 
-var fileName = location.href.split("/").at(-1);
+var fileName = location.href.split("/").pop();
 var jsonFileName = fileName.split(".")[0];
 
 fetch(jsonFileName+'.json')
