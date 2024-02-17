@@ -4,8 +4,19 @@ var pageId = 0, cid = 0, colorId = 1;
 var training_colors = [];
 var test_colors = [];
 var all_answers = [];
+
 // TODO: change this based on cvd type
-var match_colors = ['#E00201', '#975B39', '#3A3EE9', '#9400D3', '#EDEE33', '#7FFF00'];
+// Dark Red, Brown, Blue, Dark Violet, Yellow, Light Green
+//var match_colors = ['#E00201', '#975B39', '#3A3EE9', '#9400D3', '#EDEE33', '#'];
+
+// Dark Red, Dark Green, Blue, Dark Violet, Yellow, Light Green
+//var match_colors = ['#8D1B1A', '#015A00', '#3A3EE9', '#9400D3', '#EDEE33', '#7FFF00'];
+
+// Light Pink, Turquoise, Blue, Dark Violet, Yellow, Light Green
+//var match_colors = ['#FC8FB7', '#37D4B2', '#3A3EE9', '#9400D3', '#EDEE33', '#7FFF00'];
+
+// Light Pink, Turquoise, Blue, Dark Violet, Yellow, Light Green, Dark Red, Dark Green
+var match_colors = ['#FC8FB7', '#37D4B2', '#3A3EE9', '#9400D3', '#EDEE33', '#7FFF00','#8D1B1A', '#015A00'];
 
 class Profiler {
   constructor(currentDate) {
@@ -45,7 +56,7 @@ $('#resbox').css('visibility', 'hidden');
 // reload memorized data; uncomment below for debugging
 if (para_single) {
   window.localStorage.removeItem('dashboardName');
-  //window.localStorage.removeItem('matchedResults');
+  window.localStorage.removeItem('matchedResults');
   //window.localStorage.removeItem('info');
 }
 
@@ -57,7 +68,7 @@ var matched_res = window.localStorage.getItem('matchedResults');
 if (matched_res) {
   match_colors = JSON.parse(matched_res);
   // setting |training_colors| so that we could skip matching
-  for (var id = 0; id < 6; id++) {
+  for (var id = 0; id < match_colors.length; id++) {
     training_colors[id] = {
       color: match_colors[id],
       id: '#color'+(id+1).toString(),

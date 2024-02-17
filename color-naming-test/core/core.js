@@ -116,7 +116,9 @@ function gen_test_colors() {
   //   subjects don't know if a color will be tested at all)
   indices = Array.from(Array(training_colors.length).keys());
   indices = indices.concat([...indices]);
-  indices = indices.concat([getRandBin(), getRandBin() +2, getRandBin() + 4]);
+  for (var i = 0; i < match_colors.length / 2; i++) {
+    indices.push(getRandBin() + i * 2);
+  }
   shuffle(indices);
 
   // perturb so that the test colors are one JND away from training colors
@@ -140,7 +142,7 @@ function gen_test_colors() {
 	// clipping in lab makes sure the color is not imaginary and clipping in
 	// srgb makes sure it's displayable
     test_colors[i] = new colorObj(clip([c1.srgb_linear.r, c1.srgb_linear.g, c1.srgb_linear.b]), 'linear_srgb');
-    console.log(training_colors[indices[i]].obj.srgb, test_colors[i].srgb);
+    //console.log(training_colors[indices[i]].obj.srgb, test_colors[i].srgb);
   }
 }
 

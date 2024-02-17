@@ -53,7 +53,7 @@ function get_train_ans_cb(e) {
     else page.num_con_cors = 0;
     $('#counter').text(page.num_con_cors.toString());
 
-    if (page.num_con_cors == 6) {
+    if (page.num_con_cors = match_colors.length) {
       $('#trainbox').css('visibility', 'visible');
 
       set_keyboard_cb(true, false, false, false);
@@ -110,7 +110,7 @@ function key_slider_cb(e) {
 }
 
 function get_ans_cb(e) {
-  if (e.which >= 49 && e.which <= 54) { // 1 -- 6
+  if (e.which >= 49 && e.which <= (49 + match_colors.length - 1)) { // 1 -- 8
     var ans = e.which-48;
     $('input[type=radio][id=ans'+ans+']').prop('checked',true);
   }
@@ -179,7 +179,7 @@ function next_pair_cb() {
   };
   cid++;
 
-  if (cid == 6) {
+  if (cid == match_colors.length) {
     // finish matching
     //$('#matchbox').css('visibility', 'visible');
     set_keyboard_cb(true, false, false, false);
@@ -192,9 +192,9 @@ function next_pair_cb() {
 
     // log matched pairs so that we don't have to rematch again
     window.localStorage.setItem('matchedResults', JSON.stringify(training_colors.map(c => c.color)));
-  } else if (cid <= 4) {
+  } else if (cid <= match_colors.length - 2) {
     // set up next pair
-    $('#pair').text('Pair ' + (cid/2+1).toString() + '/3');
+    $('#pair').text('Pair ' + (cid/2+1).toString() + '/' + (match_colors.length/2).toString());
     $('#base').css('background-color', match_colors[cid]);
     $('#match').css('background-color', match_colors[cid+1]);
 
@@ -204,7 +204,7 @@ function next_pair_cb() {
     $('#val_customRange').val(match.hsv.v);
     $('#hue_customRange').val(match.hsv.h);
 
-    if (cid == 4) {
+    if (cid == match_colors.length - 2) {
       $('#nextpair').text('Finish');
     }
   }
