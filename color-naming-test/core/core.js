@@ -104,7 +104,7 @@ function prepare_training() {
 
 function gen_test_colors() {
   function clip(c) {
-    return c.map(color => Math.max(0, Math.min(1, color)));
+    return c.map(color => clamp(color, 0, 1));
   }
 
   function getRandBin() {
@@ -127,16 +127,23 @@ function gen_test_colors() {
   // https://github.com/color-js/color.js/blob/main/src/distance.js
   // https://zschuessler.github.io/DeltaE/learn/
   // Note that the json file will still have the original colors
-  var jnd = 2.3;
+
+  // all JND definitions are for normal trichromacy, so what we are testing
+  // here whether cvd individuals can generalize what they've learned to other
+  // colors that look different *for trichromats* but still share the same
+  // color name as the training colors.
+  var delta = 5; // one JND is roughly about DeltaE 2.3 (defined in CIELAB)
   for (var i = 0; i < indices.length; i++) {
     var c0 = new Color("srgb-linear", training_colors[indices[i]].obj.linear_srgb);
     var theta = Math.floor(Math.random() *  Math.PI);
     var phi = Math.floor(Math.random() * 2 * Math.PI);
-    var l = Math.max(0, Math.min(100, c0.lab_d65.l + jnd * Math.cos(theta)));
-    var a = Math.max(-125, Math.min(125, c0.lab_d65.a + jnd * Math.sin(theta) * Math.cos(phi)));
-    var b = Math.max(-125, Math.min(125, c0.lab_d65.b + jnd * Math.sin(theta) * Math.sin(phi)));
+    var l = Math.max(0, Math.min(100, c0.lab_d65.l + delta * Math.cos(theta)));
+    var a = Math.max(-125, Math.min(125, c0.lab_d65.a + delta * Math.sin(theta) * Math.cos(phi)));
+    var b = Math.max(-125, Math.min(125, c0.lab_d65.b + delta * Math.sin(theta) * Math.sin(phi)));
     var c1 = new Color("lab-d65", [l, a, b]); 
     //console.log(Color.deltaE(c0, c1, "76"), Math.sqrt(Math.pow(c1.lab_d65.l - c0.lab_d65.l, 2) + Math.pow(c1.lab_d65.a - c0.lab_d65.a, 2) + Math.pow(c1.lab_d65.b - c0.lab_d65.b, 2)), c0.srgb, c1.srgb);
+    //var c1p = new Color("srgb-linear", clip([c1.srgb_linear.r, c1.srgb_linear.g, c1.srgb_linear.b])); 
+    //console.log(Color.deltaE(c0, c1p, "76"), Color.deltaE(c0, c1p, "2000"));
 
 	// still has to clip in srgb_linear even though we have clipped in lab:
 	// clipping in lab makes sure the color is not imaginary and clipping in
