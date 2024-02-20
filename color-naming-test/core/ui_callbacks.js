@@ -191,7 +191,7 @@ function next_pair_cb() {
     $('body').trigger(e);
 
     // log matched pairs so that we don't have to rematch again
-    window.localStorage.setItem('matchedResults', JSON.stringify(training_colors.map(c => c.color)));
+    if (!para_single) window.localStorage.setItem('matchedResults', JSON.stringify(training_colors.map(c => c.color)));
   } else if (cid <= match_colors.length - 2) {
     // set up next pair
     $('#pair').text('Pair ' + (cid/2+1).toString() + '/' + (match_colors.length/2).toString());

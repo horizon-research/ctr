@@ -85,7 +85,7 @@ function post_data(data) {
   .then(response => response.text())
   .then(result => {
     dashboardName = result;
-    window.localStorage.setItem('dashboardName', dashboardName);
+    if (!para_single) window.localStorage.setItem('dashboardName', dashboardName);
   })
   .catch(error => console.error(error));
 }

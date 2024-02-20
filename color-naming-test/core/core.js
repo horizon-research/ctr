@@ -33,7 +33,7 @@ function trigger_enter_onbody() {
 
 function prepare_choice() {
   // log demo info first
-  window.localStorage.setItem('info', JSON.stringify(page.info));
+  if (!para_single) window.localStorage.setItem('info', JSON.stringify(page.info));
 
   $('#phase1').on('click', function(){
     phaseId = 1;
