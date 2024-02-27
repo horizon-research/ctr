@@ -203,8 +203,8 @@ function next_pair_cb() {
     $('#sat_customRange').val(match.hsv.s);
     $('#val_customRange').val(match.hsv.v);
     $("#hue_customRange").attr({
-       "max" : (match.hsv.h + 3) % 360,
-       "min" : (match.hsv.h + 357) % 360,
+       "max" : (match.hsv.h + 10) % 360,
+       "min" : (match.hsv.h + 350) % 360,
     })
     $('#hue_customRange').val(match.hsv.h);
 
@@ -230,6 +230,9 @@ function change_sat_cb() {
   $('#match').css('background-color', 'rgb(' + (match.srgb.r*255).toString() + ', ' 
       + (match.srgb.g*255).toString() + ', '
       + (match.srgb.b*255).toString() + ')');
+
+  var tmp_color = new colorObj([match.srgb.r*255, match.srgb.g*255, match.srgb.b*255], 'srgb');
+  //$('#dbg_text').text(tmp_color.srgb_name);
 }
 
 function set_age_cb() {

@@ -155,6 +155,7 @@ var ntc = {
 ["008000", "Green"],
 ["006400", "Dark Green"],
 ["90EE90", "Light Green"],
+["B9FF2E", "Light Green"], // later added
 ["FFFFF0", "White"], //["FFFFF0", "Ivory"],
 ["F2E58F", "Beige"], //["F2E58F", "Dark Ivory"],
 ["FFF8C9", "Beige"], //["FFF8C9", "Light Ivory"],

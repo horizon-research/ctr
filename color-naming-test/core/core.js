@@ -75,8 +75,8 @@ function prepare_matching() {
   $('#sat_customRange').val(match.hsv.s);
   $('#val_customRange').val(match.hsv.v);
   $("#hue_customRange").attr({
-     "max" : (match.hsv.h + 3) % 360,
-     "min" : (match.hsv.h + 357) % 360,
+     "max" : (match.hsv.h + 10) % 360,
+     "min" : (match.hsv.h + 350) % 360,
   })
   $('#hue_customRange').val(match.hsv.h);
 
