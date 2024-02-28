@@ -272,6 +272,8 @@ function get_fb_cb() {
   const feedbackData = {uid: dashboardName,
                         fb: $('#fbtext').val()};
 
+  $('#fbtext').val('');
+
   //fetch('https://colorvision.cs.rochester.edu/upload-naming-feedback', {
   fetch('http://localhost:9812/upload-naming-feedback', {
     method: 'POST',
