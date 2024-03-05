@@ -225,6 +225,8 @@ function prepare_fb() {
     console.assert(!para_single);
     if (num_corrects != test_colors.length) {
       $('#next_step').html('Since you are on Day 1 &#8212; 3 and you didn\'t get a perfect score, you <b>must</b> go through the training again and re-take the test until you get a perfect score. <a id="goto_training" href="">Click here</a> to go back to training.');
+    } else {
+      $('#next_step').html('');
     }
   }
   $('#goto_training').on('click', function(ev) {
