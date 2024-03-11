@@ -4,17 +4,17 @@ const ctx = canvas.getContext('2d');
 
 var current_ang = 0;
 
-function handleOrientation(event) {
-  const rotateDegrees = event.alpha; // alpha: about z-axis
-  const frontToBack = event.beta; // beta: about x-axis
-  const leftToRight = event.gamma; // gamma: about y-axis
-
-  handleOrientationEvent(frontToBack, leftToRight, rotateDegrees);
-}
-
-const handleOrientationEvent = (frontToBack, leftToRight, rotateDegrees) => {
-  current_ang = rotateDegrees / 180 * Math.PI;
-};
+//function handleOrientation(event) {
+//  const rotateDegrees = event.alpha; // alpha: about z-axis
+//  const frontToBack = event.beta; // beta: about x-axis
+//  const leftToRight = event.gamma; // gamma: about y-axis
+//
+//  handleOrientationEvent(frontToBack, leftToRight, rotateDegrees);
+//}
+//
+//const handleOrientationEvent = (frontToBack, leftToRight, rotateDegrees) => {
+//  current_ang = rotateDegrees / 180 * Math.PI;
+//};
 
 // Request access to the user's camera
 navigator.mediaDevices.getUserMedia({ video: {facingMode: "environment"} })
@@ -105,11 +105,11 @@ function drawRotate() {
   rotate(imageData);
   ctx.putImageData(imageData, 0, 0);
 
-  ctx.font = "20px Arial";
+  ctx.font = "40px Arial";
   ctx.fillStyle = "#ff0000";
   ctx.textBaseline = 'middle';
   ctx.textAlign = 'center';
-  ctx.fillText((current_ang / Math.PI * 180).toFixed(1).toString(), canvas.width/2, 100);
+  ctx.fillText(((current_ang + 2 * Math.PI) % (2 * Math.PI) / Math.PI * 180).toFixed(1).toString(), canvas.width/2, 100);
 
   requestAnimationFrame(drawRotate);
 }
@@ -140,7 +140,7 @@ let is_sim = (para_sim == "true") ? true : false;
 
 function rotate(imgData) {
   var img = imgData.data;
-  var rotMat = getMat(current_ang);
+  var rotMat = getMat(-current_ang);
 
   for (let i = 0; i < img.length; i += 4) {
     var red = img[i];
