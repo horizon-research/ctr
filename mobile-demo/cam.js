@@ -2,6 +2,12 @@ const video = document.getElementById('camera');
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
 
+ctx.font = "10px Arial";
+ctx.fillStyle = "#ff0000";
+ctx.textBaseline = 'middle';
+ctx.textAlign = 'center';
+ctx.fillText('Press to Start', canvas.width/2, canvas.height/2);
+
 var current_ang = 0;
 
 //function handleOrientation(event) {
@@ -33,7 +39,7 @@ navigator.mediaDevices.getUserMedia({ video: {facingMode: "environment"} })
 
 $('body').on('click', toggleVideo);
 
-let is_running = false;
+//let is_running = false;
 function toggleVideo() {
   // Request permission for iOS 13+ devices
   // This must be under an event handler
