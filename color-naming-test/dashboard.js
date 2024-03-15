@@ -77,7 +77,59 @@ function add_one_test(time_in_training, time_in_test, time, colors, tests, answe
   }
 }
 
-function gen_plot(results) {
+function add_isochrome_lines(plot, cvdType, rows) {
+  function unpack(rows, key, toNum) {
+    return rows.map(function(row) {
+        if (toNum == false) return row[key];
+        else return parseFloat(row[key]);
+      });
+  }
+  x_cmf = unpack(rows, 'x');
+  y_cmf = unpack(rows, 'y');
+  z_cmf = unpack(rows, 'z');
+  wlen = unpack(rows, 'wavelength');
+  var firstW = wlen[0];
+  var stride = 5;
+
+  var a475_i = (475 - firstW) / stride;
+  var a575_i = (575 - firstW) / stride;
+  var a475_c = new colorObj([x_cmf[a475_i], y_cmf[a475_i], z_cmf[a475_i]], 'xyz');
+  var a575_c = new colorObj([x_cmf[a575_i], y_cmf[a575_i], z_cmf[a575_i]], 'xyz');
+
+  var a485_i = (485 - firstW) / stride;
+  var a660_i = (660 - firstW) / stride;
+  var a485_c = new colorObj([x_cmf[a485_i], y_cmf[a485_i], z_cmf[a485_i]], 'xyz');
+  var a660_c = new colorObj([x_cmf[a660_i], y_cmf[a660_i], z_cmf[a660_i]], 'xyz');
+
+  // Brettel projection planes
+  var isochrome_line = {
+    x: (cvdType != 'T') ? [a475_c.xy[0], 1/3, a575_c.xy[0]] : [a485_c.xy[0], 1/3, a660_c.xy[0]],
+    y: (cvdType != 'T') ? [a475_c.xy[1], 1/3, a575_c.xy[1]] : [a485_c.xy[1], 1/3, a660_c.xy[1]],
+    text: (cvdType != 'T') ? ['475 nm', 'EEW', '575 nm'] : ['485 nm', 'EEW', '660 nm'],
+    mode: 'lines+markers',
+    marker: {
+      size: 12,
+      opacity: 1,
+      color: ['#FFFFFF','#FFFFFF','#FFFFFF'],
+      line: {
+        color: '#000000',
+        width: 2
+      }
+    },
+    line: {
+      width: 1,
+      color: '#000000',
+    },
+    name: 'Iso-chrome lines',
+    hovertemplate: 'x: %{x}' +
+      '<br>y: %{y}' +
+      '<br>%{text}<extra></extra>',
+  };
+
+  Plotly.addTraces(plot, isochrome_line);
+}
+
+function gen_plot(results, cvdType) {
   d3.csv('../ciexyzjv.csv').then(function(rows){
     dis_plot = plotDis('disDiv', rows);
 
@@ -87,6 +139,9 @@ function gen_plot(results) {
       var color = new colorObj(colors[i].rgb, 'srgb');
       add_new_color(dis_plot, color);
     }
+
+    // add confusion lines
+    add_isochrome_lines(dis_plot, cvdType, rows);
   });
 
   for (var i = results.length - 1; i >= 0; i--) {
@@ -129,7 +184,7 @@ fetch(jsonFileName+'.json')
     page = new pageObj((cs == 0) ? 'srgb' : 'p3');
     Object.assign(page.color_supports, data.page_stats.color_supports); // so that page.bitdepth is correctly set
 
-    gen_plot(data.prof);
+    gen_plot(data.prof, data.page_stats.info.cvdType[0]);
     displayConfig(data.page_stats);
     displayFb(data.page_stats.info); // TODO: show all the matching results
   })
