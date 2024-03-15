@@ -82,7 +82,7 @@ function gen_plot(results) {
     dis_plot = plotDis('disDiv', rows);
 
     // add the test colors to the xy chromaticity diagram
-    var colors = results[0].all_colors;
+    var colors = results[results.length - 1].all_colors;
     for (var i = 0; i < colors.length; i++) {
       var color = new colorObj(colors[i].rgb, 'srgb');
       add_new_color(dis_plot, color);
