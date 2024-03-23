@@ -218,7 +218,7 @@ function displayColorRes() {
                     </div> \
                   </div> \
                   <div class=\"row d-flex justify-content-start\"> \
-                    <div class=\"col-sm-2 content_center fs-4 text-center\">Indiscriminable colors w slider</div> \
+                    <div class=\"col-sm-2 content_center fs-4 text-center\">Indiscriminable colors w/ slider</div> \
                     <div class=\"col-sm-10 content_center\"> \
                       <div class=\"square mx-2\" style=\"background-color: " + baseColorSets_yes[i].thresholdColors[0] + "\"></div> \
                       <div class=\"square mx-2\" style=\"background-color: " + baseColorSets_yes[i].thresholdColors[1] + "\"></div> \
