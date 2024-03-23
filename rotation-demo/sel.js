@@ -2305,7 +2305,7 @@ var sim;
 var setter; // 0 for using color picker, 1 for using scale, 3 for using presets
 var color1, color2, color3;
 var name1, name2, name3;
-var preserveLum = true;
+var preserveLum = false;
 
 d3.csv('/rotation-demo/ciexyzjv.csv').then(function(rows){
   function unpack(rows, key, toNum) {
