@@ -52,7 +52,7 @@ function prepare_choice() {
   });
   $('#phase4').on('click', function(){
     phaseId = 4;
-    pageId = 2;
+    pageId = 3;
     trigger_enter_onbody();
   });
 
