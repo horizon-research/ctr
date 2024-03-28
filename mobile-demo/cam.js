@@ -79,6 +79,7 @@ const touchMove = (event) => {
   // technically no need for this; do this just so we show angles between -PI and PI
   if (current_ang < -Math.PI) current_ang += Math.PI*2;
   else if (current_ang > Math.PI) current_ang -= Math.PI*2;
+  $('#ang_slider').val(current_ang);
 };
 
 // TODO: conflicts with click to start/stop video; the idea is to use double tap to reset current_ang to 0.
@@ -111,11 +112,11 @@ function drawRotate() {
   rotate(imageData);
   ctx.putImageData(imageData, 0, 0);
 
-  ctx.font = "40px Arial";
-  ctx.fillStyle = "#ff0000";
-  ctx.textBaseline = 'middle';
-  ctx.textAlign = 'center';
-  ctx.fillText(((current_ang + 2 * Math.PI) % (2 * Math.PI) / Math.PI * 180).toFixed(1).toString(), canvas.width/2, 100);
+  //ctx.font = "40px Arial";
+  //ctx.fillStyle = "#ff0000";
+  //ctx.textBaseline = 'middle';
+  //ctx.textAlign = 'center';
+  //ctx.fillText(((current_ang + 2 * Math.PI) % (2 * Math.PI) / Math.PI * 180).toFixed(1).toString(), canvas.width/2, 100);
 
   requestAnimationFrame(drawRotate);
 }
@@ -198,6 +199,12 @@ function rotate(imgData) {
     img[i + 2] = blue;
   }
 }
+
+$('#reset').on('click', function(event){
+  current_ang = 0;
+  $('#ang_slider').val(current_ang);
+  event.stopPropagation();
+})
 
 //$("body").on('keydown', change_angle_cb);
 //function change_angle_cb(e) {
