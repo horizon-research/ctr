@@ -2361,7 +2361,7 @@ d3.csv('/rotation-demo/ciexyzjv.csv').then(function(rows){
   
   // by default use preset2 in color setter
   $('#usepre').prop("checked", true).trigger('change');
-  $('#presets').val('preset2');
+  $('#presets').val('preset4');
   $('#presets').trigger('change');
   
   // set the mode to play and update the plot with the initial setting
