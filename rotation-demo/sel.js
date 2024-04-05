@@ -2218,28 +2218,16 @@ function registerSelectPresets() {
       $('#c12').val(rgb2hex('rgb(148, 0, 211)'));
       $('#c13').val(rgb2hex('rgb(224, 2, 224)'));
     } else if (val == "preset3") {
-      $('#c11').val(rgb2hex('rgb(224, 2, 1)'));
-      $('#c12').val(rgb2hex('rgb(151, 91, 57)'));
+      //$('#c11').val(rgb2hex('rgb(224, 2, 1)'));
+      $('#c11').val(rgb2hex('rgb(141, 27, 26)'));
+      //$('#c12').val(rgb2hex('rgb(151, 91, 57)'));
+      $('#c12').val(rgb2hex('rgb(125, 64, 28)'));
       $('#c13').val(rgb2hex('rgb(9, 90, 0)'));
     } else if (val == "preset4") {
       // these are picked to be on Deutanopia confusion line.
-      // the first/commented c11 is more like gray. the used c11 is more similar to c12.
-      // the second c13 is on a different confusion line in RGB but the same line in xy.
-	  // the second c13 just has lower luminance, so in xy-chromaticity plot
-	  // it's technically incorrect to say that colors on confusion line are
-	  // perceptually the same --- they might have different luminances because
-	  // they come from different confusion lines in XYZ/RGB.
-
-      //$('#c11').val(rgb2hex('rgb(171, 188, 180)'));
       $('#c11').val(rgb2hex('rgb(228, 160, 182)'));
-      $('#c12').val(rgb2hex('rgb(252, 143, 183)'));
+      $('#c12').val(rgb2hex('rgb(171, 188, 180)'));
       $('#c13').val(rgb2hex('rgb(55, 212, 178)'));
-      //$('#c13').val(rgb2hex('rgb(218, 64, 136)'));
-
-      // another deuta line (in RGB)
-      //$('#c11').val(rgb2hex('rgb(218, 64, 136)'));
-      //$('#c12').val(rgb2hex('rgb(107, 144, 131)'));
-      //$('#c13').val(rgb2hex('rgb(66, 153, 131)'));
     }
 
     $('#c11').trigger('change');
