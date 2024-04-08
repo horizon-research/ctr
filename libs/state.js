@@ -176,24 +176,9 @@ class discTestState {
 
     this.rotColorsMapped = mapped_colors_value.map(c => new colorObj(c, 'v_rgb'));
 
-    // preserve luminance
-    if (page.preserveLum) {
-      var orig_colors = this.colors;
-      this.rotColorsMapped.map(function(rot_c, idx){
-        if (page.info.cvdType == 'Protanopia') {
-          return new colorObj(math.divide(mapped_colors_value[idx],
-              (rot_c.lum_p / orig_colors[idx].lum_p)), 'v_rgb');
-        } else if (page.info.cvdType == 'Deuteranopia') {
-          return new colorObj(math.divide(mapped_colors_value[idx],
-              (rot_c.lum_d / orig_colors[idx].lum_d)), 'v_rgb');
-        } else {
-		  // If normal vision or anomalous trichromacy or tritanopia we use l+m
-		  // (of course not true for anomalous vision)
-          return new colorObj(math.divide(mapped_colors_value[idx],
-              (rot_c.lum_tri / orig_colors[idx].lum_tri)), 'v_rgb');
-        }
-      });
-    }
+    //this.rotColorsMapped.map((c, id) => {
+    //  if (id == 0) console.log(c.lum_tri, colors[id].lum_tri);
+    //});
   }
 
   rotate_colors(theta) {
@@ -212,7 +197,27 @@ class discTestState {
     var rotated_colors_col = this.geoTrans(rotMat, this.colors);
     var rotated_colors_row = math.transpose(rotated_colors_col);
 
-    this.rotColors = rotated_colors_row.map(c => new colorObj(c, 'v_rgb'));
+    this.rotColors = rotated_colors_row.map((c, idx) => {
+      var c_obj = new colorObj(c, 'v_rgb')
+
+      // preserve luminance
+      if (page.preserveLum) {
+        if (page.info.cvdType == 'Protanopia') {
+          c_obj = new colorObj(math.divide(c,
+              (c_obj.lum_p / this.colors[idx].lum_p)), 'v_rgb');
+        } else if (page.info.cvdType == 'Deuteranopia') {
+          c_obj = new colorObj(math.divide(c,
+              (c_obj.lum_d / this.colors[idx].lum_d)), 'v_rgb');
+        } else {
+	  	// If normal vision or anomalous trichromacy or tritanopia we use l+m
+	  	// (of course not true for anomalous vision)
+          c_obj = new colorObj(math.divide(c,
+              (c_obj.lum_tri / this.colors[idx].lum_tri)), 'v_rgb');
+        }
+      }
+
+      return c_obj;
+    });
   }
 
   simulate() {
