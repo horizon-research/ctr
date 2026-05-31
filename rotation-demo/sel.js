@@ -2296,7 +2296,7 @@ var color1, color2, color3;
 var name1, name2, name3;
 var preserveLum = false;
 
-d3.csv('/rotation-demo/ciexyzjv.csv').then(function(rows){
+d3.csv('./ciexyzjv.csv').then(function(rows){
   function unpack(rows, key, toNum) {
     return rows.map(function(row) {
         if (toNum == false) return row[key];
